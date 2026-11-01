@@ -8,10 +8,12 @@
     "inputs": [],
     "nodes": [
       {"id": "start", "definition_id": "usb.start", "display_name": "Begin tick", "description": "Begins one controller iteration."},
-      {"id": "tick", "definition_id": "usb.tick_step", "display_name": "Advance tick", "description": "Waits, updates and publishes the runtime state, then reports whether to stop."},
+      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads settings and persisted state."},
+      {"id": "probe", "definition_id": "usb.device_probe", "display_name": "Probe tablet", "description": "Resolves USB presence and ADB transport state."},
+      {"id": "tick", "definition_id": "usb.tick_merge", "display_name": "Advance tick", "description": "Merges probe results, persists state and reports whether to stop."},
       {"id": "end", "definition_id": "usb.end", "display_name": "Finish tick", "description": "Finishes one controller iteration."}
     ],
-    "edges": [["start", "tick"], ["tick", "end"]],
+    "edges": [["start", "io"], ["io", "probe"], ["io", "tick"], ["probe", "tick"], ["tick", "end"]],
     "outputs": [
       {"type": "usb.shutdown", "cardinality": "exactly_one", "display_name": "Stop flag"}
     ]

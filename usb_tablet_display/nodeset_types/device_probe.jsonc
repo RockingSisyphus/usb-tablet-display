@@ -1,0 +1,24 @@
+{
+  "type_key": "usb.device_probe",
+  "display_name": "Probe tablet",
+  "description": "Resolves USB presence and ADB transport state for the configured tablet.",
+  "requires": [{"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"}],
+  "provides": [
+    {"key": "device", "type": "usb.device", "display_name": "USB device"},
+    {"key": "adb_state", "type": "usb.adb_state", "display_name": "ADB transport state"}
+  ],
+  "pipeline": {
+    "inputs": [{"key": "settings", "type": "usb.settings", "display_name": "Tablet settings", "required": true}],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Begin probe", "description": "Begins the device probe."},
+      {"id": "probe", "definition_id": "usb.probe_device", "display_name": "Probe USB device", "description": "Scans sysfs for the configured serial."},
+      {"id": "adb", "definition_id": "usb.adb_state", "display_name": "ADB transport state", "description": "Queries the ADB transport state."},
+      {"id": "end", "definition_id": "usb.end", "display_name": "Finish probe", "description": "Finishes the device probe."}
+    ],
+    "edges": [["start", "probe"], ["start", "adb"], ["probe", "end"], ["adb", "end"]],
+    "outputs": [
+      {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
+      {"type": "usb.adb_state", "cardinality": "exactly_one", "display_name": "ADB transport state"}
+    ]
+  }
+}

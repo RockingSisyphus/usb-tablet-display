@@ -1,0 +1,24 @@
+{
+  "type_key": "usb.state_io",
+  "display_name": "Load state and settings",
+  "description": "Loads tablet settings and the persisted runtime state for one operation.",
+  "requires": [],
+  "provides": [
+    {"key": "settings", "type": "usb.settings", "display_name": "Tablet settings"},
+    {"key": "loaded_state", "type": "usb.state", "display_name": "Runtime state"}
+  ],
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Begin load", "description": "Begins the settings and state load."},
+      {"id": "settings", "definition_id": "usb.load_settings", "display_name": "Load settings", "description": "Reads the tablet TOML configuration."},
+      {"id": "state", "definition_id": "usb.read_state", "display_name": "Read state", "description": "Reads the persisted runtime state."},
+      {"id": "end", "definition_id": "usb.end", "display_name": "Finish load", "description": "Finishes the settings and state load."}
+    ],
+    "edges": [["start", "settings"], ["settings", "state"], ["state", "end"]],
+    "outputs": [
+      {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
+      {"type": "usb.state", "cardinality": "exactly_one", "display_name": "Runtime state"}
+    ]
+  }
+}

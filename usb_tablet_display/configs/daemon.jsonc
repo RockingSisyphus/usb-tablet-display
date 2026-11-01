@@ -22,6 +22,10 @@
     "edges": [["start", "loop"], ["loop", "end"]],
     "outputs": []
   },
-  "nodeset_imports": [{"path": "../nodeset_types/daemon_tick.jsonc"}],
+  "nodeset_imports": [
+    {"path": "../nodeset_types/state_io.jsonc"},
+    {"path": "../nodeset_types/device_probe.jsonc"},
+    {"path": "../nodeset_types/daemon_tick.jsonc"}
+  ],
   "plugins": []
 }
