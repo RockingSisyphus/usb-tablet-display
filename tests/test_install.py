@@ -54,8 +54,11 @@ def test_verify_reports_all_checks(home):
     ops.install(home, runner=fake_runner())
     result = ops.verify(home, runner=fake_runner())
     assert result["ok"] is True
-    assert set(result["checks"]) == {"unit_file", "cli_wrapper", "unit_enabled",
-                                     "unit_active", "state_present"}
+    required = {"unit_file", "coordinator_unit", "internet_unit", "cli_wrapper",
+                "unit_enabled", "unit_active", "coordinator_active", "tablet_serial",
+                "python_3_11", "adb", "systemctl"}
+    assert required <= set(result["checks"])
+    assert isinstance(result["hints"], list)
 
 
 def test_restore_returns_backed_up_unit(home):

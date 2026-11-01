@@ -41,7 +41,9 @@ class InstallRun:
         action = str(request.get("action", "verify"))
         home = Path.home()
         backup_dir = str(request.get("backup_dir") or "")
-        if action == "backup":
+        if action == "all":
+            result = ops.install_all(home)
+        elif action == "backup":
             result = ops.backup(home)
         elif action == "quiesce":
             result = ops.quiesce(home)

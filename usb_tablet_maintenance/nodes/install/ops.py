@@ -1,9 +1,11 @@
 """Install, quiesce, backup and restore operations for the new stack."""
 from __future__ import annotations
 
+import importlib.util
 import json
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -66,8 +68,10 @@ def install(home: Path, runner=run):
     units.mkdir(parents=True, exist_ok=True)
     for name in (NEW_UNIT, NEW_INTERNET_UNIT, NEW_COORDINATOR_UNIT):
         source = Path(ROOT_PATH) / "services" / name
-        text = source.read_text(encoding="utf-8").replace("@ROOT@", ROOT_PATH)
-        (units / name).write_text(text, encoding="utf-8")
+        text = source.read_text(encoding="utf-8")
+        if "@ROOT@" not in text:
+            raise RuntimeError(f"{name} lost its @ROOT@ placeholder")
+        (units / name).write_text(text.replace("@ROOT@", ROOT_PATH), encoding="utf-8")
     target = units / NEW_UNIT
     extension_source = Path(ROOT_PATH) / "gnome-shell-ext" / EXTENSION
     extension_target = home / ".local/share/gnome-shell/extensions" / EXTENSION
@@ -120,14 +124,95 @@ def restore(home: Path, backup_dir: Path, runner=run):
     return {"action": "restore", "backup_dir": str(base), "restored": restored}
 
 
+def _which(name):
+    return shutil.which(name) is not None
+
+
+def _action_output(argv, timeout=10):
+    try:
+        done = subprocess.run([str(a) for a in argv], capture_output=True, text=True, timeout=timeout)
+        return done.stdout or ""
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+
+
+def _tablet_serial(home: Path):
+    config = home / ".config/usb-tablet-display/tablet.toml"
+    if not config.is_file():
+        return ""
+    for line in config.read_text(encoding="utf-8").splitlines():
+        if line.strip().startswith("serial"):
+            return line.split("=", 1)[1].strip().strip('"')
+    return ""
+
+
+def _device_apps():
+    if not _which("adb"):
+        return {"installed": False, "reason": "adb 不可用"}
+    state = _action_output(["adb", "get-state"]).strip()
+    if state != "device":
+        return {"installed": False, "reason": f"平板未连接（adb 状态：{state or '未知'}）"}
+    listed = _action_output(["adb", "shell", "pm", "list", "packages", "com.genymobile.gnirehtet"])
+    if "com.genymobile.gnirehtet" in listed:
+        return {"installed": True, "reason": "已安装"}
+    apk = Path(ROOT_PATH) / "vendor" / "gnirehtet" / "gnirehtet.apk"
+    if not apk.is_file():
+        return {"installed": False, "reason": "项目内缺少 gnirehtet.apk"}
+    result = run(["adb", "install", "-r", str(apk)], timeout=120)
+    return {"installed": result["code"] == 0, "reason": result["out"] or result["err"]}
+
+
+def _network_hint():
+    names = _action_output(["nmcli", "-t", "-f", "NAME", "connection", "show"]).splitlines()
+    if "android-usb-direct" in names:
+        return {"present": True, "hint": ""}
+    hint = ("nmcli connection add type ethernet ifname '*' con-name android-usb-direct "
+            "ipv4.method auto ipv4.never-default yes ipv4.ignore-auto-routes yes "
+            "ipv4.ignore-auto-dns yes ipv6.method disabled")
+    return {"present": False, "hint": hint}
+
+
 def verify(home: Path, runner=run):
     unit = home / ".config/systemd/user" / NEW_UNIT
     cli = home / ".local/bin/usb-tablet"
+    extension = home / ".local/share/gnome-shell/extensions" / EXTENSION
     checks = {
+        "python_3_11": sys.version_info >= (3, 11),
+        "pygobject": importlib.util.find_spec("gi") is not None,
+        "adb": _which("adb"),
+        "systemctl": _which("systemctl"),
+        "gnome_extensions": _which("gnome-extensions"),
+        "network_manager": _which("nmcli"),
         "unit_file": unit.is_file(),
-        "cli_wrapper": cli.is_file() and cli.stat().st_mode & 0o111 != 0,
+        "coordinator_unit": (home / ".config/systemd/user" / NEW_COORDINATOR_UNIT).is_file(),
+        "internet_unit": (home / ".config/systemd/user" / NEW_INTERNET_UNIT).is_file(),
+        "cli_wrapper": cli.is_file() and bool(cli.stat().st_mode & 0o111),
+        "extension_installed": extension.is_dir(),
         "unit_enabled": runner(["systemctl", "--user", "is-enabled", NEW_UNIT])["out"] == "enabled",
         "unit_active": runner(["systemctl", "--user", "is-active", NEW_UNIT])["out"] == "active",
+        "coordinator_active": runner(["systemctl", "--user", "is-active", NEW_COORDINATOR_UNIT])["out"] == "active",
+        "sunshine_installed": "app-dev.lizardbyte.app.Sunshine.service" in _action_output(
+            ["systemctl", "--user", "list-unit-files", "--no-legend"]),
+        "network_profile": _network_hint()["present"],
+        "tablet_serial": bool(_tablet_serial(home)),
         "state_present": (Path(STATE_PATH) / "state.json").is_file(),
     }
-    return {"action": "verify", "checks": checks, "ok": all(checks.values())}
+    hints = []
+    if not checks["network_profile"]:
+        hints.append("缺少 NetworkManager 连接 android-usb-direct：" + _network_hint()["hint"])
+    if not checks["sunshine_installed"]:
+        hints.append("未安装 Sunshine，串流无法启动")
+    if not checks["tablet_serial"]:
+        hints.append("tablet.toml 缺少 serial")
+    if not checks["pygobject"]:
+        hints.append("缺少 PyGObject（python3-gi）")
+    return {"action": "verify", "checks": checks, "hints": hints, "ok": all(checks.values())}
+
+
+def install_all(home: Path, runner=run):
+    installed = install(home, runner)
+    device = _device_apps()
+    network = _network_hint()
+    verified = verify(home, runner)
+    return {"action": "all", "install": installed, "device": device,
+            "network": network, "verify": verified, "ok": verified["ok"]}

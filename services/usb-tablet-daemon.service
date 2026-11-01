@@ -7,7 +7,7 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/rockingsisyphus/projects/体验优化小项目/平板usb副屏
+WorkingDirectory=@ROOT@
 ExecStartPre=/bin/rm -f /tmp/usb-tablet-display/shutdown
 ExecStart=/usr/bin/python3 run.py coordination run-python --url http://127.0.0.1:8765 --workspace vibeflow_config.jsonc --config usb_tablet_display/configs/daemon.jsonc --input usb_tablet_display/probes/daemon.json
 ExecStop=/bin/sh -c 'mkdir -p /tmp/usb-tablet-display && touch /tmp/usb-tablet-display/shutdown && sleep 3'

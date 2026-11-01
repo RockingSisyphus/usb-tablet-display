@@ -53,7 +53,7 @@ def main():
                         choices=("status", "enable", "disable", "reconnect", "set-auto",
                                  "auto", "logs", "gui", "install"))
     parser.add_argument("value", nargs="?", choices=("on", "off", "backup", "quiesce",
-                                                    "install", "restore", "verify"))
+                                                    "install", "restore", "verify", "all"))
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     if args.action == "status":
