@@ -172,6 +172,17 @@ class DisplayApply:
                                            "reason": "sunshine is still casting a monitor; stop the stream first"}}
         connection = _bus()
         state = _state(connection)
+        if target == "enable" and settings["connector"] not in {spec[0] for spec in state[1]}:
+            # 虚拟副屏由 Sunshine 的录屏门户创建；没有时先把它拉起来再等一等。
+            try:
+                subprocess.run(["systemctl", "--user", "start", settings["sunshine_unit"]],
+                               capture_output=True, text=True, timeout=20)
+            except (OSError, subprocess.TimeoutExpired):
+                pass
+            deadline = time.monotonic() + 20
+            while time.monotonic() < deadline and settings["connector"] not in {spec[0] for spec in state[1]}:
+                time.sleep(0.5)
+                state = _state(connection)
         if layout.config_matches(state, target, settings["connector"],
                                  settings["virtual_mode"], settings["builtin_mode"], settings["scale"]):
             return {"display_result": {"target": target, "changed": False, "verified": True}}

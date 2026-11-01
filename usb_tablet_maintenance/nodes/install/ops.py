@@ -269,6 +269,7 @@ def verify(home: Path, runner=run):
         "coordinator_active": runner(["systemctl", "--user", "is-active", NEW_COORDINATOR_UNIT])["out"] == "active",
         "sunshine_installed": "app-dev.lizardbyte.app.Sunshine.service" in _action_output(
             ["systemctl", "--user", "list-unit-files", "--no-legend"]),
+        "sunshine_portal_token": (home / ".config/sunshine/portal_token").is_file(),
         "network_profile": _network_hint()["present"],
         "tablet_serial": bool(_tablet_serial(home)),
         "state_present": (Path(STATE_PATH) / "state.json").is_file(),
@@ -278,6 +279,8 @@ def verify(home: Path, runner=run):
         hints.append("缺少 NetworkManager 连接 android-usb-direct：" + _network_hint()["hint"])
     if not checks["sunshine_installed"]:
         hints.append("未安装 Sunshine，串流无法启动")
+    if checks["sunshine_installed"] and not checks["sunshine_portal_token"]:
+        hints.append("Sunshine 尚未生成录屏授权：先手动启动一次 Sunshine（systemctl --user start app-dev.lizardbyte.app.Sunshine.service）再运行安装自检")
     if checks["extension_installed"] and not checks["extension_active"]:
         hints.append("GNOME 扩展未加载：重新登录桌面，或执行 gnome-extensions disable/enable " + EXTENSION)
     if not checks["tablet_serial"]:
