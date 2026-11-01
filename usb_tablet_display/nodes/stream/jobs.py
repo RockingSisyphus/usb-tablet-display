@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import time
 from pathlib import Path
 
@@ -10,6 +11,12 @@ from vibeflow.targets.python.sdk import node
 JOB_PATH = "/tmp/usb-tablet-display/job.json"
 EXIT_PATH = "/tmp/usb-tablet-display/job.exit"
 LOG_PATH = "/tmp/usb-tablet-display/job.log"
+TIMEOUT_SECONDS = 600
+
+
+def _clean():
+    for name in (JOB_PATH, EXIT_PATH):
+        Path(name).unlink(missing_ok=True)
 
 
 def job_state():
@@ -19,39 +26,42 @@ def job_state():
     try:
         data = json.loads(job.read_text(encoding="utf-8"))
         pid = int(data.get("pid") or 0)
+        started = float(data.get("started_at") or 0)
     except (OSError, ValueError):
-        return {"action": "none", "code": None, "running": False, "detail": ""}
-    alive = pid > 0 and Path(f"/proc/{pid}").exists()
-    if alive:
-        return {"action": str(data.get("action", "none")), "code": None,
-                "running": True, "detail": ""}
-    code = None
-    for _attempt in range(12):
+        _clean()
+        return {"action": "none", "code": None, "running": False, "detail": "invalid job file"}
+    action = str(data.get("action", "none"))
+    exit_file = Path(EXIT_PATH)
+    if exit_file.is_file():
         try:
-            code = int(Path(EXIT_PATH).read_text(encoding="utf-8").strip())
-            break
+            code = int(exit_file.read_text(encoding="utf-8").strip())
         except (OSError, ValueError):
-            code = None
-            time.sleep(0.25)
-    if code is None:
-        return {"action": str(data.get("action", "none")), "code": None,
-                "running": True, "detail": ""}
-    detail = ""
-    try:
-        detail = Path(LOG_PATH).read_text(encoding="utf-8", errors="replace")[-300:]
-    except OSError:
-        pass
-    for path in (JOB_PATH, EXIT_PATH):
-        Path(path).unlink(missing_ok=True)
-    return {"action": str(data.get("action", "none")), "code": code,
-            "running": False, "detail": detail}
+            code = -1
+        detail = ""
+        try:
+            detail = Path(LOG_PATH).read_text(encoding="utf-8", errors="replace")[-300:]
+        except OSError:
+            pass
+        _clean()
+        return {"action": action, "code": code, "running": False, "detail": detail}
+    alive = pid > 0 and Path(f"/proc/{pid}").exists()
+    if alive and time.time() - started < TIMEOUT_SECONDS:
+        return {"action": action, "code": None, "running": True, "detail": ""}
+    if alive:
+        try:
+            subprocess.run(["kill", "-TERM", f"-{pid}"], capture_output=True, timeout=5)
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+    _clean()
+    return {"action": action, "code": -1, "running": False,
+            "detail": "job ended without exit code" if not alive else "job timed out"}
 
 
 @node(
     id="usb.collect_job", node_type="vibeflow.node",
     display_name="Collect background job",
     description="Reports whether the background session job is running and its exit code once finished.",
-    version="0.1.0", flow_kind="process",
+    version="0.2.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={
         "requires": [],

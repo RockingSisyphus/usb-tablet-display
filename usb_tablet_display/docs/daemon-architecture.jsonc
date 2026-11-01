@@ -2632,7 +2632,7 @@
         "class": "CollectJob",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/jobs.py",
-        "line": 65
+        "line": 75
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2641,7 +2641,7 @@
       "info": {
         "display_name": "Collect background job",
         "description": "Reports whether the background session job is running and its exit code once finished.",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "flow_kind": "process",
         "author": null,
         "tags": [],
@@ -4932,7 +4932,7 @@
         "id": "usb.collect_job",
         "display_name": "Collect background job",
         "description": "Reports whether the background session job is running and its exit code once finished.",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "flow_kind": "process",
         "tags": [],
         "external": false,
@@ -4991,7 +4991,7 @@
             "path": "."
           },
           "path": "nodes/stream/jobs.py",
-          "line": 50,
+          "line": 60,
           "symbol": "CollectJob"
         },
         "status": "implemented",

@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import json
-import os
 import subprocess
+import time
 from pathlib import Path
 
 from vibeflow.targets.python.sdk import node
@@ -55,10 +55,12 @@ class AutoSession:
         Path(jobs.EXIT_PATH).unlink(missing_ok=True)
         command = (f'cd "{ROOT}" && python3 run.py run --config {config} '
                    f'--input usb_tablet_display/probes/daemon.json '
-                   f'> {jobs.LOG_PATH} 2>&1; echo $? > {jobs.EXIT_PATH}')
+                   f'> {jobs.LOG_PATH} 2>&1; code=$?; '
+                   f'printf "%s" "$code" > {jobs.EXIT_PATH}.tmp; mv {jobs.EXIT_PATH}.tmp {jobs.EXIT_PATH}')
         process = subprocess.Popen(["/bin/sh", "-c", command], start_new_session=True,
                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        Path(jobs.JOB_PATH).write_text(json.dumps({"action": action, "pid": process.pid}),
-                                       encoding="utf-8")
+        Path(jobs.JOB_PATH).write_text(
+            json.dumps({"action": action, "pid": process.pid, "started_at": time.time()}),
+            encoding="utf-8")
         return {"action_result": {"action": action, "code": None, "started": True,
                                   "pid": process.pid, "auto_enabled": auto}}
