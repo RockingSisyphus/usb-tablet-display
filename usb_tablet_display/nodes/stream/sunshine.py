@@ -162,7 +162,7 @@ class SunshineStart:
     contract={
         "requires": [
             {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
-            {"type": "usb.stream_state", "cardinality": "exactly_one", "display_name": "Stream state"},
+            {"type": "usb.stream_ready", "cardinality": "exactly_one", "display_name": "Stream readiness"},
             {"type": "usb.launch_state", "cardinality": "exactly_one", "display_name": "Launch state"},
         ],
         "provides": [{"key": "stream_check", "type": "usb.stream_check", "display_name": "Stream check"}],
@@ -170,7 +170,7 @@ class SunshineStart:
         "params_defaults": {"wait_ms": 30000},
         "input_semantics": {
             "usb.settings": ["ADB binary, serial and Moonlight package."],
-            "usb.stream_state": ["Unit and port readiness from the start step."],
+            "usb.stream_ready": ["Unit and port readiness from the start step."],
             "usb.launch_state": ["Launch attempt result from the Moonlight step."],
         },
         "output_semantics": {"stream_check": ["Sunshine server events and Moonlight client activity."]},
@@ -217,3 +217,43 @@ class SunshineStop:
             time.sleep(0.1)
         return {"stream_state": {"unit": unit, "state": "stopped" if not _active(unit) else "active",
                                  "ok": not _active(unit)}}
+
+
+@node(
+    id="usb.sunshine_ready", node_type="vibeflow.node",
+    display_name="Restart Sunshine after portal change",
+    description="Restarts Sunshine when portal authorization changed, then waits for its streaming ports again.",
+    version="0.1.0", flow_kind="process",
+    rulesets=["vibeflow.python_io"],
+    contract={
+        "requires": [
+            {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
+            {"type": "usb.stream_state", "cardinality": "exactly_one", "display_name": "Stream state"},
+            {"type": "usb.portal_state", "cardinality": "exactly_one", "display_name": "Portal state"},
+        ],
+        "provides": [{"key": "stream_ready", "type": "usb.stream_ready", "display_name": "Stream readiness"}],
+        "params_schema": {"timeout_ms": {"type": "integer"}},
+        "params_defaults": {"timeout_ms": 20000},
+        "input_semantics": {
+            "usb.settings": ["Sunshine unit name."],
+            "usb.stream_state": ["Current unit and port state."],
+            "usb.portal_state": ["Whether portal authorization changed."],
+        },
+        "output_semantics": {"stream_ready": ["Unit state and whether every streaming port is listening."]},
+    },
+)
+class SunshineReady:
+    def run_pure(self, inputs, params):
+        settings = inputs["usb.settings"]["value"]
+        portal = inputs["usb.portal_state"]["value"]
+        unit = settings["sunshine_unit"]
+        if portal.get("changed"):
+            _systemctl("stop", unit)
+            _systemctl("start", unit)
+        deadline = time.monotonic() + max(int(params["timeout_ms"]), 1000) / 1000.0
+        missing = _missing_ports()
+        while missing and time.monotonic() < deadline:
+            time.sleep(0.5)
+            missing = _missing_ports()
+        return {"stream_ready": {"unit": unit, "restarted": bool(portal.get("changed")),
+                                 "ports_missing": missing, "ok": not missing}}

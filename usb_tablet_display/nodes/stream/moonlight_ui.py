@@ -42,3 +42,13 @@ def fresh_snapshot(output, max_age=5):
     except (ValueError, ET.ParseError):
         pass
     return None
+
+
+def dialog_error(xml, package):
+    """An acknowledged error dialog, not the ongoing registration spinner."""
+    root = ET.fromstring(xml)
+    nodes = [n for n in root.iter() if n.get("package") == package]
+    if any(n.get("resource-id") == "android:id/button1" for n in nodes):
+        return next((n.get("text", "") for n in nodes
+                     if n.get("resource-id") == "android:id/message"), "")
+    return ""

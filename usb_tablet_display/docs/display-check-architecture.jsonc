@@ -1209,6 +1209,11 @@
       },
       {
         "kind": "node",
+        "id": "usb.portal_pin",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.probe_device",
         "reason": "declaration"
       },
@@ -1220,6 +1225,11 @@
       {
         "kind": "node",
         "id": "usb.require_ready",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.require_stream",
         "reason": "declaration"
       },
       {
@@ -1245,6 +1255,11 @@
       {
         "kind": "node",
         "id": "usb.sunshine_configure",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.sunshine_ready",
         "reason": "declaration"
       },
       {

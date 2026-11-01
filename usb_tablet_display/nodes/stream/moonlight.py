@@ -3,13 +3,15 @@ from __future__ import annotations
 
 import json
 import subprocess
+from pathlib import Path
 import time
 import xml.etree.ElementTree as ET
 
 from vibeflow.targets.python.sdk import node
 
 from usb_tablet_display.nodes.stream import session
-from usb_tablet_display.nodes.stream.moonlight_ui import field, fresh_snapshot, stream_surface
+from usb_tablet_display.nodes.stream.moonlight_ui import (dialog_error, field, fresh_snapshot,
+                                                          stream_surface)
 
 UI_PATH = "/data/local/tmp/tablet-display-ui.xml"
 PCVIEW = ".PcView"
@@ -117,10 +119,65 @@ def _try_launch(settings, address):
         return False
 
 
+def _observe(settings, address):
+    ports_ok, detail = session.ports_ready(settings, address)
+    return session.connected(settings) and ports_ok, detail
+
+
+def _save_failure(stage, address, xml, detail):
+    path = Path("/tmp/usb-tablet-display/moonlight-failure.json")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"stage": stage, "address": address, "detail": detail,
+                                    "ui_file": "/tmp/usb-tablet-display/moonlight-failure.xml"},
+                                   ensure_ascii=False, indent=2), encoding="utf-8")
+        (path.parent / "moonlight-failure.xml").write_text(xml or "", encoding="utf-8")
+    except OSError:
+        pass
+
+
+def _register_address(settings, address, deadline):
+    entered = submitted = opened = False
+    while time.monotonic() < deadline:
+        if session.connected(settings):
+            return True, ""
+        xml = _dump_ui(settings, settings.get("shared_ui_snapshot"))
+        if not xml:
+            time.sleep(0.5)
+            continue
+        try:
+            error = dialog_error(xml, settings["moonlight_package"])
+        except ET.ParseError:
+            time.sleep(0.5)
+            continue
+        if error:
+            return False, "Moonlight rejected the USB address: " + error
+        root = ET.fromstring(xml)
+        if stream_surface(root, settings["moonlight_package"]):
+            return True, ""
+        edit = field(xml, settings["moonlight_package"], "hostTextView")
+        add = field(xml, settings["moonlight_package"], "manuallyAddPc")
+        confirm = field(xml, settings["moonlight_package"], "addPcButton")
+        if edit and not entered:
+            _tap(settings, edit[0])
+            if edit[1]:
+                _adb(settings, ["input", "keyevent", "123", *(["67"] * len(edit[1]))])
+            _adb(settings, ["input", "text", address])
+            entered = True
+        elif entered and confirm and not submitted:
+            _tap(settings, confirm[0])
+            submitted = True
+        elif add and not opened:
+            _tap(settings, add[0])
+            opened = True
+        time.sleep(0.5)
+    return session.connected(settings), "address registration timed out"
+
+
 @node(
     id="usb.moonlight_connect", node_type="vibeflow.node",
     display_name="Start Moonlight session",
-    description="Registers the USB host address when needed and launches Moonlight on the tablet.",
+    description="Registers the USB host address first, launches Moonlight once, then waits for the stream without touching the UI.",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     implementation_files=["moonlight_ui.py", "session.py"],
@@ -128,17 +185,17 @@ def _try_launch(settings, address):
         "requires": [
             {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
             {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
-            {"type": "usb.stream_state", "cardinality": "exactly_one", "display_name": "Stream state"},
+            {"type": "usb.stream_ready", "cardinality": "exactly_one", "display_name": "Stream readiness"},
         ],
         "provides": [{"key": "launch_state", "type": "usb.launch_state", "display_name": "Launch state"}],
-        "params_schema": {"timeout_ms": {"type": "integer"}},
-        "params_defaults": {"timeout_ms": 45000},
+        "params_schema": {"register_ms": {"type": "integer"}, "connect_ms": {"type": "integer"}},
+        "params_defaults": {"register_ms": 45000, "connect_ms": 55000},
         "input_semantics": {
             "usb.settings": ["ADB binary, serial, Moonlight package and configured app."],
             "usb.device": ["Interface used to resolve the current USB host address."],
-            "usb.stream_state": ["Sunshine readiness before Moonlight is launched."],
+            "usb.stream_ready": ["Sunshine readiness before Moonlight is launched."],
         },
-        "output_semantics": {"launch_state": ["Host address, launch attempts and stream connectivity."]},
+        "output_semantics": {"launch_state": ["Registered address, stage and stream connectivity."]},
     },
 )
 class MoonlightConnect:
@@ -148,21 +205,60 @@ class MoonlightConnect:
         address = _host_address(device.get("interface", ""))
         package = settings["moonlight_package"]
         if not address:
-            return {"launch_state": {"connected": False, "address": "", "reason": "no usb address"}}
+            return {"launch_state": {"connected": False, "address": "", "stage": "no-usb-address",
+                                     "error": "no usb host address"}}
+        ready, detail = _observe(settings, address)
+        if ready:
+            return {"launch_state": {"connected": True, "address": address, "stage": "already"}}
         _adb(settings, ["am", "force-stop", package])
         _adb(settings, ["am", "start", "-n", package + PCVIEW, "--activity-clear-top"])
-        if session.connected(settings):
-            return {"launch_state": {"connected": True, "address": address, "stage": "already"}}
+        registered, error = _register_address(settings, address, time.monotonic() + max(int(params["register_ms"]), 5000) / 1000.0)
+        if error and "timed out" not in error:
+            _save_failure("register", address, _dump_ui(settings, settings.get("shared_ui_snapshot")), error)
+            return {"launch_state": {"connected": False, "address": address, "stage": "register",
+                                     "error": error}}
         launched = _try_launch(settings, address)
-        budget = time.monotonic() + max(int(params["timeout_ms"]), 5000) / 1000.0
-        while time.monotonic() < budget and launched and not session.connected(settings):
-            time.sleep(1)
-        if session.connected(settings):
-            return {"launch_state": {"connected": True, "address": address, "stage": "shortcut"}}
-        registered = _register_address(settings, address, time.monotonic() + 25)
-        launched = _try_launch(settings, address) or launched
-        while time.monotonic() < budget and launched and not session.connected(settings):
-            time.sleep(1)
-        return {"launch_state": {"connected": session.connected(settings), "address": address,
-                                 "stage": "registered" if registered else "shortcut",
-                                 "launched": launched}}
+        deadline = time.monotonic() + max(int(params["connect_ms"]), 5000) / 1000.0
+        while time.monotonic() < deadline:
+            ready, detail = _observe(settings, address)
+            if ready:
+                return {"launch_state": {"connected": True, "address": address,
+                                         "stage": "shortcut", "registered": registered}}
+            time.sleep(0.5)
+        _save_failure("launch", address, _dump_ui(settings, settings.get("shared_ui_snapshot")), detail)
+        return {"launch_state": {"connected": False, "address": address, "stage": "launch",
+                                 "registered": registered, "launched": launched, "detail": detail}}
+
+
+@node(
+    id="usb.require_stream", node_type="vibeflow.node",
+    display_name="Require stream",
+    description="Fails the connect session when the stream never became connected.",
+    version="0.1.0", flow_kind="process",
+    rulesets=["vibeflow.process"],
+    contract={
+        "requires": [
+            {"type": "usb.stream_check", "cardinality": "exactly_one", "display_name": "Stream check"},
+            {"type": "usb.launch_state", "cardinality": "exactly_one", "display_name": "Launch state"},
+        ],
+        "provides": [{"key": "required", "type": "usb.required", "display_name": "Required outcome"}],
+        "params_schema": {},
+        "params_defaults": {},
+        "input_semantics": {
+            "usb.stream_check": ["Final Sunshine/Moonlight observation."],
+            "usb.launch_state": ["Address, stage and any registration error."],
+        },
+        "output_semantics": {"required": ["Confirmation that the stream is connected."]},
+    },
+)
+class RequireStream:
+    def run_pure(self, inputs, params):
+        check = inputs["usb.stream_check"]["value"]
+        launch = inputs["usb.launch_state"]["value"]
+        if check.get("connected"):
+            return {"required": {"stream_connected": True}}
+        stage = launch.get("stage", "unknown")
+        error = launch.get("error", "")
+        raise RuntimeError(f"stream not established (stage={stage}, server={check.get('server_connected')}, "
+                           f"client={check.get('client_connected')}, address={launch.get('address', '')}"
+                           + (f", error={error}" if error else "") + ")")

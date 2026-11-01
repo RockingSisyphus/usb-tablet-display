@@ -38,3 +38,24 @@ def client_connected(settings: dict, timeout: float = 5.0) -> bool:
 
 def connected(settings: dict) -> bool:
     return server_connected(settings["sunshine_unit"]) and client_connected(settings)
+
+
+PORTS = (47984, 47989, 47990, 48010)
+
+
+def ports_ready(settings: dict, host_ip: str) -> tuple[bool, str]:
+    """All streaming ports must be listened on the current USB address by our Sunshine."""
+    listening = _run(["ss", "-H", "-ltnp"], 5)
+    shown = _run(["systemctl", "--user", "show", settings["sunshine_unit"], "-P", "MainPID"], 5)
+    if listening is None or shown is None:
+        return False, "cannot inspect listening sockets"
+    pid = shown.stdout.strip()
+    for port in PORTS:
+        rows = [row for row in listening.stdout.splitlines() if re.search(rf":{port}\s", row)]
+        if not rows:
+            return False, f"port {port} not listening"
+        if not any(f"pid={pid}," in row for row in rows):
+            return False, f"port {port} owned by another process"
+        if host_ip and any(row.split()[3] != f"{host_ip}:{port}" for row in rows):
+            return False, f"port {port} is not bound to usb address {host_ip}"
+    return True, ""
