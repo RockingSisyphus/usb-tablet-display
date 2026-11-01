@@ -1,15 +1,22 @@
-# Minimal Python Runtime project
+# USB 平板副屏（业务 root）
 
-The workflow is `input boundary -> business process -> output boundary`, with explicit start and end terminals. Replace the pass-through under `BUSINESS CODE` in `nodes/workflow_nodes.py`, then update the `@node` contract when the data relationship changes.
+本 root 承载实际业务实现，替代 VibeFlow 发行包自带的最小示例。
 
-`plugins/code_plugin.py` exports the fixed plugin selected by `configs/main.jsonc`. Declare additional resources with `vibeflow.targets.python.sdk`, add them to that plugin, and select their Rulesets explicitly. For split implementations and default colors or shapes, read `kernel/docs/user/multifile-resources.md` from the distribution root.
+## 目录
 
+- `configs/`：三个入口工作流声明。`daemon.jsonc` 为常驻入口（无限循环），后续加入 `control.jsonc`、`install.jsonc`。
+- `nodeset_types/`：可复用子图，daemon 与一次性入口共享。
+- `nodes/`：业务 Node，按职责分目录；外部命令统一走 `nodes/io/run_cmd.py`。
+- `probes/`：验证运行输入。
+- `docs/`：生成的架构审阅文档。
 
-部署可从发行包根目录构建完整目录 bundle：
+## 常用命令
 
 ```bash
-python run.py build --config python_project/configs/main.jsonc --out-dir python_project/build/aot
-python python_project/build/aot/run.py run --input python_project/probe_input.json --runtime-profile train
+python run.py validate   --config usb_tablet_display/configs/daemon.jsonc
+python run.py architecture --config usb_tablet_display/configs/daemon.jsonc --output usb_tablet_display/docs/daemon-architecture.jsonc
+python run.py run        --config usb_tablet_display/configs/daemon.jsonc --input usb_tablet_display/probes/daemon.json
+python run.py review     --config usb_tablet_display/configs/daemon.jsonc
 ```
 
-目录可独立搬迁，目标环境安装业务 Python 依赖。资源收集、对象引用和低层 API 见使用手册中的 Python 开发说明。
+`daemon` 以 `max_iterations: null` 常驻；写入 `shutdown` 标记文件后，循环在下一轮 tick 退出。

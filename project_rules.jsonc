@@ -9,6 +9,14 @@
         {
           "path": "vibeflow-preview",
           "purpose": "Offline workflow viewer assets and history"
+        },
+        {
+          "path": "usb_tablet_display/nodeset_types",
+          "purpose": "Reusable workflow subgraphs shared by the daemon and one-shot entries"
+        },
+        {
+          "path": "usb_tablet_display/probes",
+          "purpose": "Workflow execution inputs for verification runs"
         }
       ]
     }

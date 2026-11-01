@@ -1,1 +1,1 @@
-"""Workflow nodes for the minimal project."""
+"""Business nodes for the USB tablet secondary display workflows."""

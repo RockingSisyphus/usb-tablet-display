@@ -1,6 +1,11 @@
 {
   "project_target": "python",
   "architecture": {
-    "documents": []
+    "documents": [
+      {
+        "workflow": "configs/daemon.jsonc",
+        "document": "docs/daemon-architecture.jsonc"
+      }
+    ]
   }
 }

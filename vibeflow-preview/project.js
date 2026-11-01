@@ -1,0 +1,1 @@
+VibeFlowPreview.project({"version": 4, "name": "平板usb副屏", "updated_at": "2026-11-01T05:45:55.482912+00:00", "roots": [], "inventory_complete": false, "error": "无法使用 PROJECT_ARCHITECTURE.jsonc：[Errno 2] No such file or directory: '/home/rockingsisyphus/projects/体验优化小项目/平板usb副屏/PROJECT_ARCHITECTURE.jsonc'；运行 preview --workspace 重新生成。"});

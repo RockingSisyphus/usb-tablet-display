@@ -1,0 +1,16 @@
+{
+  "rule_params": {
+    "vibeflow.root.layout": {
+      "directories": [
+        {
+          "path": "nodeset_types",
+          "purpose": "Reusable workflow subgraphs shared by the daemon and one-shot entries"
+        },
+        {
+          "path": "probes",
+          "purpose": "Workflow execution inputs for verification runs"
+        }
+      ]
+    }
+  }
+}

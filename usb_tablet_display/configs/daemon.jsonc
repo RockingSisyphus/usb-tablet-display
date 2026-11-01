@@ -1,0 +1,27 @@
+{
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Start daemon", "description": "Starts the long-running controller workflow."},
+      {
+        "id": "loop",
+        "definition_id": "vibeflow.loop.while",
+        "display_name": "Controller loop",
+        "description": "Runs daemon ticks until shutdown is requested.",
+        "requires": [],
+        "provides": [],
+        "loop": {
+          "body": "usb.daemon_tick",
+          "max_iterations": null,
+          "stop_when": {"from": "usb.shutdown", "equals": true}
+        }
+      },
+      {"id": "end", "definition_id": "usb.end", "display_name": "End daemon", "description": "Ends after the loop reports shutdown.",
+        "similar_to": {"node": "start", "relationship": "copy", "reason": "Both terminals intentionally return no data at opposite graph boundaries."}}
+    ],
+    "edges": [["start", "loop"], ["loop", "end"]],
+    "outputs": []
+  },
+  "nodeset_imports": [{"path": "../nodeset_types/daemon_tick.jsonc"}],
+  "plugins": []
+}
