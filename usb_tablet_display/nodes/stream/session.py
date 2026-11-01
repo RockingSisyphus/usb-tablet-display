@@ -1,6 +1,7 @@
 """Read Sunshine and Moonlight session state through systemd, journal and adb."""
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 
@@ -36,8 +37,28 @@ def client_connected(settings: dict, timeout: float = 5.0) -> bool:
                           re.escape(settings["moonlight_package"]) + r"/\.Game\b", done.stdout))
 
 
-def connected(settings: dict) -> bool:
-    return server_connected(settings["sunshine_unit"]) and client_connected(settings)
+def usb_address(interface: str) -> str:
+    if not interface:
+        return ""
+    done = _run(["ip", "-j", "-4", "addr", "show", "dev", interface], 5)
+    if done is None:
+        return ""
+    try:
+        rows = json.loads(done.stdout)
+    except ValueError:
+        return ""
+    for row in rows:
+        for addr in row.get("addr_info", []):
+            if addr.get("scope") == "global":
+                return str(addr.get("local", ""))
+    return ""
+
+
+def connected(settings: dict, address: str = "") -> bool:
+    if not server_connected(settings["sunshine_unit"]) or not client_connected(settings):
+        return False
+    ok, _detail = ports_ready(settings, address)
+    return ok
 
 
 PORTS = (47984, 47989, 47990, 48010)

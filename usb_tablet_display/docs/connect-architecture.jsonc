@@ -3241,7 +3241,7 @@
         "class": "MoonlightConnect",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/moonlight.py",
-        "line": 264
+        "line": 252
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3674,7 +3674,7 @@
         "class": "RequireStream",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/moonlight.py",
-        "line": 334
+        "line": 322
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -4327,7 +4327,17 @@
       },
       {
         "kind": "node",
+        "id": "usb.auto_session",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.build_status",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.decide_action",
         "reason": "declaration"
       },
       {
@@ -4388,6 +4398,11 @@
       {
         "kind": "node",
         "id": "usb.run_command",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.session_status",
         "reason": "declaration"
       },
       {
@@ -6833,7 +6848,7 @@
             "path": "."
           },
           "path": "nodes/stream/moonlight.py",
-          "line": 240,
+          "line": 228,
           "symbol": "MoonlightConnect"
         },
         "status": "implemented",
@@ -8769,7 +8784,7 @@
             "path": "."
           },
           "path": "nodes/stream/moonlight.py",
-          "line": 313,
+          "line": 301,
           "symbol": "RequireStream"
         },
         "status": "implemented",

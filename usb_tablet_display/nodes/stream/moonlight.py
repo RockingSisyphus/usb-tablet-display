@@ -27,19 +27,7 @@ def _adb(settings, args, timeout=10):
 
 
 def _host_address(interface):
-    if not interface:
-        return ""
-    try:
-        done = subprocess.run(["ip", "-j", "-4", "addr", "show", "dev", interface],
-                              capture_output=True, text=True, timeout=5)
-        rows = json.loads(done.stdout)
-    except (OSError, subprocess.TimeoutExpired, ValueError):
-        return ""
-    for row in rows:
-        for addr in row.get("addr_info", []):
-            if addr.get("scope") == "global":
-                return str(addr.get("local", ""))
-    return ""
+    return session.usb_address(interface)
 
 
 def _dump_ui(settings, shared_snapshot):

@@ -31,6 +31,7 @@ def _write_json(path: Path, value) -> None:
             {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
             {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
             {"type": "usb.adb_state", "cardinality": "exactly_one", "display_name": "ADB transport state"},
+            {"type": "usb.action_result", "cardinality": "exactly_one", "display_name": "Action result"},
         ],
         "provides": [{"key": "stop", "type": "usb.shutdown", "display_name": "Stop flag"}],
         "params_schema": {
@@ -50,6 +51,7 @@ def _write_json(path: Path, value) -> None:
             "usb.settings": ["Configuration for the current run."],
             "usb.device": ["USB presence and RNDIS interface from this iteration."],
             "usb.adb_state": ["ADB transport state from this iteration."],
+            "usb.action_result": ["Session action taken during this iteration."],
         },
         "output_semantics": {"stop": ["True when the daemon should leave its loop."]},
     },
@@ -60,6 +62,7 @@ class TickMerge:
         device = inputs["usb.device"]["value"]
         adb = inputs["usb.adb_state"]["value"]
         settings = inputs["usb.settings"]["value"]
+        action_result = inputs["usb.action_result"]["value"]
         time.sleep(max(int(params["tick_ms"]), 1) / 1000.0)
         state.update({
             "ticks": int(state.get("ticks") or 0) + 1,
@@ -70,6 +73,11 @@ class TickMerge:
             "adb": adb.get("state", "unavailable"),
             "adb_detail": adb.get("detail", ""),
         })
+        if action_result.get("action") not in (None, "none"):
+            state["last_action"] = action_result.get("action")
+            state["last_action_code"] = action_result.get("code")
+            state["last_action_at"] = time.time()
+            state["last_action_detail"] = action_result.get("detail", "")[-200:]
         _write_json(Path(params["state_path"]), state)
         limit = int(params["max_ticks"] or 0)
         stop = Path(params["shutdown_path"]).exists() or (limit > 0 and state["ticks"] >= limit)

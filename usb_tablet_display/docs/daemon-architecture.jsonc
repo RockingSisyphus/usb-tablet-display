@@ -325,11 +325,11 @@
         "execution_lock": null,
         "contains_global_state": false,
         "summary": {
-          "nodes": 5,
+          "nodes": 8,
           "nodeset_types": 3,
-          "explicit_edges": 5,
-          "data_edges": 1,
-          "reported_edges": 5,
+          "explicit_edges": 13,
+          "data_edges": 6,
+          "reported_edges": 13,
           "contains_global_state": false
         },
         "entry_nodes": [
@@ -338,7 +338,24 @@
         "terminal_nodes": [
           "end"
         ],
-        "god_nodes": [],
+        "god_nodes": [
+          {
+            "node": "io",
+            "degree": 6
+          },
+          {
+            "node": "decide",
+            "degree": 4
+          },
+          {
+            "node": "probe",
+            "degree": 4
+          },
+          {
+            "node": "tick",
+            "degree": 4
+          }
+        ],
         "nodes": [
           {
             "id": "start",
@@ -573,6 +590,276 @@
             }
           },
           {
+            "id": "sstatus",
+            "definition_id": "usb.session_status",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "Read session status",
+              "description": "Reads Sunshine/Moonlight session state.",
+              "description_source": "call"
+            },
+            "flow_kind": "process",
+            "rulesets": [
+              "vibeflow.python_io"
+            ],
+            "selected_rulesets": [
+              "vibeflow.python_io"
+            ],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#ECECFF",
+                "stroke": "#9370DB",
+                "text": "#333333",
+                "shape": "rect"
+              },
+              "sources": {
+                "fill": "native",
+                "stroke": "native",
+                "text": "native",
+                "shape": "native"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "python_io",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [
+              {
+                "type": "usb.settings",
+                "cardinality": "exactly_one",
+                "display_name": "Tablet settings"
+              },
+              {
+                "type": "usb.device",
+                "cardinality": "exactly_one",
+                "display_name": "USB device"
+              }
+            ],
+            "provides": [
+              {
+                "key": "session_status",
+                "type": "usb.session_status",
+                "display_name": "Session status"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
+            "id": "decide",
+            "definition_id": "usb.decide_action",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "Decide session action",
+              "description": "Chooses connect, disconnect or none.",
+              "description_source": "call"
+            },
+            "flow_kind": "process",
+            "rulesets": [
+              "vibeflow.process"
+            ],
+            "selected_rulesets": [
+              "vibeflow.process"
+            ],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#ECECFF",
+                "stroke": "#9370DB",
+                "text": "#333333",
+                "shape": "rect"
+              },
+              "sources": {
+                "fill": "native",
+                "stroke": "native",
+                "text": "native",
+                "shape": "native"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "none",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [
+              {
+                "type": "usb.settings",
+                "cardinality": "exactly_one",
+                "display_name": "Tablet settings"
+              },
+              {
+                "type": "usb.state",
+                "cardinality": "exactly_one",
+                "display_name": "Runtime state"
+              },
+              {
+                "type": "usb.device",
+                "cardinality": "exactly_one",
+                "display_name": "USB device"
+              },
+              {
+                "type": "usb.adb_state",
+                "cardinality": "exactly_one",
+                "display_name": "ADB transport state"
+              },
+              {
+                "type": "usb.session_status",
+                "cardinality": "exactly_one",
+                "display_name": "Session status"
+              }
+            ],
+            "provides": [
+              {
+                "key": "action",
+                "type": "usb.action",
+                "display_name": "Session action"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
+            "id": "runner",
+            "definition_id": "usb.auto_session",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "Run session action",
+              "description": "Invokes the verified connect/disconnect workflow when needed.",
+              "description_source": "call"
+            },
+            "flow_kind": "process",
+            "rulesets": [
+              "vibeflow.python_io"
+            ],
+            "selected_rulesets": [
+              "vibeflow.python_io"
+            ],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#ECECFF",
+                "stroke": "#9370DB",
+                "text": "#333333",
+                "shape": "rect"
+              },
+              "sources": {
+                "fill": "native",
+                "stroke": "native",
+                "text": "native",
+                "shape": "native"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "python_io",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [
+              {
+                "type": "usb.action",
+                "cardinality": "exactly_one",
+                "display_name": "Session action"
+              },
+              {
+                "type": "usb.settings",
+                "cardinality": "exactly_one",
+                "display_name": "Tablet settings"
+              }
+            ],
+            "provides": [
+              {
+                "key": "action_result",
+                "type": "usb.action_result",
+                "display_name": "Action result"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
             "id": "tick",
             "definition_id": "usb.tick_merge",
             "source": {
@@ -581,7 +868,7 @@
             },
             "role": {
               "display_name": "Advance tick",
-              "description": "Merges probe results, persists state and reports whether to stop.",
+              "description": "Merges probe and action results, persists state and reports whether to stop.",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -636,6 +923,11 @@
                 "type": "usb.adb_state",
                 "cardinality": "exactly_one",
                 "display_name": "ADB transport state"
+              },
+              {
+                "type": "usb.action_result",
+                "cardinality": "exactly_one",
+                "display_name": "Action result"
               }
             ],
             "provides": [
@@ -774,6 +1066,194 @@
           },
           {
             "from": "io",
+            "to": "sstatus",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "settings",
+                  "type": "usb.settings",
+                  "display_name": "Tablet settings"
+                },
+                "requirement": {
+                  "type": "usb.settings",
+                  "cardinality": "exactly_one",
+                  "display_name": "Tablet settings"
+                }
+              }
+            ]
+          },
+          {
+            "from": "probe",
+            "to": "sstatus",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "device",
+                  "type": "usb.device",
+                  "display_name": "USB device"
+                },
+                "requirement": {
+                  "type": "usb.device",
+                  "cardinality": "exactly_one",
+                  "display_name": "USB device"
+                }
+              }
+            ]
+          },
+          {
+            "from": "io",
+            "to": "decide",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "settings",
+                  "type": "usb.settings",
+                  "display_name": "Tablet settings"
+                },
+                "requirement": {
+                  "type": "usb.settings",
+                  "cardinality": "exactly_one",
+                  "display_name": "Tablet settings"
+                }
+              },
+              {
+                "provider": {
+                  "key": "loaded_state",
+                  "type": "usb.state",
+                  "display_name": "Runtime state"
+                },
+                "requirement": {
+                  "type": "usb.state",
+                  "cardinality": "exactly_one",
+                  "display_name": "Runtime state"
+                }
+              }
+            ]
+          },
+          {
+            "from": "probe",
+            "to": "decide",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "device",
+                  "type": "usb.device",
+                  "display_name": "USB device"
+                },
+                "requirement": {
+                  "type": "usb.device",
+                  "cardinality": "exactly_one",
+                  "display_name": "USB device"
+                }
+              },
+              {
+                "provider": {
+                  "key": "adb_state",
+                  "type": "usb.adb_state",
+                  "display_name": "ADB transport state"
+                },
+                "requirement": {
+                  "type": "usb.adb_state",
+                  "cardinality": "exactly_one",
+                  "display_name": "ADB transport state"
+                }
+              }
+            ]
+          },
+          {
+            "from": "sstatus",
+            "to": "decide",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "session_status",
+                  "type": "usb.session_status",
+                  "display_name": "Session status"
+                },
+                "requirement": {
+                  "type": "usb.session_status",
+                  "cardinality": "exactly_one",
+                  "display_name": "Session status"
+                }
+              }
+            ]
+          },
+          {
+            "from": "decide",
+            "to": "runner",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "action",
+                  "type": "usb.action",
+                  "display_name": "Session action"
+                },
+                "requirement": {
+                  "type": "usb.action",
+                  "cardinality": "exactly_one",
+                  "display_name": "Session action"
+                }
+              }
+            ]
+          },
+          {
+            "from": "io",
+            "to": "runner",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "settings",
+                  "type": "usb.settings",
+                  "display_name": "Tablet settings"
+                },
+                "requirement": {
+                  "type": "usb.settings",
+                  "cardinality": "exactly_one",
+                  "display_name": "Tablet settings"
+                }
+              }
+            ]
+          },
+          {
+            "from": "io",
             "to": "tick",
             "when": "",
             "roles": [
@@ -812,8 +1292,7 @@
             "to": "tick",
             "when": "",
             "roles": [
-              "mainline",
-              "schedule",
+              "data_bypass",
               "transfer"
             ],
             "transfers": [
@@ -839,6 +1318,30 @@
                   "type": "usb.adb_state",
                   "cardinality": "exactly_one",
                   "display_name": "ADB transport state"
+                }
+              }
+            ]
+          },
+          {
+            "from": "runner",
+            "to": "tick",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "action_result",
+                  "type": "usb.action_result",
+                  "display_name": "Action result"
+                },
+                "requirement": {
+                  "type": "usb.action_result",
+                  "cardinality": "exactly_one",
+                  "display_name": "Action result"
                 }
               }
             ]
@@ -1776,6 +2279,210 @@
         }
       }
     },
+    "usb.auto_session": {
+      "id": "usb.auto_session",
+      "node_type": "vibeflow.node",
+      "source": {
+        "module": "nodes.stream.runner",
+        "class": "AutoSession",
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/runner.py",
+        "line": 34
+      },
+      "declaration": {
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/runner.py"
+      },
+      "info": {
+        "display_name": "Run session action",
+        "description": "Invokes the verified connect or disconnect workflow for the decided action.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "author": null,
+        "tags": [],
+        "external": false,
+        "effect_scope": "python_io"
+      },
+      "contract": {
+        "requires": [
+          {
+            "type": "usb.action",
+            "cardinality": "exactly_one",
+            "display_name": "Session action"
+          },
+          {
+            "type": "usb.settings",
+            "cardinality": "exactly_one",
+            "display_name": "Tablet settings"
+          }
+        ],
+        "provides": [
+          {
+            "key": "action_result",
+            "type": "usb.action_result",
+            "display_name": "Action result"
+          }
+        ],
+        "input_semantics": {
+          "usb.action": [
+            "connect, disconnect or none."
+          ],
+          "usb.settings": [
+            "Configuration path used by the invoked workflow."
+          ]
+        },
+        "output_semantics": {
+          "action_result": [
+            "Action taken, exit code and a short diagnostic tail."
+          ]
+        }
+      },
+      "rulesets": [
+        "vibeflow.python_io"
+      ],
+      "declared_presentation": {},
+      "declared_rulesets": [
+        "vibeflow.python_io"
+      ],
+      "presentation": {
+        "values": {
+          "fill": "#ECECFF",
+          "stroke": "#9370DB",
+          "text": "#333333",
+          "shape": "rect"
+        },
+        "sources": {
+          "fill": "native",
+          "stroke": "native",
+          "text": "native",
+          "shape": "native"
+        },
+        "modifiers": {
+          "planned": false
+        }
+      },
+      "config": {
+        "defaults": {
+          "timeout_ms": 240000
+        },
+        "schema": {
+          "timeout_ms": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "usb.decide_action": {
+      "id": "usb.decide_action",
+      "node_type": "vibeflow.node",
+      "source": {
+        "module": "nodes.stream.dispatch",
+        "class": "DecideAction",
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/dispatch.py",
+        "line": 73
+      },
+      "declaration": {
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/dispatch.py"
+      },
+      "info": {
+        "display_name": "Decide session action",
+        "description": "Chooses connect, disconnect or no action from presence, ADB state, auto policy and session status.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "author": null,
+        "tags": [],
+        "external": false,
+        "effect_scope": "none"
+      },
+      "contract": {
+        "requires": [
+          {
+            "type": "usb.settings",
+            "cardinality": "exactly_one",
+            "display_name": "Tablet settings"
+          },
+          {
+            "type": "usb.state",
+            "cardinality": "exactly_one",
+            "display_name": "Runtime state"
+          },
+          {
+            "type": "usb.device",
+            "cardinality": "exactly_one",
+            "display_name": "USB device"
+          },
+          {
+            "type": "usb.adb_state",
+            "cardinality": "exactly_one",
+            "display_name": "ADB transport state"
+          },
+          {
+            "type": "usb.session_status",
+            "cardinality": "exactly_one",
+            "display_name": "Session status"
+          }
+        ],
+        "provides": [
+          {
+            "key": "action",
+            "type": "usb.action",
+            "display_name": "Session action"
+          }
+        ],
+        "input_semantics": {
+          "usb.adb_state": [
+            "ADB transport state."
+          ],
+          "usb.device": [
+            "USB presence resolved from sysfs."
+          ],
+          "usb.session_status": [
+            "Current Sunshine/Moonlight session state."
+          ],
+          "usb.settings": [
+            "Configured tablet identity."
+          ],
+          "usb.state": [
+            "Persisted state carrying the auto policy."
+          ]
+        },
+        "output_semantics": {
+          "action": [
+            "connect, disconnect or none with a reason."
+          ]
+        }
+      },
+      "rulesets": [
+        "vibeflow.process"
+      ],
+      "declared_presentation": {},
+      "declared_rulesets": [
+        "vibeflow.process"
+      ],
+      "presentation": {
+        "values": {
+          "fill": "#ECECFF",
+          "stroke": "#9370DB",
+          "text": "#333333",
+          "shape": "rect"
+        },
+        "sources": {
+          "fill": "native",
+          "stroke": "native",
+          "text": "native",
+          "shape": "native"
+        },
+        "modifiers": {
+          "planned": false
+        }
+      },
+      "config": {
+        "defaults": {},
+        "schema": {}
+      }
+    },
     "usb.end": {
       "id": "usb.end",
       "node_type": "vibeflow.node",
@@ -2064,6 +2771,93 @@
         }
       }
     },
+    "usb.session_status": {
+      "id": "usb.session_status",
+      "node_type": "vibeflow.node",
+      "source": {
+        "module": "nodes.stream.dispatch",
+        "class": "SessionStatus",
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/dispatch.py",
+        "line": 39
+      },
+      "declaration": {
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/dispatch.py"
+      },
+      "info": {
+        "display_name": "Read session status",
+        "description": "Reads Sunshine and Moonlight state so the loop can decide whether a session exists.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "author": null,
+        "tags": [],
+        "external": false,
+        "effect_scope": "python_io"
+      },
+      "contract": {
+        "requires": [
+          {
+            "type": "usb.settings",
+            "cardinality": "exactly_one",
+            "display_name": "Tablet settings"
+          },
+          {
+            "type": "usb.device",
+            "cardinality": "exactly_one",
+            "display_name": "USB device"
+          }
+        ],
+        "provides": [
+          {
+            "key": "session_status",
+            "type": "usb.session_status",
+            "display_name": "Session status"
+          }
+        ],
+        "input_semantics": {
+          "usb.device": [
+            "Interface used to resolve the current USB address."
+          ],
+          "usb.settings": [
+            "Sunshine unit, ADB serial and Moonlight package."
+          ]
+        },
+        "output_semantics": {
+          "session_status": [
+            "Whether a client and the Moonlight game are both active."
+          ]
+        }
+      },
+      "rulesets": [
+        "vibeflow.python_io"
+      ],
+      "declared_presentation": {},
+      "declared_rulesets": [
+        "vibeflow.python_io"
+      ],
+      "presentation": {
+        "values": {
+          "fill": "#ECECFF",
+          "stroke": "#9370DB",
+          "text": "#333333",
+          "shape": "rect"
+        },
+        "sources": {
+          "fill": "native",
+          "stroke": "native",
+          "text": "native",
+          "shape": "native"
+        },
+        "modifiers": {
+          "planned": false
+        }
+      },
+      "config": {
+        "defaults": {},
+        "schema": {}
+      }
+    },
     "usb.start": {
       "id": "usb.start",
       "node_type": "vibeflow.node",
@@ -2131,7 +2925,7 @@
         "class": "TickMerge",
         "root_id": "usb-tablet-display",
         "path": "nodes/state/runtime_state.py",
-        "line": 57
+        "line": 59
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2168,6 +2962,11 @@
             "type": "usb.adb_state",
             "cardinality": "exactly_one",
             "display_name": "ADB transport state"
+          },
+          {
+            "type": "usb.action_result",
+            "cardinality": "exactly_one",
+            "display_name": "Action result"
           }
         ],
         "provides": [
@@ -2178,6 +2977,9 @@
           }
         ],
         "input_semantics": {
+          "usb.action_result": [
+            "Session action taken during this iteration."
+          ],
           "usb.adb_state": [
             "ADB transport state from this iteration."
           ],
@@ -2431,7 +3233,17 @@
       },
       {
         "kind": "node",
+        "id": "usb.auto_session",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.build_status",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.decide_action",
         "reason": "declaration"
       },
       {
@@ -2492,6 +3304,11 @@
       {
         "kind": "node",
         "id": "usb.run_command",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.session_status",
         "reason": "declaration"
       },
       {
@@ -3261,6 +4078,812 @@
             "path": "nodes/device/adb_state.py",
             "role": "entry",
             "symbol": "AdbState",
+            "language": "python",
+            "load_state": "loaded"
+          }
+        ]
+      },
+      "node:usb.auto_session": {
+        "kind": "node",
+        "node_type": "vibeflow.node",
+        "id": "usb.auto_session",
+        "display_name": "Run session action",
+        "description": "Invokes the verified connect or disconnect workflow for the decided action.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "tags": [],
+        "external": false,
+        "contract": {
+          "requires": [
+            {
+              "type": "usb.action",
+              "cardinality": "exactly_one",
+              "display_name": "Session action"
+            },
+            {
+              "type": "usb.settings",
+              "cardinality": "exactly_one",
+              "display_name": "Tablet settings"
+            }
+          ],
+          "provides": [
+            {
+              "key": "action_result",
+              "type": "usb.action_result",
+              "display_name": "Action result"
+            }
+          ],
+          "input_semantics": {
+            "usb.action": [
+              "connect, disconnect or none."
+            ],
+            "usb.settings": [
+              "Configuration path used by the invoked workflow."
+            ]
+          },
+          "output_semantics": {
+            "action_result": [
+              "Action taken, exit code and a short diagnostic tail."
+            ]
+          },
+          "params_schema": {
+            "timeout_ms": {
+              "type": "integer"
+            }
+          },
+          "params_defaults": {
+            "timeout_ms": 240000
+          },
+          "examples": []
+        },
+        "implementations": [
+          {
+            "language": "python",
+            "targets": [
+              "python"
+            ],
+            "source": {
+              "kind": "file",
+              "ref": "nodes/stream/runner.py",
+              "export": "AutoSession"
+            },
+            "completion": "immediate"
+          }
+        ],
+        "base_libs": [],
+        "workflow_operations": [],
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "presentation": {},
+        "metadata": {},
+        "plugin_id": "",
+        "owner": {
+          "kind": "root",
+          "id": "usb-tablet-display",
+          "root_id": "usb-tablet-display",
+          "path": "."
+        },
+        "origin": {
+          "owner": {
+            "kind": "root",
+            "id": "usb-tablet-display",
+            "root_id": "usb-tablet-display",
+            "path": "."
+          },
+          "path": "nodes/stream/runner.py",
+          "line": 13,
+          "symbol": "AutoSession"
+        },
+        "status": "implemented",
+        "markers": [],
+        "diagnostics": [],
+        "effective_rules": {
+          "import": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "import",
+              "graph_scope": "current_graph",
+              "order": [
+                "imports"
+              ],
+              "calls": [
+                {
+                  "id": "imports",
+                  "rule_id": "vibeflow.import_side_effects",
+                  "original_rule_id": "vibeflow.import_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:imports",
+                    "policy": "default:vibeflow.import_side_effects"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "static": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "static",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "run": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "run",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ]
+        },
+        "effective_presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "sources": [
+          {
+            "id": "file:7008e28b7a1edb05",
+            "path": "nodes/stream/runner.py",
+            "role": "entry",
+            "symbol": "AutoSession",
+            "language": "python",
+            "load_state": "loaded"
+          }
+        ]
+      },
+      "node:usb.decide_action": {
+        "kind": "node",
+        "node_type": "vibeflow.node",
+        "id": "usb.decide_action",
+        "display_name": "Decide session action",
+        "description": "Chooses connect, disconnect or no action from presence, ADB state, auto policy and session status.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "tags": [],
+        "external": false,
+        "contract": {
+          "requires": [
+            {
+              "type": "usb.settings",
+              "cardinality": "exactly_one",
+              "display_name": "Tablet settings"
+            },
+            {
+              "type": "usb.state",
+              "cardinality": "exactly_one",
+              "display_name": "Runtime state"
+            },
+            {
+              "type": "usb.device",
+              "cardinality": "exactly_one",
+              "display_name": "USB device"
+            },
+            {
+              "type": "usb.adb_state",
+              "cardinality": "exactly_one",
+              "display_name": "ADB transport state"
+            },
+            {
+              "type": "usb.session_status",
+              "cardinality": "exactly_one",
+              "display_name": "Session status"
+            }
+          ],
+          "provides": [
+            {
+              "key": "action",
+              "type": "usb.action",
+              "display_name": "Session action"
+            }
+          ],
+          "input_semantics": {
+            "usb.settings": [
+              "Configured tablet identity."
+            ],
+            "usb.state": [
+              "Persisted state carrying the auto policy."
+            ],
+            "usb.device": [
+              "USB presence resolved from sysfs."
+            ],
+            "usb.adb_state": [
+              "ADB transport state."
+            ],
+            "usb.session_status": [
+              "Current Sunshine/Moonlight session state."
+            ]
+          },
+          "output_semantics": {
+            "action": [
+              "connect, disconnect or none with a reason."
+            ]
+          },
+          "params_schema": {},
+          "params_defaults": {},
+          "examples": []
+        },
+        "implementations": [
+          {
+            "language": "python",
+            "targets": [
+              "python"
+            ],
+            "source": {
+              "kind": "file",
+              "ref": "nodes/stream/dispatch.py",
+              "export": "DecideAction"
+            },
+            "completion": "immediate"
+          }
+        ],
+        "base_libs": [],
+        "workflow_operations": [],
+        "rulesets": [
+          "vibeflow.process"
+        ],
+        "presentation": {},
+        "metadata": {},
+        "plugin_id": "",
+        "owner": {
+          "kind": "root",
+          "id": "usb-tablet-display",
+          "root_id": "usb-tablet-display",
+          "path": "."
+        },
+        "origin": {
+          "owner": {
+            "kind": "root",
+            "id": "usb-tablet-display",
+            "root_id": "usb-tablet-display",
+            "path": "."
+          },
+          "path": "nodes/stream/dispatch.py",
+          "line": 46,
+          "symbol": "DecideAction"
+        },
+        "status": "implemented",
+        "markers": [],
+        "diagnostics": [],
+        "effective_rules": {
+          "import": [
+            {
+              "ruleset_id": "vibeflow.process",
+              "entrypoint": "import",
+              "graph_scope": "current_graph",
+              "order": [
+                "imports"
+              ],
+              "calls": [
+                {
+                  "id": "imports",
+                  "rule_id": "vibeflow.import_side_effects",
+                  "original_rule_id": "vibeflow.import_side_effects",
+                  "params": {
+                    "effect_scope": "none",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:imports",
+                    "policy": "default:vibeflow.import_side_effects"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "static": [
+            {
+              "ruleset_id": "vibeflow.process",
+              "entrypoint": "static",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "none",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "run": [
+            {
+              "ruleset_id": "vibeflow.process",
+              "entrypoint": "run",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "none",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.process"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ]
+        },
+        "effective_presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "sources": [
+          {
+            "id": "file:423432595d552a27",
+            "path": "nodes/stream/dispatch.py",
+            "role": "entry",
+            "symbol": "DecideAction",
             "language": "python",
             "load_state": "loaded"
           }
@@ -4758,6 +6381,408 @@
           }
         ]
       },
+      "node:usb.session_status": {
+        "kind": "node",
+        "node_type": "vibeflow.node",
+        "id": "usb.session_status",
+        "display_name": "Read session status",
+        "description": "Reads Sunshine and Moonlight state so the loop can decide whether a session exists.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "tags": [],
+        "external": false,
+        "contract": {
+          "requires": [
+            {
+              "type": "usb.settings",
+              "cardinality": "exactly_one",
+              "display_name": "Tablet settings"
+            },
+            {
+              "type": "usb.device",
+              "cardinality": "exactly_one",
+              "display_name": "USB device"
+            }
+          ],
+          "provides": [
+            {
+              "key": "session_status",
+              "type": "usb.session_status",
+              "display_name": "Session status"
+            }
+          ],
+          "input_semantics": {
+            "usb.settings": [
+              "Sunshine unit, ADB serial and Moonlight package."
+            ],
+            "usb.device": [
+              "Interface used to resolve the current USB address."
+            ]
+          },
+          "output_semantics": {
+            "session_status": [
+              "Whether a client and the Moonlight game are both active."
+            ]
+          },
+          "params_schema": {},
+          "params_defaults": {},
+          "examples": []
+        },
+        "implementations": [
+          {
+            "language": "python",
+            "targets": [
+              "python"
+            ],
+            "source": {
+              "kind": "file",
+              "ref": "nodes/stream/dispatch.py",
+              "export": "SessionStatus"
+            },
+            "completion": "immediate",
+            "implementation_files": [
+              {
+                "kind": "file",
+                "ref": "nodes/stream/session.py"
+              }
+            ]
+          }
+        ],
+        "base_libs": [],
+        "workflow_operations": [],
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "presentation": {},
+        "metadata": {},
+        "plugin_id": "",
+        "owner": {
+          "kind": "root",
+          "id": "usb-tablet-display",
+          "root_id": "usb-tablet-display",
+          "path": "."
+        },
+        "origin": {
+          "owner": {
+            "kind": "root",
+            "id": "usb-tablet-display",
+            "root_id": "usb-tablet-display",
+            "path": "."
+          },
+          "path": "nodes/stream/dispatch.py",
+          "line": 17,
+          "symbol": "SessionStatus"
+        },
+        "status": "implemented",
+        "markers": [],
+        "diagnostics": [],
+        "effective_rules": {
+          "import": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "import",
+              "graph_scope": "current_graph",
+              "order": [
+                "imports"
+              ],
+              "calls": [
+                {
+                  "id": "imports",
+                  "rule_id": "vibeflow.import_side_effects",
+                  "original_rule_id": "vibeflow.import_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:imports",
+                    "policy": "default:vibeflow.import_side_effects"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "static": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "static",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "run": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "run",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ]
+        },
+        "effective_presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "sources": [
+          {
+            "id": "file:423432595d552a27",
+            "path": "nodes/stream/dispatch.py",
+            "role": "entry",
+            "symbol": "SessionStatus",
+            "language": "python",
+            "load_state": "loaded"
+          },
+          {
+            "id": "file:4fd3ae8cf3ab83de",
+            "path": "nodes/stream/session.py",
+            "role": "support",
+            "symbol": "",
+            "language": "python",
+            "load_state": "loaded"
+          }
+        ]
+      },
       "node:usb.start": {
         "kind": "node",
         "node_type": "vibeflow.node",
@@ -5149,6 +7174,11 @@
               "type": "usb.adb_state",
               "cardinality": "exactly_one",
               "display_name": "ADB transport state"
+            },
+            {
+              "type": "usb.action_result",
+              "cardinality": "exactly_one",
+              "display_name": "Action result"
             }
           ],
           "provides": [
@@ -5170,6 +7200,9 @@
             ],
             "usb.adb_state": [
               "ADB transport state from this iteration."
+            ],
+            "usb.action_result": [
+              "Session action taken during this iteration."
             ]
           },
           "output_semantics": {
@@ -5555,6 +7588,38 @@
         ],
         "load_state": "loaded"
       },
+      "file:7008e28b7a1edb05": {
+        "id": "file:7008e28b7a1edb05",
+        "path": "nodes/stream/runner.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.auto_session",
+            "role": "entry",
+            "symbol": "AutoSession"
+          }
+        ],
+        "load_state": "loaded"
+      },
+      "file:423432595d552a27": {
+        "id": "file:423432595d552a27",
+        "path": "nodes/stream/dispatch.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.decide_action",
+            "role": "entry",
+            "symbol": "DecideAction"
+          },
+          {
+            "kind": "node",
+            "id": "usb.session_status",
+            "role": "entry",
+            "symbol": "SessionStatus"
+          }
+        ],
+        "load_state": "loaded"
+      },
       "file:149802a0f899dd06": {
         "id": "file:149802a0f899dd06",
         "path": "nodes/boundary.py",
@@ -5613,6 +7678,19 @@
         ],
         "load_state": "loaded"
       },
+      "file:4fd3ae8cf3ab83de": {
+        "id": "file:4fd3ae8cf3ab83de",
+        "path": "nodes/stream/session.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.session_status",
+            "role": "support",
+            "symbol": ""
+          }
+        ],
+        "load_state": "loaded"
+      },
       "file:2aaeaf192f09d6d0": {
         "id": "file:2aaeaf192f09d6d0",
         "path": "nodes/state/runtime_state.py",
@@ -5625,12 +7703,40 @@
           }
         ],
         "load_state": "loaded"
+      },
+      "file:8e2c1f727276d30c": {
+        "id": "file:8e2c1f727276d30c",
+        "path": "__init__.py",
+        "owners": [],
+        "load_state": "loaded"
+      },
+      "file:699984b668dc0b9b": {
+        "id": "file:699984b668dc0b9b",
+        "path": "nodes/__init__.py",
+        "owners": [],
+        "load_state": "loaded"
+      },
+      "file:5dde3ec466af2223": {
+        "id": "file:5dde3ec466af2223",
+        "path": "nodes/stream/__init__.py",
+        "owners": [],
+        "load_state": "loaded"
       }
     },
     "relations": [
       {
         "from": "node:usb.adb_state",
         "to": "file:6427758cf67b72d5",
+        "relation": "entry"
+      },
+      {
+        "from": "node:usb.auto_session",
+        "to": "file:7008e28b7a1edb05",
+        "relation": "entry"
+      },
+      {
+        "from": "node:usb.decide_action",
+        "to": "file:423432595d552a27",
         "relation": "entry"
       },
       {
@@ -5654,6 +7760,16 @@
         "relation": "entry"
       },
       {
+        "from": "node:usb.session_status",
+        "to": "file:423432595d552a27",
+        "relation": "entry"
+      },
+      {
+        "from": "node:usb.session_status",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "support"
+      },
+      {
         "from": "node:usb.start",
         "to": "file:149802a0f899dd06",
         "relation": "entry"
@@ -5662,6 +7778,14 @@
         "from": "node:usb.tick_merge",
         "to": "file:2aaeaf192f09d6d0",
         "relation": "entry"
+      },
+      {
+        "from": "file:423432595d552a27",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "import",
+        "specifier": "usb_tablet_display.nodes.stream",
+        "line": 8,
+        "type_only": false
       }
     ]
   },
@@ -5669,6 +7793,13 @@
     {
       "call_path": [
         "end"
+      ],
+      "effect_scope": "none"
+    },
+    {
+      "call_path": [
+        "loop",
+        "decide"
       ],
       "effect_scope": "none"
     },
@@ -5742,6 +7873,20 @@
         "start"
       ],
       "effect_scope": "none"
+    },
+    {
+      "call_path": [
+        "loop",
+        "runner"
+      ],
+      "effect_scope": "python_io"
+    },
+    {
+      "call_path": [
+        "loop",
+        "sstatus"
+      ],
+      "effect_scope": "python_io"
     },
     {
       "call_path": [
@@ -5844,6 +7989,60 @@
         ],
         "source": "static",
         "origin": "usb.start",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "nodeset:usb.daemon_tick",
+      "type_key": "usb.session_status",
+      "call_path": [
+        "loop",
+        "sstatus"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.session_status",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "nodeset:usb.daemon_tick",
+      "type_key": "usb.decide_action",
+      "call_path": [
+        "loop",
+        "decide"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.process"
+        ],
+        "source": "static",
+        "origin": "usb.decide_action",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "nodeset:usb.daemon_tick",
+      "type_key": "usb.auto_session",
+      "call_path": [
+        "loop",
+        "runner"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.auto_session",
         "replaced": []
       }
     },

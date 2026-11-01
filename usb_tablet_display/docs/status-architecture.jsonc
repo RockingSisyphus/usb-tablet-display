@@ -2204,7 +2204,17 @@
       },
       {
         "kind": "node",
+        "id": "usb.auto_session",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.build_status",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.decide_action",
         "reason": "declaration"
       },
       {
@@ -2265,6 +2275,11 @@
       {
         "kind": "node",
         "id": "usb.run_command",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.session_status",
         "reason": "declaration"
       },
       {
