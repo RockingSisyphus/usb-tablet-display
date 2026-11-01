@@ -494,7 +494,7 @@
       "source": {
         "module": "nodes.display.nodes",
         "class": "DisplayApply",
-        "line": 126
+        "line": 157
       },
       "declaration": {},
       "info": {
@@ -565,6 +565,7 @@
           "layout_mode": 1,
           "method": 2,
           "settle_ms": 400,
+          "stop_wait_ms": 20000,
           "target": "enable"
         },
         "schema": {
@@ -584,6 +585,9 @@
             "type": "integer"
           },
           "settle_ms": {
+            "type": "integer"
+          },
+          "stop_wait_ms": {
             "type": "integer"
           },
           "target": {
@@ -1306,6 +1310,9 @@
             },
             "confirm_timeout_ms": {
               "type": "integer"
+            },
+            "stop_wait_ms": {
+              "type": "integer"
             }
           },
           "params_defaults": {
@@ -1315,7 +1322,8 @@
             "allow_disable": false,
             "settle_ms": 400,
             "extension_uuid": "android-tablet-auto-keep-display@rockingsisyphus.local",
-            "confirm_timeout_ms": 6000
+            "confirm_timeout_ms": 6000,
+            "stop_wait_ms": 20000
           },
           "examples": []
         },
@@ -1361,7 +1369,7 @@
             "path": "@project/."
           },
           "path": "@project/nodes/display/nodes.py",
-          "line": 104,
+          "line": 133,
           "symbol": "DisplayApply"
         },
         "status": "implemented",

@@ -79,6 +79,7 @@ def install(home: Path, runner=run):
     if extension_source.is_dir():
         extension_target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(extension_source, extension_target, dirs_exist_ok=True)
+        runner(["gnome-extensions", "disable", EXTENSION])
         runner(["gnome-extensions", "enable", EXTENSION])
     bin_home = home / ".local/bin"
     bin_home.mkdir(parents=True, exist_ok=True)
@@ -181,6 +182,15 @@ def autofill_config(home: Path):
             "reason": "" if len(serials) == 1 else "未检测到唯一的平板，保持原有序列号"}
 
 
+def _extension_state(uuid):
+    import re
+    out = _action_output(["gdbus", "call", "--session", "--dest", "org.gnome.Shell.Extensions",
+                          "--object-path", "/org/gnome/Shell/Extensions", "--method",
+                          "org.gnome.Shell.Extensions.GetExtensionInfo", uuid])
+    match = re.search(r"'state': <([0-9.]+)>", out)
+    return float(match.group(1)) if match else None
+
+
 def _device_apps():
     if not _which("adb"):
         return {"installed": False, "reason": "adb 不可用"}
@@ -223,6 +233,7 @@ def verify(home: Path, runner=run):
         "internet_unit": (home / ".config/systemd/user" / NEW_INTERNET_UNIT).is_file(),
         "cli_wrapper": cli.is_file() and bool(cli.stat().st_mode & 0o111),
         "extension_installed": extension.is_dir(),
+        "extension_active": _extension_state(EXTENSION) == 1.0,
         "unit_enabled": runner(["systemctl", "--user", "is-enabled", NEW_UNIT])["out"] == "enabled",
         "unit_active": runner(["systemctl", "--user", "is-active", NEW_UNIT])["out"] == "active",
         "coordinator_active": runner(["systemctl", "--user", "is-active", NEW_COORDINATOR_UNIT])["out"] == "active",
@@ -237,6 +248,8 @@ def verify(home: Path, runner=run):
         hints.append("缺少 NetworkManager 连接 android-usb-direct：" + _network_hint()["hint"])
     if not checks["sunshine_installed"]:
         hints.append("未安装 Sunshine，串流无法启动")
+    if checks["extension_installed"] and not checks["extension_active"]:
+        hints.append("GNOME 扩展未加载：重新登录桌面，或执行 gnome-extensions disable/enable " + EXTENSION)
     if not checks["tablet_serial"]:
         hints.append("tablet.toml 缺少 serial")
     if not checks["pygobject"]:

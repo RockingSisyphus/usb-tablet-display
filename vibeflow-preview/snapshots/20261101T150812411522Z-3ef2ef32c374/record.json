@@ -1,0 +1,24 @@
+{
+  "version": 5,
+  "id": "20261101T150812411522Z-3ef2ef32c374",
+  "category": "run",
+  "status": "succeeded",
+  "created_at": "2026-11-01T15:08:12.411517+00:00",
+  "updated_at": "2026-11-01T15:08:19.772128+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-display",
+    "path": "configs/disconnect.jsonc",
+    "id": "usb-tablet-display:configs/disconnect.jsonc",
+    "name": "disconnect",
+    "target": "python"
+  },
+  "views": [
+    "flow",
+    "base_lib",
+    "plugin",
+    "links"
+  ],
+  "revision": 4,
+  "run_id": "20261101T150811Z-9e5d6e36",
+  "check_status": "CONCERNS"
+}

@@ -52,12 +52,41 @@ def _extension_active(uuid: str) -> bool:
 
 
 def _await_confirmation(target: str, settings: dict, timeout_ms: int) -> bool:
+    """等待系统确认：布局到位后再留一段宽限，交给扩展点击"保留更改"。"""
     deadline = time.monotonic() + max(timeout_ms, 0) / 1000.0
+    matched_at = None
     while time.monotonic() < deadline:
-        if not _marker_path().exists():
+        state = _state(_bus())
+        matches = layout.config_matches(state, target, settings["connector"],
+                                        settings["virtual_mode"], settings["builtin_mode"], settings["scale"])
+        if matches and matched_at is None:
+            matched_at = time.monotonic()
+        if matches and not _marker_path().exists():
             return True
-        time.sleep(0.1)
-    return not _marker_path().exists()
+        if matched_at is not None and time.monotonic() - matched_at >= 1.5 and not _marker_path().exists():
+            return True
+        if not matches and not _marker_path().exists():
+            return layout.config_matches(state, target, settings["connector"],
+                                         settings["virtual_mode"], settings["builtin_mode"],
+                                         settings["scale"])
+        time.sleep(0.2)
+    return layout.config_matches(_state(_bus()), target, settings["connector"],
+                                 settings["virtual_mode"], settings["builtin_mode"], settings["scale"])
+
+
+def _rebuild_previous(state: tuple, previous: list) -> list:
+    """把 GetCurrentState 的逻辑显示器改写成 ApplyMonitorsConfig 需要的形状。"""
+    modes = {spec[0]: spec for spec in state[1]}
+    config = []
+    for logical in previous:
+        monitors = []
+        for monitor in logical[5]:
+            connector = monitor[0]
+            record = modes.get(connector)
+            mode_id = layout.selected_mode_id(record) if record else ""
+            monitors.append((connector, mode_id, {}))
+        config.append((logical[0], logical[1], logical[2], logical[3], logical[4], monitors))
+    return config
 
 
 def _service_active(unit: str) -> bool:
@@ -115,10 +144,12 @@ class DisplayMatches:
                           "layout_mode": {"type": "integer"}, "allow_disable": {"type": "boolean"},
                           "settle_ms": {"type": "integer"},
                           "extension_uuid": {"type": "string"},
-                          "confirm_timeout_ms": {"type": "integer"}},
+                          "confirm_timeout_ms": {"type": "integer"},
+                          "stop_wait_ms": {"type": "integer"}},
         "params_defaults": {"target": "enable", "method": 2, "layout_mode": 1,
                             "allow_disable": False, "settle_ms": 400,
-                            "extension_uuid": EXTENSION_UUID, "confirm_timeout_ms": 6000},
+                            "extension_uuid": EXTENSION_UUID, "confirm_timeout_ms": 6000,
+                            "stop_wait_ms": 20000},
         "input_semantics": {"usb.settings": ["Connector, modes and scale to apply."]},
         "output_semantics": {"display_result": ["Applied state, whether a change was needed and verification result."]},
     },
@@ -132,9 +163,13 @@ class DisplayApply:
                                        "skipped": True,
                                        "reason": "removing a monitor requires explicit confirmation"}}
         if target == "disable" and _service_active(settings["sunshine_unit"]):
-            return {"display_result": {"target": target, "changed": False, "verified": False,
-                                       "skipped": True,
-                                       "reason": "sunshine is still casting a monitor; stop the stream first"}}
+            deadline = time.monotonic() + max(int(params.get("stop_wait_ms", 20000)), 1000) / 1000.0
+            while _service_active(settings["sunshine_unit"]) and time.monotonic() < deadline:
+                time.sleep(0.25)
+            if _service_active(settings["sunshine_unit"]):
+                return {"display_result": {"target": target, "changed": False, "verified": False,
+                                           "skipped": True,
+                                           "reason": "sunshine is still casting a monitor; stop the stream first"}}
         connection = _bus()
         state = _state(connection)
         if layout.config_matches(state, target, settings["connector"],
@@ -147,7 +182,7 @@ class DisplayApply:
         marker = _marker_path()
         marker.parent.mkdir(parents=True, exist_ok=True)
         marker.write_text(str(int(time.time())), encoding="utf-8")
-        previous = [tuple(item) for item in state[2]]
+        previous = _rebuild_previous(state, state[2])
         config = layout.build_logical_config(state, target, settings["connector"],
                                              settings["virtual_mode"], settings["builtin_mode"], settings["scale"])
         _apply(connection, state, config, int(params["method"]), int(params["layout_mode"]))
@@ -158,7 +193,6 @@ class DisplayApply:
             settings["virtual_mode"], settings["builtin_mode"], settings["scale"])
         rolled_back = False
         if not verified:
-            marker.unlink(missing_ok=True)
             _apply(connection, state, previous, int(params["method"]), int(params["layout_mode"]))
             time.sleep(max(int(params["settle_ms"]), 0) / 1000.0)
             rolled_back = True

@@ -25,27 +25,39 @@ export default class AndroidTabletAutoKeepDisplay extends Extension {
             'confirm-display-change', () => {
                 if (!this._shouldAutoAccept())
                     return;
-
                 GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-                try {
-                    this._shellwm.complete_display_change(true);
-                    // The stock signal handler has already opened its dialog.
-                    // Completing Mutter's change alone leaves that dialog's
-                    // timeout armed, so it later reverts the layout. Close the
-                    // top modal dialog to cancel its countdown as the Keep
-                    // Changes button would.
-                    Main.modalActorFocusStack.at(-1)?.actor?.close();
-                    this._removeMarker();
-                    console.log(`${this.uuid}: accepted display change`);
-                } catch (error) {
-                    logError(error, `${this.uuid}: failed to accept display change`);
-                }
+                    this._acceptDisplayChange();
                     return GLib.SOURCE_REMOVE;
                 });
             });
+        this._pollId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+            if (this._shouldAutoAccept())
+                this._acceptDisplayChange();
+            return GLib.SOURCE_CONTINUE;
+        });
+    }
+
+    _acceptDisplayChange() {
+        try {
+            const top = Main.modalActorFocusStack.at(-1)?.actor;
+            if (!top)
+                return;
+            this._shellwm.complete_display_change(true);
+            // The stock signal handler has already opened its dialog; closing it
+            // cancels its countdown exactly like the Keep Changes button.
+            top.close();
+            this._removeMarker();
+            console.log(`${this.uuid}: accepted display change`);
+        } catch (error) {
+            logError(error, `${this.uuid}: failed to accept display change`);
+        }
     }
 
     disable() {
+        if (this._pollId) {
+            GLib.source_remove(this._pollId);
+            this._pollId = null;
+        }
         if (this._confirmDisplayChangeId)
             this._shellwm.disconnect(this._confirmDisplayChangeId);
         this._confirmDisplayChangeId = null;

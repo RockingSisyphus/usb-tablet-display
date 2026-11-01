@@ -107,4 +107,7 @@ class TeardownSummary:
             "session": "teardown",
             "changed": bool(result.get("changed")),
             "verified": bool(check.get("matches")),
+            "skipped": bool(result.get("skipped")),
+            "reason": str(result.get("reason") or "")[:200],
+            "rolled_back": bool(result.get("rolled_back")),
         }}

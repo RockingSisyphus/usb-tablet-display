@@ -104,49 +104,6 @@ def _list_has_host(settings, host_name):
     return host_name in texts, xml
 
 
-def _register_address(settings, address, deadline):
-    entered = submitted = opened = False
-    package = settings["moonlight_package"]
-    while time.monotonic() < deadline:
-        if session.connected(settings):
-            return True, ""
-        xml = _dump_ui(settings, settings.get("shared_ui_snapshot"))
-        if not xml:
-            time.sleep(0.6)
-            continue
-        try:
-            error = dialog_error(xml, package)
-        except ET.ParseError:
-            time.sleep(0.6)
-            continue
-        if error:
-            return False, "Moonlight rejected the USB address: " + error
-        root = ET.fromstring(xml)
-        if stream_surface(root, package):
-            return True, ""
-        edit = field(xml, package, "hostTextView")
-        add = field(xml, package, "manuallyAddPc")
-        confirm = field(xml, package, "addPcButton")
-        if edit and not entered:
-            _tap(settings, edit[0])
-            if edit[1]:
-                _adb(settings, ["input", "keyevent", "123", *(["67"] * len(edit[1]))])
-            _adb(settings, ["input", "text", address])
-            entered = True
-        elif entered and confirm and not submitted:
-            _tap(settings, confirm[0])
-            submitted = True
-        elif add and not opened:
-            _tap(settings, add[0])
-            opened = True
-        elif submitted:
-            present, _xml = _list_has_host(settings, settings["host_name"])
-            if present:
-                return True, ""
-        time.sleep(0.6)
-    return session.connected(settings), "address registration timed out"
-
-
 def _server_info(address):
     done = subprocess.run(["curl", "-fsS", "--max-time", "3",
                            f"http://{address}:47989/serverinfo"],
@@ -266,6 +223,10 @@ def _register_address(settings, address, deadline):
         elif add and not opened:
             _tap(settings, add[0])
             opened = True
+        elif submitted:
+            present, _xml = _list_has_host(settings, settings["host_name"])
+            if present:
+                return True, ""
         time.sleep(0.5)
     return session.connected(settings), "address registration timed out"
 

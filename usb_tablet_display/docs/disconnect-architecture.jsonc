@@ -1165,7 +1165,7 @@
       "source": {
         "module": "nodes.display.nodes",
         "class": "DisplayApply",
-        "line": 126
+        "line": 157
       },
       "declaration": {},
       "info": {
@@ -1236,6 +1236,7 @@
           "layout_mode": 1,
           "method": 2,
           "settle_ms": 400,
+          "stop_wait_ms": 20000,
           "target": "enable"
         },
         "schema": {
@@ -1257,6 +1258,9 @@
           "settle_ms": {
             "type": "integer"
           },
+          "stop_wait_ms": {
+            "type": "integer"
+          },
           "target": {
             "type": "string"
           }
@@ -1269,7 +1273,7 @@
       "source": {
         "module": "nodes.display.nodes",
         "class": "DisplayMatches",
-        "line": 95
+        "line": 124
       },
       "declaration": {},
       "info": {
@@ -1667,7 +1671,7 @@
       },
       "config": {
         "defaults": {
-          "timeout_ms": 8000
+          "timeout_ms": 20000
         },
         "schema": {
           "timeout_ms": {
@@ -2329,6 +2333,9 @@
             },
             "confirm_timeout_ms": {
               "type": "integer"
+            },
+            "stop_wait_ms": {
+              "type": "integer"
             }
           },
           "params_defaults": {
@@ -2338,7 +2345,8 @@
             "allow_disable": false,
             "settle_ms": 400,
             "extension_uuid": "android-tablet-auto-keep-display@rockingsisyphus.local",
-            "confirm_timeout_ms": 6000
+            "confirm_timeout_ms": 6000,
+            "stop_wait_ms": 20000
           },
           "examples": []
         },
@@ -2384,7 +2392,7 @@
             "path": "@project/."
           },
           "path": "@project/nodes/display/nodes.py",
-          "line": 104,
+          "line": 133,
           "symbol": "DisplayApply"
         },
         "status": "implemented",
@@ -2784,7 +2792,7 @@
             "path": "@project/."
           },
           "path": "@project/nodes/display/nodes.py",
-          "line": 79,
+          "line": 108,
           "symbol": "DisplayMatches"
         },
         "status": "implemented",
@@ -4610,7 +4618,7 @@
             }
           },
           "params_defaults": {
-            "timeout_ms": 8000
+            "timeout_ms": 20000
           },
           "examples": []
         },

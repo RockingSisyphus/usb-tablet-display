@@ -201,7 +201,7 @@ class StreamVerify:
         "requires": [{"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"}],
         "provides": [{"key": "stream_state", "type": "usb.stream_state", "display_name": "Stream state"}],
         "params_schema": {"timeout_ms": {"type": "integer"}},
-        "params_defaults": {"timeout_ms": 8000},
+        "params_defaults": {"timeout_ms": 20000},
         "input_semantics": {"usb.settings": ["Configuration carrying the Sunshine unit name."]},
         "output_semantics": {"stream_state": ["Unit identity and whether it is stopped."]},
     },

@@ -494,7 +494,7 @@
       "source": {
         "module": "nodes.display.nodes",
         "class": "DisplayMatches",
-        "line": 95
+        "line": 124
       },
       "declaration": {},
       "info": {
@@ -1313,7 +1313,7 @@
             "path": "@project/."
           },
           "path": "@project/nodes/display/nodes.py",
-          "line": 79,
+          "line": 108,
           "symbol": "DisplayMatches"
         },
         "status": "implemented",
