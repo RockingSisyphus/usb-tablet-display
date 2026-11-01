@@ -3674,7 +3674,7 @@
         "class": "RequireStream",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/moonlight.py",
-        "line": 254
+        "line": 262
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -4111,7 +4111,7 @@
         "class": "SunshineReady",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 245
+        "line": 246
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -4195,9 +4195,13 @@
       },
       "config": {
         "defaults": {
+          "restart_if_unconnected": true,
           "timeout_ms": 20000
         },
         "schema": {
+          "restart_if_unconnected": {
+            "type": "boolean"
+          },
           "timeout_ms": {
             "type": "integer"
           }
@@ -8765,7 +8769,7 @@
             "path": "."
           },
           "path": "nodes/stream/moonlight.py",
-          "line": 233,
+          "line": 241,
           "symbol": "RequireStream"
         },
         "status": "implemented",
@@ -10692,10 +10696,14 @@
           "params_schema": {
             "timeout_ms": {
               "type": "integer"
+            },
+            "restart_if_unconnected": {
+              "type": "boolean"
             }
           },
           "params_defaults": {
-            "timeout_ms": 20000
+            "timeout_ms": 20000,
+            "restart_if_unconnected": true
           },
           "examples": []
         },
@@ -10710,7 +10718,13 @@
               "ref": "nodes/stream/sunshine.py",
               "export": "SunshineReady"
             },
-            "completion": "immediate"
+            "completion": "immediate",
+            "implementation_files": [
+              {
+                "kind": "file",
+                "ref": "nodes/stream/session.py"
+              }
+            ]
           }
         ],
         "base_libs": [],
@@ -11035,6 +11049,14 @@
             "path": "nodes/stream/sunshine.py",
             "role": "entry",
             "symbol": "SunshineReady",
+            "language": "python",
+            "load_state": "loaded"
+          },
+          {
+            "id": "file:4fd3ae8cf3ab83de",
+            "path": "nodes/stream/session.py",
+            "role": "support",
+            "symbol": "",
             "language": "python",
             "load_state": "loaded"
           }
@@ -11566,6 +11588,12 @@
             "id": "usb.stream_verify",
             "role": "support",
             "symbol": ""
+          },
+          {
+            "kind": "node",
+            "id": "usb.sunshine_ready",
+            "role": "support",
+            "symbol": ""
           }
         ],
         "load_state": "loaded"
@@ -11789,6 +11817,11 @@
         "from": "node:usb.sunshine_ready",
         "to": "file:600d44922390f17f",
         "relation": "entry"
+      },
+      {
+        "from": "node:usb.sunshine_ready",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "support"
       },
       {
         "from": "node:usb.sunshine_start",

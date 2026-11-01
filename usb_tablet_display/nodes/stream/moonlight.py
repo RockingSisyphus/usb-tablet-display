@@ -210,6 +210,14 @@ class MoonlightConnect:
         ready, detail = _observe(settings, address)
         if ready:
             return {"launch_state": {"connected": True, "address": address, "stage": "already"}}
+        fast_deadline = time.monotonic() + 12
+        fast_launched = _try_launch(settings, address)
+        while time.monotonic() < fast_deadline and fast_launched:
+            ready, _detail = _observe(settings, address)
+            if ready:
+                return {"launch_state": {"connected": True, "address": address,
+                                         "stage": "already-registered"}}
+            time.sleep(0.5)
         _adb(settings, ["am", "force-stop", package])
         _adb(settings, ["am", "start", "-n", package + PCVIEW, "--activity-clear-top"])
         registered, error = _register_address(settings, address, time.monotonic() + max(int(params["register_ms"]), 5000) / 1000.0)

@@ -221,6 +221,7 @@ class SunshineStop:
 
 @node(
     id="usb.sunshine_ready", node_type="vibeflow.node",
+    implementation_files=["session.py"],
     display_name="Restart Sunshine after portal change",
     description="Restarts Sunshine when portal authorization changed, then waits for its streaming ports again.",
     version="0.1.0", flow_kind="process",
@@ -232,8 +233,8 @@ class SunshineStop:
             {"type": "usb.portal_state", "cardinality": "exactly_one", "display_name": "Portal state"},
         ],
         "provides": [{"key": "stream_ready", "type": "usb.stream_ready", "display_name": "Stream readiness"}],
-        "params_schema": {"timeout_ms": {"type": "integer"}},
-        "params_defaults": {"timeout_ms": 20000},
+        "params_schema": {"timeout_ms": {"type": "integer"}, "restart_if_unconnected": {"type": "boolean"}},
+        "params_defaults": {"timeout_ms": 20000, "restart_if_unconnected": True},
         "input_semantics": {
             "usb.settings": ["Sunshine unit name."],
             "usb.stream_state": ["Current unit and port state."],
@@ -247,7 +248,11 @@ class SunshineReady:
         settings = inputs["usb.settings"]["value"]
         portal = inputs["usb.portal_state"]["value"]
         unit = settings["sunshine_unit"]
-        if portal.get("changed"):
+        restart = bool(portal.get("changed"))
+        if params.get("restart_if_unconnected", True) and not restart:
+            if not session.connected(settings):
+                restart = True
+        if restart:
             _systemctl("stop", unit)
             _systemctl("start", unit)
         deadline = time.monotonic() + max(int(params["timeout_ms"]), 1000) / 1000.0
@@ -255,5 +260,5 @@ class SunshineReady:
         while missing and time.monotonic() < deadline:
             time.sleep(0.5)
             missing = _missing_ports()
-        return {"stream_ready": {"unit": unit, "restarted": bool(portal.get("changed")),
+        return {"stream_ready": {"unit": unit, "restarted": restart,
                                  "ports_missing": missing, "ok": not missing}}
