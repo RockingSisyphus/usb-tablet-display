@@ -1629,7 +1629,7 @@
         "class": "SunshineStop",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 210
+        "line": 209
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -1940,6 +1940,11 @@
       {
         "kind": "node",
         "id": "usb.tick_merge",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.wait_usb_address",
         "reason": "declaration"
       },
       {
@@ -4660,7 +4665,7 @@
             "path": "."
           },
           "path": "nodes/stream/sunshine.py",
-          "line": 195,
+          "line": 194,
           "symbol": "SunshineStop"
         },
         "status": "implemented",

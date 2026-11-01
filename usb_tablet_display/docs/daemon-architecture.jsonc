@@ -3357,6 +3357,11 @@
         "reason": "declaration"
       },
       {
+        "kind": "node",
+        "id": "usb.wait_usb_address",
+        "reason": "declaration"
+      },
+      {
         "kind": "node_type",
         "id": "vibeflow.node",
         "reason": "builtin"
