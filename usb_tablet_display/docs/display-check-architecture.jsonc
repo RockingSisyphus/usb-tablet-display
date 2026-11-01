@@ -1209,12 +1209,27 @@
       },
       {
         "kind": "node",
+        "id": "usb.require_ready",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.run_command",
         "reason": "declaration"
       },
       {
         "kind": "node",
+        "id": "usb.session_summary",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.start",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.teardown_summary",
         "reason": "declaration"
       },
       {

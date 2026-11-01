@@ -1,0 +1,26 @@
+{
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Start connect", "description": "Starts the connect session."},
+      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads tablet settings."},
+      {"id": "probe", "definition_id": "usb.device_probe", "display_name": "Probe tablet", "description": "Resolves USB presence and ADB transport state."},
+      {"id": "ready", "definition_id": "usb.require_ready", "display_name": "Require ADB readiness", "description": "Fails fast when the tablet is unusable."},
+      {"id": "display", "definition_id": "usb.display_apply", "display_name": "Enable virtual output", "description": "Applies the enable layout when needed."},
+      {"id": "check", "definition_id": "usb.display_matches", "display_name": "Verify virtual output", "description": "Verifies the enable layout."},
+      {"id": "summary", "definition_id": "usb.session_summary", "display_name": "Summarize connect", "description": "Reports the connect outcome."},
+      {"id": "end", "definition_id": "usb.end", "display_name": "End connect", "description": "Ends the connect session."}
+    ],
+    "edges": [["start", "io"], ["io", "probe"], ["probe", "ready"], ["io", "display"], ["io", "check"],
+              ["display", "summary"], ["check", "summary"], ["ready", "summary"], ["summary", "end"]],
+    "node_configs": {"display": {"target": "enable"}, "check": {"target": "enable"}},
+    "outputs": [
+      {"type": "usb.session_result", "cardinality": "exactly_one", "display_name": "Session result"}
+    ]
+  },
+  "nodeset_imports": [
+    {"path": "../nodeset_types/state_io.jsonc"},
+    {"path": "../nodeset_types/device_probe.jsonc"}
+  ],
+  "plugins": []
+}

@@ -1,0 +1,20 @@
+{
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Start teardown", "description": "Starts the teardown session."},
+      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads tablet settings."},
+      {"id": "display", "definition_id": "usb.display_apply", "display_name": "Disable virtual output", "description": "Applies the disable layout when needed."},
+      {"id": "check", "definition_id": "usb.display_matches", "display_name": "Verify teardown", "description": "Verifies the disable layout."},
+      {"id": "summary", "definition_id": "usb.teardown_summary", "display_name": "Summarize teardown", "description": "Reports the teardown outcome."},
+      {"id": "end", "definition_id": "usb.end", "display_name": "End teardown", "description": "Ends the teardown session."}
+    ],
+    "edges": [["start", "io"], ["io", "display"], ["io", "check"], ["display", "summary"], ["check", "summary"], ["summary", "end"]],
+    "node_configs": {"display": {"params": {"target": "disable"}}, "check": {"params": {"target": "disable"}}},
+    "outputs": [
+      {"type": "usb.session_result", "cardinality": "exactly_one", "display_name": "Session result"}
+    ]
+  },
+  "nodeset_imports": [{"path": "../nodeset_types/state_io.jsonc"}],
+  "plugins": []
+}
