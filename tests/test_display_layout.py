@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from usb_tablet_display.nodes.display import layout
+from nodes.display import layout
 
 CONNECTORS = ["eDP-1", "DP-1"]
 

@@ -49,6 +49,14 @@
         {
           "path": "usb_tablet_display/probes",
           "purpose": "Workflow execution inputs for verification runs"
+        },
+        {
+          "path": "nodes",
+          "purpose": "多个 root 共用的业务节点"
+        },
+        {
+          "path": "usb_tablet_maintenance",
+          "purpose": "维护类 root（只读检查与安装）"
         }
       ]
     }

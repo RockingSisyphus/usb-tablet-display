@@ -6,7 +6,7 @@
     "entries": {},
     "default_entry": "",
     "source": {
-      "root_id": "usb-tablet-display",
+      "root_id": "usb-tablet-maintenance",
       "path": "configs/status.jsonc"
     },
     "rulesets": null,
@@ -15,7 +15,7 @@
       {
         "type": "usb.status",
         "cardinality": "exactly_one",
-        "display_name": "Status document"
+        "display_name": "状态文档"
       }
     ],
     "max_steps": 1000,
@@ -23,11 +23,11 @@
     "execution_lock": null,
     "contains_global_state": false,
     "summary": {
-      "nodes": 6,
-      "nodeset_types": 2,
-      "explicit_edges": 7,
+      "nodes": 8,
+      "nodeset_types": 0,
+      "explicit_edges": 11,
       "data_edges": 1,
-      "reported_edges": 7,
+      "reported_edges": 11,
       "contains_global_state": false
     },
     "entry_nodes": [
@@ -38,12 +38,12 @@
     ],
     "god_nodes": [
       {
-        "node": "io",
-        "degree": 4
+        "node": "settings",
+        "degree": 6
       },
       {
         "node": "status",
-        "degree": 4
+        "degree": 6
       }
     ],
     "nodes": [
@@ -51,7 +51,7 @@
         "id": "start",
         "definition_id": "usb.start",
         "source": {
-          "root_id": "usb-tablet-display",
+          "root_id": "usb-tablet-maintenance",
           "path": "configs/status.jsonc"
         },
         "role": {
@@ -101,14 +101,14 @@
           "call": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
           "node_configs": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
@@ -117,28 +117,32 @@
         "operations": []
       },
       {
-        "id": "io",
-        "definition_id": "usb.state_io",
+        "id": "settings",
+        "definition_id": "usb.load_settings",
         "source": {
-          "root_id": "usb-tablet-display",
+          "root_id": "usb-tablet-maintenance",
           "path": "configs/status.jsonc"
         },
         "role": {
-          "display_name": "读取设置与状态",
-          "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
+          "display_name": "读取设置",
+          "description": "从配置文件读取这台平板的设置，缺少的项用默认值补齐。",
           "description_source": "call"
         },
-        "flow_kind": "predefined",
-        "rulesets": null,
-        "selected_rulesets": null,
+        "flow_kind": "process",
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "selected_rulesets": [
+          "vibeflow.python_io"
+        ],
         "tags": [],
         "metadata": {},
         "presentation": {
           "values": {
-            "fill": "#ede9fe",
-            "stroke": "#7c3aed",
-            "text": "#3b0764",
-            "shape": "fr-rect"
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "dbl-circ"
           },
           "sources": {
             "fill": "native",
@@ -150,7 +154,7 @@
             "planned": false
           }
         },
-        "effect_scope": "unconstrained",
+        "effect_scope": "python_io",
         "execution_lock": null,
         "effective_execution_lock": null,
         "contains_global_state": false,
@@ -162,33 +166,24 @@
             "key": "settings",
             "type": "usb.settings",
             "display_name": "Tablet settings"
-          },
-          {
-            "key": "loaded_state",
-            "type": "usb.state",
-            "display_name": "Runtime state"
           }
         ],
-        "contract_source": "nodeset",
+        "contract_source": "node_definition",
         "join_policy": "safe_any",
         "loop": null,
-        "invokes": {
-          "kind": "nodeset",
-          "target": "usb.state_io",
-          "target_status": "implemented"
-        },
+        "invokes": null,
         "config": {
           "call": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
           "node_configs": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
@@ -197,28 +192,32 @@
         "operations": []
       },
       {
-        "id": "probe",
-        "definition_id": "usb.device_probe",
+        "id": "state",
+        "definition_id": "usb.read_state",
         "source": {
-          "root_id": "usb-tablet-display",
+          "root_id": "usb-tablet-maintenance",
           "path": "configs/status.jsonc"
         },
         "role": {
-          "display_name": "检查平板状态",
-          "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。",
+          "display_name": "读取运行状态",
+          "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
           "description_source": "call"
         },
-        "flow_kind": "predefined",
-        "rulesets": null,
-        "selected_rulesets": null,
+        "flow_kind": "process",
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "selected_rulesets": [
+          "vibeflow.python_io"
+        ],
         "tags": [],
         "metadata": {},
         "presentation": {
           "values": {
-            "fill": "#ede9fe",
-            "stroke": "#7c3aed",
-            "text": "#3b0764",
-            "shape": "fr-rect"
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
           },
           "sources": {
             "fill": "native",
@@ -230,7 +229,82 @@
             "planned": false
           }
         },
-        "effect_scope": "unconstrained",
+        "effect_scope": "python_io",
+        "execution_lock": null,
+        "effective_execution_lock": null,
+        "contains_global_state": false,
+        "status": "implemented",
+        "planned_behavior": null,
+        "requires": [],
+        "provides": [
+          {
+            "key": "loaded_state",
+            "type": "usb.state",
+            "display_name": "Runtime state"
+          }
+        ],
+        "contract_source": "node_definition",
+        "join_policy": "safe_any",
+        "loop": null,
+        "invokes": null,
+        "config": {
+          "call": {
+            "values": {},
+            "source": {
+              "root_id": "usb-tablet-maintenance",
+              "path": "configs/status.jsonc"
+            }
+          },
+          "node_configs": {
+            "values": {},
+            "source": {
+              "root_id": "usb-tablet-maintenance",
+              "path": "configs/status.jsonc"
+            }
+          },
+          "allow_config_override": false
+        },
+        "operations": []
+      },
+      {
+        "id": "probe",
+        "definition_id": "usb.probe_device",
+        "source": {
+          "root_id": "usb-tablet-maintenance",
+          "path": "configs/status.jsonc"
+        },
+        "role": {
+          "display_name": "查找平板",
+          "description": "确认平板是否已经插上，并找到它对应的网络接口。",
+          "description_source": "call"
+        },
+        "flow_kind": "process",
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "selected_rulesets": [
+          "vibeflow.python_io"
+        ],
+        "tags": [],
+        "metadata": {},
+        "presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "effect_scope": "python_io",
         "execution_lock": null,
         "effective_execution_lock": null,
         "contains_global_state": false,
@@ -248,33 +322,105 @@
             "key": "device",
             "type": "usb.device",
             "display_name": "USB device"
-          },
-          {
-            "key": "adb_state",
-            "type": "usb.adb_state",
-            "display_name": "ADB transport state"
           }
         ],
-        "contract_source": "nodeset",
+        "contract_source": "node_definition",
         "join_policy": "safe_any",
         "loop": null,
-        "invokes": {
-          "kind": "nodeset",
-          "target": "usb.device_probe",
-          "target_status": "implemented"
-        },
+        "invokes": null,
         "config": {
           "call": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
           "node_configs": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
+              "path": "configs/status.jsonc"
+            }
+          },
+          "allow_config_override": false
+        },
+        "operations": []
+      },
+      {
+        "id": "adb",
+        "definition_id": "usb.adb_state",
+        "source": {
+          "root_id": "usb-tablet-maintenance",
+          "path": "configs/status.jsonc"
+        },
+        "role": {
+          "display_name": "检查调试连接",
+          "description": "查询平板是否已经允许电脑通过 USB 调试连接。",
+          "description_source": "call"
+        },
+        "flow_kind": "process",
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "selected_rulesets": [
+          "vibeflow.python_io"
+        ],
+        "tags": [],
+        "metadata": {},
+        "presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "effect_scope": "python_io",
+        "execution_lock": null,
+        "effective_execution_lock": null,
+        "contains_global_state": false,
+        "status": "implemented",
+        "planned_behavior": null,
+        "requires": [
+          {
+            "type": "usb.settings",
+            "cardinality": "exactly_one",
+            "display_name": "Tablet settings"
+          }
+        ],
+        "provides": [
+          {
+            "key": "adb_state",
+            "type": "usb.adb_state",
+            "display_name": "ADB transport state"
+          }
+        ],
+        "contract_source": "node_definition",
+        "join_policy": "safe_any",
+        "loop": null,
+        "invokes": null,
+        "config": {
+          "call": {
+            "values": {},
+            "source": {
+              "root_id": "usb-tablet-maintenance",
+              "path": "configs/status.jsonc"
+            }
+          },
+          "node_configs": {
+            "values": {},
+            "source": {
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
@@ -286,12 +432,12 @@
         "id": "display",
         "definition_id": "usb.display_matches",
         "source": {
-          "root_id": "usb-tablet-display",
+          "root_id": "usb-tablet-maintenance",
           "path": "configs/status.jsonc"
         },
         "role": {
           "display_name": "检查副屏是否已就位",
-          "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
+          "description": "把当前屏幕布局和期望的副屏状态做比较。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -348,14 +494,14 @@
           "call": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
           "node_configs": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
@@ -367,12 +513,12 @@
         "id": "status",
         "definition_id": "usb.build_status",
         "source": {
-          "root_id": "usb-tablet-display",
+          "root_id": "usb-tablet-maintenance",
           "path": "configs/status.jsonc"
         },
         "role": {
-          "display_name": "Build status",
-          "description": "Composes the published status document.",
+          "display_name": "汇总状态",
+          "description": "把平板、副屏、串流与网络情况汇总成一份状态。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -451,14 +597,14 @@
               "state_path": "/tmp/usb-tablet-display/status.json"
             },
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
           "node_configs": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
@@ -470,7 +616,7 @@
         "id": "end",
         "definition_id": "usb.end",
         "source": {
-          "root_id": "usb-tablet-display",
+          "root_id": "usb-tablet-maintenance",
           "path": "configs/status.jsonc"
         },
         "role": {
@@ -520,14 +666,14 @@
           "call": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
           "node_configs": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/status.jsonc"
             }
           },
@@ -539,7 +685,7 @@
     "edges": [
       {
         "from": "start",
-        "to": "io",
+        "to": "settings",
         "when": "",
         "roles": [
           "mainline",
@@ -549,7 +695,18 @@
         "transfers": []
       },
       {
-        "from": "io",
+        "from": "settings",
+        "to": "state",
+        "when": "",
+        "roles": [
+          "mainline",
+          "schedule",
+          "transfer"
+        ],
+        "transfers": []
+      },
+      {
+        "from": "settings",
         "to": "probe",
         "when": "",
         "roles": [
@@ -573,7 +730,31 @@
         ]
       },
       {
-        "from": "io",
+        "from": "settings",
+        "to": "adb",
+        "when": "",
+        "roles": [
+          "mainline",
+          "schedule",
+          "transfer"
+        ],
+        "transfers": [
+          {
+            "provider": {
+              "key": "settings",
+              "type": "usb.settings",
+              "display_name": "Tablet settings"
+            },
+            "requirement": {
+              "type": "usb.settings",
+              "cardinality": "exactly_one",
+              "display_name": "Tablet settings"
+            }
+          }
+        ]
+      },
+      {
+        "from": "settings",
         "to": "display",
         "when": "",
         "roles": [
@@ -597,7 +778,7 @@
         ]
       },
       {
-        "from": "io",
+        "from": "settings",
         "to": "status",
         "when": "",
         "roles": [
@@ -616,7 +797,19 @@
               "cardinality": "exactly_one",
               "display_name": "Tablet settings"
             }
-          },
+          }
+        ]
+      },
+      {
+        "from": "state",
+        "to": "status",
+        "when": "",
+        "roles": [
+          "mainline",
+          "schedule",
+          "transfer"
+        ],
+        "transfers": [
           {
             "provider": {
               "key": "loaded_state",
@@ -652,7 +845,19 @@
               "cardinality": "exactly_one",
               "display_name": "USB device"
             }
-          },
+          }
+        ]
+      },
+      {
+        "from": "adb",
+        "to": "status",
+        "when": "",
+        "roles": [
+          "mainline",
+          "schedule",
+          "transfer"
+        ],
+        "transfers": [
           {
             "provider": {
               "key": "adb_state",
@@ -666,6 +871,17 @@
             }
           }
         ]
+      },
+      {
+        "from": "status",
+        "to": "end",
+        "when": "",
+        "roles": [
+          "mainline",
+          "schedule",
+          "transfer"
+        ],
+        "transfers": []
       },
       {
         "from": "display",
@@ -690,861 +906,17 @@
             }
           }
         ]
-      },
-      {
-        "from": "status",
-        "to": "end",
-        "when": "",
-        "roles": [
-          "mainline",
-          "schedule",
-          "transfer"
-        ],
-        "transfers": []
       }
     ],
     "global_config": {
       "values": {},
       "source": {
-        "root_id": "usb-tablet-display",
+        "root_id": "usb-tablet-maintenance",
         "path": "configs/status.jsonc"
       }
     }
   },
-  "nodeset_types": {
-    "usb.device_probe": {
-      "type_key": "usb.device_probe",
-      "source": {
-        "root_id": "usb-tablet-display",
-        "path": "nodeset_types/device_probe.jsonc"
-      },
-      "display_name": "检查平板状态",
-      "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。",
-      "status": "implemented",
-      "planned_behavior": null,
-      "expand": true,
-      "flow_kind": "predefined",
-      "effect_scope": "unconstrained",
-      "rulesets": null,
-      "reachable_from_workflow": true,
-      "requires": [
-        {
-          "type": "usb.settings",
-          "cardinality": "exactly_one",
-          "display_name": "Tablet settings"
-        }
-      ],
-      "provides": [
-        {
-          "key": "device",
-          "type": "usb.device",
-          "display_name": "USB device"
-        },
-        {
-          "key": "adb_state",
-          "type": "usb.adb_state",
-          "display_name": "ADB transport state"
-        }
-      ],
-      "global_config": {
-        "values": {},
-        "source": {
-          "root_id": "usb-tablet-display",
-          "path": "nodeset_types/device_probe.jsonc"
-        }
-      },
-      "body": {
-        "entries": {},
-        "default_entry": "",
-        "source": {
-          "root_id": "usb-tablet-display",
-          "path": "nodeset_types/device_probe.jsonc"
-        },
-        "rulesets": null,
-        "inputs": [
-          {
-            "key": "settings",
-            "type": "usb.settings",
-            "display_name": "Tablet settings",
-            "required": true
-          }
-        ],
-        "outputs": [
-          {
-            "type": "usb.device",
-            "cardinality": "exactly_one",
-            "display_name": "USB device"
-          },
-          {
-            "type": "usb.adb_state",
-            "cardinality": "exactly_one",
-            "display_name": "ADB transport state"
-          }
-        ],
-        "max_steps": 1000,
-        "entry_mode": "sync",
-        "execution_lock": null,
-        "contains_global_state": false,
-        "summary": {
-          "nodes": 4,
-          "nodeset_types": 2,
-          "explicit_edges": 4,
-          "data_edges": 0,
-          "reported_edges": 4,
-          "contains_global_state": false
-        },
-        "entry_nodes": [
-          "start"
-        ],
-        "terminal_nodes": [
-          "end"
-        ],
-        "god_nodes": [],
-        "nodes": [
-          {
-            "id": "start",
-            "definition_id": "usb.start",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/device_probe.jsonc"
-            },
-            "role": {
-              "display_name": "开始",
-              "description": "表示这个流程从这里开始，本身不做任何事。",
-              "description_source": "call"
-            },
-            "flow_kind": "terminal",
-            "rulesets": [
-              "vibeflow.process"
-            ],
-            "selected_rulesets": [
-              "vibeflow.process"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "stadium"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "none",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [],
-            "provides": [],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/device_probe.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/device_probe.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          },
-          {
-            "id": "probe",
-            "definition_id": "usb.probe_device",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/device_probe.jsonc"
-            },
-            "role": {
-              "display_name": "查找平板",
-              "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
-              "description_source": "call"
-            },
-            "flow_kind": "process",
-            "rulesets": [
-              "vibeflow.python_io"
-            ],
-            "selected_rulesets": [
-              "vibeflow.python_io"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "rect"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "python_io",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [
-              {
-                "type": "usb.settings",
-                "cardinality": "exactly_one",
-                "display_name": "Tablet settings"
-              }
-            ],
-            "provides": [
-              {
-                "key": "device",
-                "type": "usb.device",
-                "display_name": "USB device"
-              }
-            ],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/device_probe.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/device_probe.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          },
-          {
-            "id": "adb",
-            "definition_id": "usb.adb_state",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/device_probe.jsonc"
-            },
-            "role": {
-              "display_name": "检查调试连接",
-              "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
-              "description_source": "call"
-            },
-            "flow_kind": "process",
-            "rulesets": [
-              "vibeflow.python_io"
-            ],
-            "selected_rulesets": [
-              "vibeflow.python_io"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "rect"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "python_io",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [
-              {
-                "type": "usb.settings",
-                "cardinality": "exactly_one",
-                "display_name": "Tablet settings"
-              }
-            ],
-            "provides": [
-              {
-                "key": "adb_state",
-                "type": "usb.adb_state",
-                "display_name": "ADB transport state"
-              }
-            ],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/device_probe.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/device_probe.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          },
-          {
-            "id": "end",
-            "definition_id": "usb.end",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/device_probe.jsonc"
-            },
-            "role": {
-              "display_name": "结束",
-              "description": "表示这个流程到此结束，本身不做任何事。",
-              "description_source": "call"
-            },
-            "flow_kind": "terminal",
-            "rulesets": [
-              "vibeflow.process"
-            ],
-            "selected_rulesets": [
-              "vibeflow.process"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "stadium"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "none",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [],
-            "provides": [],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/device_probe.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/device_probe.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          }
-        ],
-        "edges": [
-          {
-            "from": "start",
-            "to": "probe",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": []
-          },
-          {
-            "from": "start",
-            "to": "adb",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": []
-          },
-          {
-            "from": "probe",
-            "to": "end",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": []
-          },
-          {
-            "from": "adb",
-            "to": "end",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": []
-          }
-        ]
-      }
-    },
-    "usb.state_io": {
-      "type_key": "usb.state_io",
-      "source": {
-        "root_id": "usb-tablet-display",
-        "path": "nodeset_types/state_io.jsonc"
-      },
-      "display_name": "读取设置与状态",
-      "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
-      "status": "implemented",
-      "planned_behavior": null,
-      "expand": true,
-      "flow_kind": "predefined",
-      "effect_scope": "unconstrained",
-      "rulesets": null,
-      "reachable_from_workflow": true,
-      "requires": [],
-      "provides": [
-        {
-          "key": "settings",
-          "type": "usb.settings",
-          "display_name": "Tablet settings"
-        },
-        {
-          "key": "loaded_state",
-          "type": "usb.state",
-          "display_name": "Runtime state"
-        }
-      ],
-      "global_config": {
-        "values": {},
-        "source": {
-          "root_id": "usb-tablet-display",
-          "path": "nodeset_types/state_io.jsonc"
-        }
-      },
-      "body": {
-        "entries": {},
-        "default_entry": "",
-        "source": {
-          "root_id": "usb-tablet-display",
-          "path": "nodeset_types/state_io.jsonc"
-        },
-        "rulesets": null,
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "usb.settings",
-            "cardinality": "exactly_one",
-            "display_name": "Tablet settings"
-          },
-          {
-            "type": "usb.state",
-            "cardinality": "exactly_one",
-            "display_name": "Runtime state"
-          }
-        ],
-        "max_steps": 1000,
-        "entry_mode": "sync",
-        "execution_lock": null,
-        "contains_global_state": false,
-        "summary": {
-          "nodes": 4,
-          "nodeset_types": 2,
-          "explicit_edges": 3,
-          "data_edges": 0,
-          "reported_edges": 3,
-          "contains_global_state": false
-        },
-        "entry_nodes": [
-          "start"
-        ],
-        "terminal_nodes": [
-          "end"
-        ],
-        "god_nodes": [],
-        "nodes": [
-          {
-            "id": "start",
-            "definition_id": "usb.start",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/state_io.jsonc"
-            },
-            "role": {
-              "display_name": "开始",
-              "description": "表示这个流程从这里开始，本身不做任何事。",
-              "description_source": "call"
-            },
-            "flow_kind": "terminal",
-            "rulesets": [
-              "vibeflow.process"
-            ],
-            "selected_rulesets": [
-              "vibeflow.process"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "stadium"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "none",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [],
-            "provides": [],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/state_io.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/state_io.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          },
-          {
-            "id": "settings",
-            "definition_id": "usb.load_settings",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/state_io.jsonc"
-            },
-            "role": {
-              "display_name": "读取设置",
-              "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
-              "description_source": "call"
-            },
-            "flow_kind": "process",
-            "rulesets": [
-              "vibeflow.python_io"
-            ],
-            "selected_rulesets": [
-              "vibeflow.python_io"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "rect"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "python_io",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [],
-            "provides": [
-              {
-                "key": "settings",
-                "type": "usb.settings",
-                "display_name": "Tablet settings"
-              }
-            ],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/state_io.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/state_io.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          },
-          {
-            "id": "state",
-            "definition_id": "usb.read_state",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/state_io.jsonc"
-            },
-            "role": {
-              "display_name": "读取运行状态",
-              "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
-              "description_source": "call"
-            },
-            "flow_kind": "process",
-            "rulesets": [
-              "vibeflow.python_io"
-            ],
-            "selected_rulesets": [
-              "vibeflow.python_io"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "rect"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "python_io",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [],
-            "provides": [
-              {
-                "key": "loaded_state",
-                "type": "usb.state",
-                "display_name": "Runtime state"
-              }
-            ],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/state_io.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/state_io.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          },
-          {
-            "id": "end",
-            "definition_id": "usb.end",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/state_io.jsonc"
-            },
-            "role": {
-              "display_name": "结束",
-              "description": "表示这个流程到此结束，本身不做任何事。",
-              "description_source": "call"
-            },
-            "flow_kind": "terminal",
-            "rulesets": [
-              "vibeflow.process"
-            ],
-            "selected_rulesets": [
-              "vibeflow.process"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "stadium"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "none",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [],
-            "provides": [],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/state_io.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/state_io.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          }
-        ],
-        "edges": [
-          {
-            "from": "start",
-            "to": "settings",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": []
-          },
-          {
-            "from": "settings",
-            "to": "state",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": []
-          },
-          {
-            "from": "state",
-            "to": "end",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": []
-          }
-        ]
-      }
-    }
-  },
+  "nodeset_types": {},
   "node_definitions": {
     "usb.adb_state": {
       "id": "usb.adb_state",
@@ -1552,14 +924,9 @@
       "source": {
         "module": "nodes.device.adb_state",
         "class": "AdbState",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/device/adb_state.py",
         "line": 24
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/device/adb_state.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "检查调试连接",
         "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
@@ -1637,12 +1004,12 @@
       "source": {
         "module": "nodes.report.status",
         "class": "BuildStatus",
-        "root_id": "usb-tablet-display",
+        "root_id": "usb-tablet-maintenance",
         "path": "nodes/report/status.py",
         "line": 101
       },
       "declaration": {
-        "root_id": "usb-tablet-display",
+        "root_id": "usb-tablet-maintenance",
         "path": "nodes/report/status.py"
       },
       "info": {
@@ -1754,14 +1121,9 @@
       "source": {
         "module": "nodes.display.nodes",
         "class": "DisplayMatches",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/display/nodes.py",
         "line": 95
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/display/nodes.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "检查副屏是否已就位",
         "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
@@ -1839,14 +1201,9 @@
       "source": {
         "module": "nodes.boundary",
         "class": "EndNode",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py",
         "line": 28
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "结束",
         "description": "表示这个流程到此结束，本身不做任何事。",
@@ -1898,14 +1255,9 @@
       "source": {
         "module": "nodes.state.settings",
         "class": "LoadSettings",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/state/settings.py",
         "line": 56
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/state/settings.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "读取设置",
         "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
@@ -1973,14 +1325,9 @@
       "source": {
         "module": "nodes.device.probe",
         "class": "ProbeDevice",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/device/probe.py",
         "line": 45
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/device/probe.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "查找平板",
         "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
@@ -2052,14 +1399,9 @@
       "source": {
         "module": "nodes.state.read_state",
         "class": "ReadState",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/state/read_state.py",
         "line": 27
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/state/read_state.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "读取运行状态",
         "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
@@ -2127,14 +1469,9 @@
       "source": {
         "module": "nodes.boundary",
         "class": "StartNode",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py",
         "line": 15
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "开始",
         "description": "表示这个流程从这里开始，本身不做任何事。",
@@ -2197,7 +1534,7 @@
   },
   "workflow_operations": {},
   "resource_use": {
-    "workflow": "usb-tablet-display:configs/status.jsonc",
+    "workflow": "usb-tablet-maintenance:configs/status.jsonc",
     "resources": [
       {
         "kind": "node",
@@ -2206,22 +1543,7 @@
       },
       {
         "kind": "node",
-        "id": "usb.auto_session",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
         "id": "usb.build_status",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.collect_job",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.decide_action",
         "reason": "declaration"
       },
       {
@@ -2246,27 +1568,7 @@
       },
       {
         "kind": "node",
-        "id": "usb.internet_sync",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.internet_tick",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
         "id": "usb.load_settings",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.moonlight_connect",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.portal_pin",
         "reason": "declaration"
       },
       {
@@ -2281,77 +1583,7 @@
       },
       {
         "kind": "node",
-        "id": "usb.require_ready",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.require_stream",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.run_command",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.session_status",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.session_summary",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
         "id": "usb.start",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.stream_verify",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.sunshine_configure",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.sunshine_ready",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.sunshine_start",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.sunshine_stop",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.take_request",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.teardown_summary",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.tick_merge",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.wait_usb_address",
         "reason": "declaration"
       },
       {
@@ -2748,7 +1980,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/device/adb_state.py",
+              "ref": "@project/nodes/device/adb_state.py",
               "export": "AdbState"
             },
             "completion": "immediate"
@@ -2763,19 +1995,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/device/adb_state.py",
+          "path": "@project/nodes/device/adb_state.py",
           "line": 9,
           "symbol": "AdbState"
         },
@@ -3072,8 +2304,8 @@
         },
         "sources": [
           {
-            "id": "file:6427758cf67b72d5",
-            "path": "nodes/device/adb_state.py",
+            "id": "file:e4daa917aae77409",
+            "path": "@project/nodes/device/adb_state.py",
             "role": "entry",
             "symbol": "AdbState",
             "language": "python",
@@ -3182,15 +2414,15 @@
         "plugin_id": "",
         "owner": {
           "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
+          "id": "usb-tablet-maintenance",
+          "root_id": "usb-tablet-maintenance",
           "path": "."
         },
         "origin": {
           "owner": {
             "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
+            "id": "usb-tablet-maintenance",
+            "root_id": "usb-tablet-maintenance",
             "path": "."
           },
           "path": "nodes/report/status.py",
@@ -3552,14 +2784,14 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/display/nodes.py",
+              "ref": "@project/nodes/display/nodes.py",
               "export": "DisplayMatches"
             },
             "completion": "immediate",
             "implementation_files": [
               {
                 "kind": "file",
-                "ref": "nodes/display/layout.py"
+                "ref": "@project/nodes/display/layout.py"
               }
             ]
           }
@@ -3573,19 +2805,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/display/nodes.py",
+          "path": "@project/nodes/display/nodes.py",
           "line": 79,
           "symbol": "DisplayMatches"
         },
@@ -3882,16 +3114,16 @@
         },
         "sources": [
           {
-            "id": "file:6e704ea5c5e7afa0",
-            "path": "nodes/display/nodes.py",
+            "id": "file:312e21996207f014",
+            "path": "@project/nodes/display/nodes.py",
             "role": "entry",
             "symbol": "DisplayMatches",
             "language": "python",
             "load_state": "loaded"
           },
           {
-            "id": "file:38ea50e00eecc3b6",
-            "path": "nodes/display/layout.py",
+            "id": "file:3a38f4b581ba47fd",
+            "path": "@project/nodes/display/layout.py",
             "role": "support",
             "symbol": "",
             "language": "python",
@@ -3926,7 +3158,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/boundary.py",
+              "ref": "@project/nodes/boundary.py",
               "export": "EndNode"
             },
             "completion": "immediate"
@@ -3941,19 +3173,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/boundary.py",
+          "path": "@project/nodes/boundary.py",
           "line": 20,
           "symbol": "EndNode"
         },
@@ -4250,8 +3482,8 @@
         },
         "sources": [
           {
-            "id": "file:149802a0f899dd06",
-            "path": "nodes/boundary.py",
+            "id": "file:fa7d24c3383a2f7a",
+            "path": "@project/nodes/boundary.py",
             "role": "entry",
             "symbol": "EndNode",
             "language": "python",
@@ -4302,7 +3534,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/state/settings.py",
+              "ref": "@project/nodes/state/settings.py",
               "export": "LoadSettings"
             },
             "completion": "immediate"
@@ -4317,19 +3549,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/state/settings.py",
+          "path": "@project/nodes/state/settings.py",
           "line": 41,
           "symbol": "LoadSettings"
         },
@@ -4626,8 +3858,8 @@
         },
         "sources": [
           {
-            "id": "file:e1a41cc6a9c9287d",
-            "path": "nodes/state/settings.py",
+            "id": "file:7f923f855d621e2d",
+            "path": "@project/nodes/state/settings.py",
             "role": "entry",
             "symbol": "LoadSettings",
             "language": "python",
@@ -4682,7 +3914,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/device/probe.py",
+              "ref": "@project/nodes/device/probe.py",
               "export": "ProbeDevice"
             },
             "completion": "immediate"
@@ -4697,19 +3929,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/device/probe.py",
+          "path": "@project/nodes/device/probe.py",
           "line": 30,
           "symbol": "ProbeDevice"
         },
@@ -5006,8 +4238,8 @@
         },
         "sources": [
           {
-            "id": "file:eda9e98964b39865",
-            "path": "nodes/device/probe.py",
+            "id": "file:451c0454028d0a3c",
+            "path": "@project/nodes/device/probe.py",
             "role": "entry",
             "symbol": "ProbeDevice",
             "language": "python",
@@ -5058,7 +4290,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/state/read_state.py",
+              "ref": "@project/nodes/state/read_state.py",
               "export": "ReadState"
             },
             "completion": "immediate"
@@ -5073,19 +4305,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/state/read_state.py",
+          "path": "@project/nodes/state/read_state.py",
           "line": 12,
           "symbol": "ReadState"
         },
@@ -5382,8 +4614,8 @@
         },
         "sources": [
           {
-            "id": "file:2fb5c99d28399d36",
-            "path": "nodes/state/read_state.py",
+            "id": "file:395114f240de8a27",
+            "path": "@project/nodes/state/read_state.py",
             "role": "entry",
             "symbol": "ReadState",
             "language": "python",
@@ -5418,7 +4650,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/boundary.py",
+              "ref": "@project/nodes/boundary.py",
               "export": "StartNode"
             },
             "completion": "immediate"
@@ -5433,19 +4665,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/boundary.py",
+          "path": "@project/nodes/boundary.py",
           "line": 7,
           "symbol": "StartNode"
         },
@@ -5742,8 +4974,8 @@
         },
         "sources": [
           {
-            "id": "file:149802a0f899dd06",
-            "path": "nodes/boundary.py",
+            "id": "file:fa7d24c3383a2f7a",
+            "path": "@project/nodes/boundary.py",
             "role": "entry",
             "symbol": "StartNode",
             "language": "python",
@@ -5753,9 +4985,9 @@
       }
     },
     "files": {
-      "file:6427758cf67b72d5": {
-        "id": "file:6427758cf67b72d5",
-        "path": "nodes/device/adb_state.py",
+      "file:e4daa917aae77409": {
+        "id": "file:e4daa917aae77409",
+        "path": "@project/nodes/device/adb_state.py",
         "owners": [
           {
             "kind": "node",
@@ -5779,9 +5011,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:6e704ea5c5e7afa0": {
-        "id": "file:6e704ea5c5e7afa0",
-        "path": "nodes/display/nodes.py",
+      "file:312e21996207f014": {
+        "id": "file:312e21996207f014",
+        "path": "@project/nodes/display/nodes.py",
         "owners": [
           {
             "kind": "node",
@@ -5792,9 +5024,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:38ea50e00eecc3b6": {
-        "id": "file:38ea50e00eecc3b6",
-        "path": "nodes/display/layout.py",
+      "file:3a38f4b581ba47fd": {
+        "id": "file:3a38f4b581ba47fd",
+        "path": "@project/nodes/display/layout.py",
         "owners": [
           {
             "kind": "node",
@@ -5805,9 +5037,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:149802a0f899dd06": {
-        "id": "file:149802a0f899dd06",
-        "path": "nodes/boundary.py",
+      "file:fa7d24c3383a2f7a": {
+        "id": "file:fa7d24c3383a2f7a",
+        "path": "@project/nodes/boundary.py",
         "owners": [
           {
             "kind": "node",
@@ -5824,9 +5056,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:e1a41cc6a9c9287d": {
-        "id": "file:e1a41cc6a9c9287d",
-        "path": "nodes/state/settings.py",
+      "file:7f923f855d621e2d": {
+        "id": "file:7f923f855d621e2d",
+        "path": "@project/nodes/state/settings.py",
         "owners": [
           {
             "kind": "node",
@@ -5837,9 +5069,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:eda9e98964b39865": {
-        "id": "file:eda9e98964b39865",
-        "path": "nodes/device/probe.py",
+      "file:451c0454028d0a3c": {
+        "id": "file:451c0454028d0a3c",
+        "path": "@project/nodes/device/probe.py",
         "owners": [
           {
             "kind": "node",
@@ -5850,9 +5082,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:2fb5c99d28399d36": {
-        "id": "file:2fb5c99d28399d36",
-        "path": "nodes/state/read_state.py",
+      "file:395114f240de8a27": {
+        "id": "file:395114f240de8a27",
+        "path": "@project/nodes/state/read_state.py",
         "owners": [
           {
             "kind": "node",
@@ -5862,30 +5094,12 @@
           }
         ],
         "load_state": "loaded"
-      },
-      "file:8e2c1f727276d30c": {
-        "id": "file:8e2c1f727276d30c",
-        "path": "__init__.py",
-        "owners": [],
-        "load_state": "loaded"
-      },
-      "file:699984b668dc0b9b": {
-        "id": "file:699984b668dc0b9b",
-        "path": "nodes/__init__.py",
-        "owners": [],
-        "load_state": "loaded"
-      },
-      "file:4c27e7c565c5add5": {
-        "id": "file:4c27e7c565c5add5",
-        "path": "nodes/display/__init__.py",
-        "owners": [],
-        "load_state": "loaded"
       }
     },
     "relations": [
       {
         "from": "node:usb.adb_state",
-        "to": "file:6427758cf67b72d5",
+        "to": "file:e4daa917aae77409",
         "relation": "entry"
       },
       {
@@ -5895,50 +5109,56 @@
       },
       {
         "from": "node:usb.display_matches",
-        "to": "file:6e704ea5c5e7afa0",
+        "to": "file:312e21996207f014",
         "relation": "entry"
       },
       {
         "from": "node:usb.display_matches",
-        "to": "file:38ea50e00eecc3b6",
+        "to": "file:3a38f4b581ba47fd",
         "relation": "support"
       },
       {
         "from": "node:usb.end",
-        "to": "file:149802a0f899dd06",
+        "to": "file:fa7d24c3383a2f7a",
         "relation": "entry"
       },
       {
         "from": "node:usb.load_settings",
-        "to": "file:e1a41cc6a9c9287d",
+        "to": "file:7f923f855d621e2d",
         "relation": "entry"
       },
       {
         "from": "node:usb.probe_device",
-        "to": "file:eda9e98964b39865",
+        "to": "file:451c0454028d0a3c",
         "relation": "entry"
       },
       {
         "from": "node:usb.read_state",
-        "to": "file:2fb5c99d28399d36",
+        "to": "file:395114f240de8a27",
         "relation": "entry"
       },
       {
         "from": "node:usb.start",
-        "to": "file:149802a0f899dd06",
+        "to": "file:fa7d24c3383a2f7a",
         "relation": "entry"
       },
       {
-        "from": "file:6e704ea5c5e7afa0",
-        "to": "file:38ea50e00eecc3b6",
+        "from": "file:312e21996207f014",
+        "to": "file:3a38f4b581ba47fd",
         "relation": "import",
-        "specifier": "usb_tablet_display.nodes.display",
+        "specifier": ".",
         "line": 12,
         "type_only": false
       }
     ]
   },
   "call_effect_scopes": [
+    {
+      "call_path": [
+        "adb"
+      ],
+      "effect_scope": "python_io"
+    },
     {
       "call_path": [
         "display"
@@ -5953,65 +5173,27 @@
     },
     {
       "call_path": [
-        "io",
-        "end"
-      ],
-      "effect_scope": "none"
-    },
-    {
-      "call_path": [
-        "io",
-        "settings"
-      ],
-      "effect_scope": "python_io"
-    },
-    {
-      "call_path": [
-        "io",
-        "start"
-      ],
-      "effect_scope": "none"
-    },
-    {
-      "call_path": [
-        "io",
-        "state"
-      ],
-      "effect_scope": "python_io"
-    },
-    {
-      "call_path": [
-        "probe",
-        "adb"
-      ],
-      "effect_scope": "python_io"
-    },
-    {
-      "call_path": [
-        "probe",
-        "end"
-      ],
-      "effect_scope": "none"
-    },
-    {
-      "call_path": [
-        "probe",
         "probe"
       ],
       "effect_scope": "python_io"
     },
     {
       "call_path": [
-        "probe",
-        "start"
+        "settings"
       ],
-      "effect_scope": "none"
+      "effect_scope": "python_io"
     },
     {
       "call_path": [
         "start"
       ],
       "effect_scope": "none"
+    },
+    {
+      "call_path": [
+        "state"
+      ],
+      "effect_scope": "python_io"
     },
     {
       "call_path": [
@@ -6055,6 +5237,74 @@
     {
       "kind": "node",
       "owner": "pipeline",
+      "type_key": "usb.load_settings",
+      "call_path": [
+        "settings"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.load_settings",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "pipeline",
+      "type_key": "usb.read_state",
+      "call_path": [
+        "state"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.read_state",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "pipeline",
+      "type_key": "usb.probe_device",
+      "call_path": [
+        "probe"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.probe_device",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "pipeline",
+      "type_key": "usb.adb_state",
+      "call_path": [
+        "adb"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.adb_state",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "pipeline",
       "type_key": "usb.display_matches",
       "call_path": [
         "display"
@@ -6091,182 +5341,6 @@
       "owner": "pipeline",
       "type_key": "usb.end",
       "call_path": [
-        "end"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.process"
-        ],
-        "source": "static",
-        "origin": "usb.end",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "graph",
-      "owner": "nodeset:usb.state_io",
-      "call_path": [
-        "io"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.workflow"
-        ],
-        "source": "inherited",
-        "origin": "workflow_defaults",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.state_io",
-      "type_key": "usb.start",
-      "call_path": [
-        "io",
-        "start"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.process"
-        ],
-        "source": "static",
-        "origin": "usb.start",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.state_io",
-      "type_key": "usb.load_settings",
-      "call_path": [
-        "io",
-        "settings"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.python_io"
-        ],
-        "source": "static",
-        "origin": "usb.load_settings",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.state_io",
-      "type_key": "usb.read_state",
-      "call_path": [
-        "io",
-        "state"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.python_io"
-        ],
-        "source": "static",
-        "origin": "usb.read_state",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.state_io",
-      "type_key": "usb.end",
-      "call_path": [
-        "io",
-        "end"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.process"
-        ],
-        "source": "static",
-        "origin": "usb.end",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "graph",
-      "owner": "nodeset:usb.device_probe",
-      "call_path": [
-        "probe"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.workflow"
-        ],
-        "source": "inherited",
-        "origin": "workflow_defaults",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.device_probe",
-      "type_key": "usb.start",
-      "call_path": [
-        "probe",
-        "start"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.process"
-        ],
-        "source": "static",
-        "origin": "usb.start",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.device_probe",
-      "type_key": "usb.probe_device",
-      "call_path": [
-        "probe",
-        "probe"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.python_io"
-        ],
-        "source": "static",
-        "origin": "usb.probe_device",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.device_probe",
-      "type_key": "usb.adb_state",
-      "call_path": [
-        "probe",
-        "adb"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.python_io"
-        ],
-        "source": "static",
-        "origin": "usb.adb_state",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.device_probe",
-      "type_key": "usb.end",
-      "call_path": [
-        "probe",
         "end"
       ],
       "declaration_only": false,

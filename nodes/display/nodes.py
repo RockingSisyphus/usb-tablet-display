@@ -9,7 +9,7 @@ from gi.repository import Gio, GLib
 
 from vibeflow.targets.python.sdk import node
 
-from usb_tablet_display.nodes.display import layout
+from . import layout
 
 
 def _bus() -> Gio.DBusConnection:

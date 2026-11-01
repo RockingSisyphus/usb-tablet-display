@@ -1,0 +1,67 @@
+{
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "settings",
+        "definition_id": "usb.load_settings",
+        "display_name": "读取设置",
+        "description": "从配置文件读取这台平板的设置，缺少的项用默认值补齐。"
+      },
+      {
+        "id": "state",
+        "definition_id": "usb.read_state",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。"
+      },
+      {
+        "id": "apply",
+        "definition_id": "usb.display_apply",
+        "display_name": "调整副屏（受保护）",
+        "description": "在未确认的情况下尝试调整副屏，验证安全保护会拒绝执行。"
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
+    ],
+    "edges": [
+      [
+        "start",
+        "settings"
+      ],
+      [
+        "settings",
+        "state"
+      ],
+      [
+        "settings",
+        "apply"
+      ],
+      [
+        "apply",
+        "end"
+      ],
+      [
+        "state",
+        "end"
+      ]
+    ],
+    "outputs": [
+      {
+        "type": "usb.display_result",
+        "cardinality": "exactly_one",
+        "display_name": "副屏调整结果"
+      }
+    ]
+  },
+  "plugins": []
+}

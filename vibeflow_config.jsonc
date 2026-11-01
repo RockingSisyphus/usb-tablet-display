@@ -3,6 +3,10 @@
     {
       "id": "usb-tablet-display",
       "path": "usb_tablet_display"
+    },
+    {
+      "id": "usb-tablet-maintenance",
+      "path": "usb_tablet_maintenance"
     }
   ]
 }

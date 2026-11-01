@@ -1,0 +1,20 @@
+{
+  "rule_params": {
+    "vibeflow.root.layout": {
+      "directories": [
+        {
+          "path": "nodes",
+          "purpose": "维护类工作流专属的节点"
+        },
+        {
+          "path": "probes",
+          "purpose": "执行工作流时使用的输入样本"
+        },
+        {
+          "path": "docs",
+          "purpose": "维护类工作流的架构文档"
+        }
+      ]
+    }
+  }
+}

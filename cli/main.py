@@ -32,7 +32,7 @@ def _state():
 
 def _status(as_json):
     subprocess.run([sys.executable, "run.py", "run", "--config",
-                    "usb_tablet_display/configs/status.jsonc", "--input",
+                    "usb_tablet_maintenance/configs/status.jsonc", "--input",
                     "usb_tablet_display/probes/daemon.json"],
                    cwd=ROOT, capture_output=True, text=True, timeout=120)
     state = _state().get("status") or {}
@@ -74,7 +74,7 @@ def main():
         STATE_ROOT.mkdir(parents=True, exist_ok=True)
         (STATE_ROOT / "install-request.json").write_text(json.dumps(payload), encoding="utf-8")
         done = subprocess.run([sys.executable, "run.py", "run", "--config",
-                               "usb_tablet_display/configs/install.jsonc", "--input",
+                               "usb_tablet_maintenance/configs/install.jsonc", "--input",
                                "usb_tablet_display/probes/daemon.json"],
                               cwd=ROOT, capture_output=True, text=True, timeout=600)
         result_path = STATE_ROOT / "install-result.json"

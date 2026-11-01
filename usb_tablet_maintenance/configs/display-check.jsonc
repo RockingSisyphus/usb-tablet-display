@@ -9,16 +9,22 @@
         "description": "表示这个流程从这里开始，本身不做任何事。"
       },
       {
-        "id": "io",
-        "definition_id": "usb.state_io",
-        "display_name": "读取设置与状态",
-        "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。"
+        "id": "settings",
+        "definition_id": "usb.load_settings",
+        "display_name": "读取设置",
+        "description": "从配置文件读取这台平板的设置，缺少的项用默认值补齐。"
       },
       {
-        "id": "check",
+        "id": "state",
+        "definition_id": "usb.read_state",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。"
+      },
+      {
+        "id": "display",
         "definition_id": "usb.display_matches",
         "display_name": "检查副屏是否已就位",
-        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。"
+        "description": "把当前屏幕布局和期望的副屏状态做比较。"
       },
       {
         "id": "end",
@@ -30,14 +36,22 @@
     "edges": [
       [
         "start",
-        "io"
+        "settings"
       ],
       [
-        "io",
-        "check"
+        "settings",
+        "state"
       ],
       [
-        "check",
+        "settings",
+        "display"
+      ],
+      [
+        "display",
+        "end"
+      ],
+      [
+        "state",
         "end"
       ]
     ],
@@ -45,14 +59,9 @@
       {
         "type": "usb.display_check",
         "cardinality": "exactly_one",
-        "display_name": "Display match result"
+        "display_name": "副屏检查结果"
       }
     ]
   },
-  "nodeset_imports": [
-    {
-      "path": "../nodeset_types/state_io.jsonc"
-    }
-  ],
   "plugins": []
 }

@@ -2602,14 +2602,9 @@
       "source": {
         "module": "nodes.device.adb_state",
         "class": "AdbState",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/device/adb_state.py",
         "line": 24
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/device/adb_state.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "检查调试连接",
         "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
@@ -2976,14 +2971,9 @@
       "source": {
         "module": "nodes.boundary",
         "class": "EndNode",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py",
         "line": 28
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "结束",
         "description": "表示这个流程到此结束，本身不做任何事。",
@@ -3132,14 +3122,9 @@
       "source": {
         "module": "nodes.state.settings",
         "class": "LoadSettings",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/state/settings.py",
         "line": 56
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/state/settings.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "读取设置",
         "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
@@ -3207,14 +3192,9 @@
       "source": {
         "module": "nodes.device.probe",
         "class": "ProbeDevice",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/device/probe.py",
         "line": 45
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/device/probe.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "查找平板",
         "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
@@ -3286,14 +3266,9 @@
       "source": {
         "module": "nodes.state.read_state",
         "class": "ReadState",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/state/read_state.py",
         "line": 27
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/state/read_state.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "读取运行状态",
         "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
@@ -3448,14 +3423,9 @@
       "source": {
         "module": "nodes.boundary",
         "class": "StartNode",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py",
         "line": 15
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "开始",
         "description": "表示这个流程从这里开始，本身不做任何事。",
@@ -3913,11 +3883,6 @@
       },
       {
         "kind": "node",
-        "id": "usb.build_status",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
         "id": "usb.collect_job",
         "reason": "declaration"
       },
@@ -3939,11 +3904,6 @@
       {
         "kind": "node",
         "id": "usb.end",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.install_run",
         "reason": "declaration"
       },
       {
@@ -4450,7 +4410,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/device/adb_state.py",
+              "ref": "@project/nodes/device/adb_state.py",
               "export": "AdbState"
             },
             "completion": "immediate"
@@ -4465,19 +4425,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/device/adb_state.py",
+          "path": "@project/nodes/device/adb_state.py",
           "line": 9,
           "symbol": "AdbState"
         },
@@ -4774,8 +4734,8 @@
         },
         "sources": [
           {
-            "id": "file:6427758cf67b72d5",
-            "path": "nodes/device/adb_state.py",
+            "id": "file:e4daa917aae77409",
+            "path": "@project/nodes/device/adb_state.py",
             "role": "entry",
             "symbol": "AdbState",
             "language": "python",
@@ -6016,7 +5976,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/boundary.py",
+              "ref": "@project/nodes/boundary.py",
               "export": "EndNode"
             },
             "completion": "immediate"
@@ -6031,19 +5991,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/boundary.py",
+          "path": "@project/nodes/boundary.py",
           "line": 20,
           "symbol": "EndNode"
         },
@@ -6340,8 +6300,8 @@
         },
         "sources": [
           {
-            "id": "file:149802a0f899dd06",
-            "path": "nodes/boundary.py",
+            "id": "file:fa7d24c3383a2f7a",
+            "path": "@project/nodes/boundary.py",
             "role": "entry",
             "symbol": "EndNode",
             "language": "python",
@@ -6790,7 +6750,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/state/settings.py",
+              "ref": "@project/nodes/state/settings.py",
               "export": "LoadSettings"
             },
             "completion": "immediate"
@@ -6805,19 +6765,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/state/settings.py",
+          "path": "@project/nodes/state/settings.py",
           "line": 41,
           "symbol": "LoadSettings"
         },
@@ -7114,8 +7074,8 @@
         },
         "sources": [
           {
-            "id": "file:e1a41cc6a9c9287d",
-            "path": "nodes/state/settings.py",
+            "id": "file:7f923f855d621e2d",
+            "path": "@project/nodes/state/settings.py",
             "role": "entry",
             "symbol": "LoadSettings",
             "language": "python",
@@ -7170,7 +7130,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/device/probe.py",
+              "ref": "@project/nodes/device/probe.py",
               "export": "ProbeDevice"
             },
             "completion": "immediate"
@@ -7185,19 +7145,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/device/probe.py",
+          "path": "@project/nodes/device/probe.py",
           "line": 30,
           "symbol": "ProbeDevice"
         },
@@ -7494,8 +7454,8 @@
         },
         "sources": [
           {
-            "id": "file:eda9e98964b39865",
-            "path": "nodes/device/probe.py",
+            "id": "file:451c0454028d0a3c",
+            "path": "@project/nodes/device/probe.py",
             "role": "entry",
             "symbol": "ProbeDevice",
             "language": "python",
@@ -7546,7 +7506,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/state/read_state.py",
+              "ref": "@project/nodes/state/read_state.py",
               "export": "ReadState"
             },
             "completion": "immediate"
@@ -7561,19 +7521,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/state/read_state.py",
+          "path": "@project/nodes/state/read_state.py",
           "line": 12,
           "symbol": "ReadState"
         },
@@ -7870,8 +7830,8 @@
         },
         "sources": [
           {
-            "id": "file:2fb5c99d28399d36",
-            "path": "nodes/state/read_state.py",
+            "id": "file:395114f240de8a27",
+            "path": "@project/nodes/state/read_state.py",
             "role": "entry",
             "symbol": "ReadState",
             "language": "python",
@@ -8308,7 +8268,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/boundary.py",
+              "ref": "@project/nodes/boundary.py",
               "export": "StartNode"
             },
             "completion": "immediate"
@@ -8323,19 +8283,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/boundary.py",
+          "path": "@project/nodes/boundary.py",
           "line": 7,
           "symbol": "StartNode"
         },
@@ -8632,8 +8592,8 @@
         },
         "sources": [
           {
-            "id": "file:149802a0f899dd06",
-            "path": "nodes/boundary.py",
+            "id": "file:fa7d24c3383a2f7a",
+            "path": "@project/nodes/boundary.py",
             "role": "entry",
             "symbol": "StartNode",
             "language": "python",
@@ -9465,9 +9425,9 @@
       }
     },
     "files": {
-      "file:6427758cf67b72d5": {
-        "id": "file:6427758cf67b72d5",
-        "path": "nodes/device/adb_state.py",
+      "file:e4daa917aae77409": {
+        "id": "file:e4daa917aae77409",
+        "path": "@project/nodes/device/adb_state.py",
         "owners": [
           {
             "kind": "node",
@@ -9529,9 +9489,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:149802a0f899dd06": {
-        "id": "file:149802a0f899dd06",
-        "path": "nodes/boundary.py",
+      "file:fa7d24c3383a2f7a": {
+        "id": "file:fa7d24c3383a2f7a",
+        "path": "@project/nodes/boundary.py",
         "owners": [
           {
             "kind": "node",
@@ -9561,9 +9521,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:e1a41cc6a9c9287d": {
-        "id": "file:e1a41cc6a9c9287d",
-        "path": "nodes/state/settings.py",
+      "file:7f923f855d621e2d": {
+        "id": "file:7f923f855d621e2d",
+        "path": "@project/nodes/state/settings.py",
         "owners": [
           {
             "kind": "node",
@@ -9574,9 +9534,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:eda9e98964b39865": {
-        "id": "file:eda9e98964b39865",
-        "path": "nodes/device/probe.py",
+      "file:451c0454028d0a3c": {
+        "id": "file:451c0454028d0a3c",
+        "path": "@project/nodes/device/probe.py",
         "owners": [
           {
             "kind": "node",
@@ -9587,9 +9547,9 @@
         ],
         "load_state": "loaded"
       },
-      "file:2fb5c99d28399d36": {
-        "id": "file:2fb5c99d28399d36",
-        "path": "nodes/state/read_state.py",
+      "file:395114f240de8a27": {
+        "id": "file:395114f240de8a27",
+        "path": "@project/nodes/state/read_state.py",
         "owners": [
           {
             "kind": "node",
@@ -9661,7 +9621,7 @@
     "relations": [
       {
         "from": "node:usb.adb_state",
-        "to": "file:6427758cf67b72d5",
+        "to": "file:e4daa917aae77409",
         "relation": "entry"
       },
       {
@@ -9686,7 +9646,7 @@
       },
       {
         "from": "node:usb.end",
-        "to": "file:149802a0f899dd06",
+        "to": "file:fa7d24c3383a2f7a",
         "relation": "entry"
       },
       {
@@ -9696,17 +9656,17 @@
       },
       {
         "from": "node:usb.load_settings",
-        "to": "file:e1a41cc6a9c9287d",
+        "to": "file:7f923f855d621e2d",
         "relation": "entry"
       },
       {
         "from": "node:usb.probe_device",
-        "to": "file:eda9e98964b39865",
+        "to": "file:451c0454028d0a3c",
         "relation": "entry"
       },
       {
         "from": "node:usb.read_state",
-        "to": "file:2fb5c99d28399d36",
+        "to": "file:395114f240de8a27",
         "relation": "entry"
       },
       {
@@ -9721,7 +9681,7 @@
       },
       {
         "from": "node:usb.start",
-        "to": "file:149802a0f899dd06",
+        "to": "file:fa7d24c3383a2f7a",
         "relation": "entry"
       },
       {

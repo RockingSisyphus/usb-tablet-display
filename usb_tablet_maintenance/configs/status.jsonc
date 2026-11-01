@@ -1,0 +1,112 @@
+{
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "settings",
+        "definition_id": "usb.load_settings",
+        "display_name": "读取设置",
+        "description": "从配置文件读取这台平板的设置，缺少的项用默认值补齐。"
+      },
+      {
+        "id": "state",
+        "definition_id": "usb.read_state",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。"
+      },
+      {
+        "id": "probe",
+        "definition_id": "usb.probe_device",
+        "display_name": "查找平板",
+        "description": "确认平板是否已经插上，并找到它对应的网络接口。"
+      },
+      {
+        "id": "adb",
+        "definition_id": "usb.adb_state",
+        "display_name": "检查调试连接",
+        "description": "查询平板是否已经允许电脑通过 USB 调试连接。"
+      },
+      {
+        "id": "display",
+        "definition_id": "usb.display_matches",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较。"
+      },
+      {
+        "id": "status",
+        "definition_id": "usb.build_status",
+        "display_name": "汇总状态",
+        "description": "把平板、副屏、串流与网络情况汇总成一份状态。",
+        "config": {
+          "state_path": "/tmp/usb-tablet-display/status.json"
+        }
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
+    ],
+    "edges": [
+      [
+        "start",
+        "settings"
+      ],
+      [
+        "settings",
+        "state"
+      ],
+      [
+        "settings",
+        "probe"
+      ],
+      [
+        "settings",
+        "adb"
+      ],
+      [
+        "settings",
+        "display"
+      ],
+      [
+        "settings",
+        "status"
+      ],
+      [
+        "state",
+        "status"
+      ],
+      [
+        "probe",
+        "status"
+      ],
+      [
+        "adb",
+        "status"
+      ],
+      [
+        "status",
+        "end"
+      ],
+      [
+        "display",
+        "status"
+      ]
+    ],
+    "outputs": [
+      {
+        "type": "usb.status",
+        "cardinality": "exactly_one",
+        "display_name": "状态文档"
+      }
+    ]
+  },
+  "plugins": []
+}

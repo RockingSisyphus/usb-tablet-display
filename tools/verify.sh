@@ -5,7 +5,7 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 PY=${PYTHON:-python3}
 
-CONFIGS="daemon connect disconnect guard-check display-check status internet install"
+CONFIGS="daemon connect disconnect internet"
 fail=0
 
 echo "== validate"
@@ -15,6 +15,15 @@ for c in $CONFIGS; do
     fail=1
   else
     echo "ok   $c"
+  fi
+done
+
+for c in status display-check guard-check install; do
+  if ! PYTHONDONTWRITEBYTECODE=1 "$PY" run.py validate --config "usb_tablet_maintenance/configs/$c.jsonc" >/dev/null 2>&1; then
+    echo "FAIL maintenance $c"
+    fail=1
+  else
+    echo "ok   maintenance/$c"
   fi
 done
 

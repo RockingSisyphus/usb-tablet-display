@@ -2,14 +2,22 @@
   "project_target": "python",
   "architecture": {
     "documents": [
-      {"workflow": "configs/daemon.jsonc", "document": "docs/daemon-architecture.jsonc"},
-      {"workflow": "configs/display-check.jsonc", "document": "docs/display-check-architecture.jsonc"},
-      {"workflow": "configs/status.jsonc", "document": "docs/status-architecture.jsonc"},
-      {"workflow": "configs/connect.jsonc", "document": "docs/connect-architecture.jsonc"},
-      {"workflow": "configs/disconnect.jsonc", "document": "docs/disconnect-architecture.jsonc"},
-      {"workflow": "configs/guard-check.jsonc", "document": "docs/guard-check-architecture.jsonc"},
-      {"workflow": "configs/internet.jsonc", "document": "docs/internet-architecture.jsonc"},
-      {"workflow": "configs/install.jsonc", "document": "docs/install-architecture.jsonc"}
+      {
+        "workflow": "configs/daemon.jsonc",
+        "document": "docs/daemon-architecture.jsonc"
+      },
+      {
+        "workflow": "configs/connect.jsonc",
+        "document": "docs/connect-architecture.jsonc"
+      },
+      {
+        "workflow": "configs/disconnect.jsonc",
+        "document": "docs/disconnect-architecture.jsonc"
+      },
+      {
+        "workflow": "configs/internet.jsonc",
+        "document": "docs/internet-architecture.jsonc"
+      }
     ]
   }
 }

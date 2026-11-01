@@ -6,7 +6,7 @@ from pathlib import Path
 
 from vibeflow.targets.python.sdk import node
 
-from usb_tablet_display.nodes.install import ops
+from usb_tablet_maintenance.nodes.install import ops
 
 REQUEST_PATH = "/tmp/usb-tablet-display/install-request.json"
 RESULT_PATH = "/tmp/usb-tablet-display/install-result.json"

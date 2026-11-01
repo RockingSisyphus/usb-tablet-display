@@ -6,7 +6,7 @@
     "entries": {},
     "default_entry": "",
     "source": {
-      "root_id": "usb-tablet-display",
+      "root_id": "usb-tablet-maintenance",
       "path": "configs/install.jsonc"
     },
     "rulesets": null,
@@ -15,7 +15,7 @@
       {
         "type": "usb.install_result",
         "cardinality": "exactly_one",
-        "display_name": "Install result"
+        "display_name": "安装结果"
       }
     ],
     "max_steps": 1000,
@@ -42,7 +42,7 @@
         "id": "start",
         "definition_id": "usb.start",
         "source": {
-          "root_id": "usb-tablet-display",
+          "root_id": "usb-tablet-maintenance",
           "path": "configs/install.jsonc"
         },
         "role": {
@@ -92,14 +92,14 @@
           "call": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/install.jsonc"
             }
           },
           "node_configs": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/install.jsonc"
             }
           },
@@ -111,7 +111,7 @@
         "id": "run",
         "definition_id": "usb.install_run",
         "source": {
-          "root_id": "usb-tablet-display",
+          "root_id": "usb-tablet-maintenance",
           "path": "configs/install.jsonc"
         },
         "role": {
@@ -167,14 +167,14 @@
           "call": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/install.jsonc"
             }
           },
           "node_configs": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/install.jsonc"
             }
           },
@@ -186,7 +186,7 @@
         "id": "end",
         "definition_id": "usb.end",
         "source": {
-          "root_id": "usb-tablet-display",
+          "root_id": "usb-tablet-maintenance",
           "path": "configs/install.jsonc"
         },
         "role": {
@@ -236,14 +236,14 @@
           "call": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/install.jsonc"
             }
           },
           "node_configs": {
             "values": {},
             "source": {
-              "root_id": "usb-tablet-display",
+              "root_id": "usb-tablet-maintenance",
               "path": "configs/install.jsonc"
             }
           },
@@ -279,7 +279,7 @@
     "global_config": {
       "values": {},
       "source": {
-        "root_id": "usb-tablet-display",
+        "root_id": "usb-tablet-maintenance",
         "path": "configs/install.jsonc"
       }
     }
@@ -292,14 +292,9 @@
       "source": {
         "module": "nodes.boundary",
         "class": "EndNode",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py",
         "line": 28
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "结束",
         "description": "表示这个流程到此结束，本身不做任何事。",
@@ -351,12 +346,12 @@
       "source": {
         "module": "nodes.install.nodes",
         "class": "InstallRun",
-        "root_id": "usb-tablet-display",
+        "root_id": "usb-tablet-maintenance",
         "path": "nodes/install/nodes.py",
         "line": 38
       },
       "declaration": {
-        "root_id": "usb-tablet-display",
+        "root_id": "usb-tablet-maintenance",
         "path": "nodes/install/nodes.py"
       },
       "info": {
@@ -430,14 +425,9 @@
       "source": {
         "module": "nodes.boundary",
         "class": "StartNode",
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py",
         "line": 15
       },
-      "declaration": {
-        "root_id": "usb-tablet-display",
-        "path": "nodes/boundary.py"
-      },
+      "declaration": {},
       "info": {
         "display_name": "开始",
         "description": "表示这个流程从这里开始，本身不做任何事。",
@@ -500,7 +490,7 @@
   },
   "workflow_operations": {},
   "resource_use": {
-    "workflow": "usb-tablet-display:configs/install.jsonc",
+    "workflow": "usb-tablet-maintenance:configs/install.jsonc",
     "resources": [
       {
         "kind": "node",
@@ -509,22 +499,7 @@
       },
       {
         "kind": "node",
-        "id": "usb.auto_session",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
         "id": "usb.build_status",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.collect_job",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.decide_action",
         "reason": "declaration"
       },
       {
@@ -549,27 +524,7 @@
       },
       {
         "kind": "node",
-        "id": "usb.internet_sync",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.internet_tick",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
         "id": "usb.load_settings",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.moonlight_connect",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.portal_pin",
         "reason": "declaration"
       },
       {
@@ -584,77 +539,7 @@
       },
       {
         "kind": "node",
-        "id": "usb.require_ready",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.require_stream",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.run_command",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.session_status",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.session_summary",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
         "id": "usb.start",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.stream_verify",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.sunshine_configure",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.sunshine_ready",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.sunshine_start",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.sunshine_stop",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.take_request",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.teardown_summary",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.tick_merge",
-        "reason": "declaration"
-      },
-      {
-        "kind": "node",
-        "id": "usb.wait_usb_address",
         "reason": "declaration"
       },
       {
@@ -1025,7 +910,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/boundary.py",
+              "ref": "@project/nodes/boundary.py",
               "export": "EndNode"
             },
             "completion": "immediate"
@@ -1040,19 +925,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/boundary.py",
+          "path": "@project/nodes/boundary.py",
           "line": 20,
           "symbol": "EndNode"
         },
@@ -1349,8 +1234,8 @@
         },
         "sources": [
           {
-            "id": "file:149802a0f899dd06",
-            "path": "nodes/boundary.py",
+            "id": "file:fa7d24c3383a2f7a",
+            "path": "@project/nodes/boundary.py",
             "role": "entry",
             "symbol": "EndNode",
             "language": "python",
@@ -1427,15 +1312,15 @@
         "plugin_id": "",
         "owner": {
           "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
+          "id": "usb-tablet-maintenance",
+          "root_id": "usb-tablet-maintenance",
           "path": "."
         },
         "origin": {
           "owner": {
             "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
+            "id": "usb-tablet-maintenance",
+            "root_id": "usb-tablet-maintenance",
             "path": "."
           },
           "path": "nodes/install/nodes.py",
@@ -1779,7 +1664,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/boundary.py",
+              "ref": "@project/nodes/boundary.py",
               "export": "StartNode"
             },
             "completion": "immediate"
@@ -1794,19 +1679,19 @@
         "metadata": {},
         "plugin_id": "",
         "owner": {
-          "kind": "root",
-          "id": "usb-tablet-display",
-          "root_id": "usb-tablet-display",
-          "path": "."
+          "kind": "project",
+          "id": "project",
+          "root_id": "",
+          "path": "@project/."
         },
         "origin": {
           "owner": {
-            "kind": "root",
-            "id": "usb-tablet-display",
-            "root_id": "usb-tablet-display",
-            "path": "."
+            "kind": "project",
+            "id": "project",
+            "root_id": "",
+            "path": "@project/."
           },
-          "path": "nodes/boundary.py",
+          "path": "@project/nodes/boundary.py",
           "line": 7,
           "symbol": "StartNode"
         },
@@ -2103,8 +1988,8 @@
         },
         "sources": [
           {
-            "id": "file:149802a0f899dd06",
-            "path": "nodes/boundary.py",
+            "id": "file:fa7d24c3383a2f7a",
+            "path": "@project/nodes/boundary.py",
             "role": "entry",
             "symbol": "StartNode",
             "language": "python",
@@ -2114,9 +1999,9 @@
       }
     },
     "files": {
-      "file:149802a0f899dd06": {
-        "id": "file:149802a0f899dd06",
-        "path": "nodes/boundary.py",
+      "file:fa7d24c3383a2f7a": {
+        "id": "file:fa7d24c3383a2f7a",
+        "path": "@project/nodes/boundary.py",
         "owners": [
           {
             "kind": "node",
@@ -2159,12 +2044,6 @@
         ],
         "load_state": "loaded"
       },
-      "file:8e2c1f727276d30c": {
-        "id": "file:8e2c1f727276d30c",
-        "path": "__init__.py",
-        "owners": [],
-        "load_state": "loaded"
-      },
       "file:699984b668dc0b9b": {
         "id": "file:699984b668dc0b9b",
         "path": "nodes/__init__.py",
@@ -2181,7 +2060,7 @@
     "relations": [
       {
         "from": "node:usb.end",
-        "to": "file:149802a0f899dd06",
+        "to": "file:fa7d24c3383a2f7a",
         "relation": "entry"
       },
       {
@@ -2196,14 +2075,14 @@
       },
       {
         "from": "node:usb.start",
-        "to": "file:149802a0f899dd06",
+        "to": "file:fa7d24c3383a2f7a",
         "relation": "entry"
       },
       {
         "from": "file:1cc697ef78b5094a",
         "to": "file:60a02c24553ee353",
         "relation": "import",
-        "specifier": "usb_tablet_display.nodes.install",
+        "specifier": "usb_tablet_maintenance.nodes.install",
         "line": 9,
         "type_only": false
       }

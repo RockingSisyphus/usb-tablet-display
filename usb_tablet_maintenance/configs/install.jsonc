@@ -35,7 +35,7 @@
       {
         "type": "usb.install_result",
         "cardinality": "exactly_one",
-        "display_name": "Install result"
+        "display_name": "安装结果"
       }
     ]
   },

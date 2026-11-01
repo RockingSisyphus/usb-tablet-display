@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from usb_tablet_display.nodes.install import ops
+from usb_tablet_maintenance.nodes.install import ops
 
 
 def fake_runner(active=True, enabled=True):
