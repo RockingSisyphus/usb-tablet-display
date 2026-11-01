@@ -272,8 +272,8 @@ def _register_address(settings, address, deadline):
 
 @node(
     id="usb.moonlight_connect", node_type="vibeflow.node",
-    display_name="Start Moonlight session",
-    description="Registers the USB host address first, launches Moonlight once, then waits for the stream without touching the UI.",
+    display_name="让平板开始投屏",
+    description="在平板上登记电脑当前的 USB 地址并打开投屏；首次使用或地址变化时会自动完成登记。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     implementation_files=["moonlight_ui.py", "session.py"],
@@ -356,8 +356,8 @@ class MoonlightConnect:
 
 @node(
     id="usb.require_stream", node_type="vibeflow.node",
-    display_name="Require stream",
-    description="Fails the connect session when the stream never became connected.",
+    display_name="要求画面已连上",
+    description="如果最终没有连上，就明确报错结束，避免把失败误当成成功。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.process"],
     contract={

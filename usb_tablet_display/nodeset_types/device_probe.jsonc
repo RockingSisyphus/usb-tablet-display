@@ -1,24 +1,90 @@
 {
   "type_key": "usb.device_probe",
-  "display_name": "Probe tablet",
-  "description": "Resolves USB presence and ADB transport state for the configured tablet.",
-  "requires": [{"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"}],
+  "display_name": "检查平板状态",
+  "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。",
+  "requires": [
+    {
+      "type": "usb.settings",
+      "cardinality": "exactly_one",
+      "display_name": "Tablet settings"
+    }
+  ],
   "provides": [
-    {"key": "device", "type": "usb.device", "display_name": "USB device"},
-    {"key": "adb_state", "type": "usb.adb_state", "display_name": "ADB transport state"}
+    {
+      "key": "device",
+      "type": "usb.device",
+      "display_name": "USB device"
+    },
+    {
+      "key": "adb_state",
+      "type": "usb.adb_state",
+      "display_name": "ADB transport state"
+    }
   ],
   "pipeline": {
-    "inputs": [{"key": "settings", "type": "usb.settings", "display_name": "Tablet settings", "required": true}],
-    "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Begin probe", "description": "Begins the device probe."},
-      {"id": "probe", "definition_id": "usb.probe_device", "display_name": "Probe USB device", "description": "Scans sysfs for the configured serial."},
-      {"id": "adb", "definition_id": "usb.adb_state", "display_name": "ADB transport state", "description": "Queries the ADB transport state."},
-      {"id": "end", "definition_id": "usb.end", "display_name": "Finish probe", "description": "Finishes the device probe."}
+    "inputs": [
+      {
+        "key": "settings",
+        "type": "usb.settings",
+        "display_name": "Tablet settings",
+        "required": true
+      }
     ],
-    "edges": [["start", "probe"], ["start", "adb"], ["probe", "end"], ["adb", "end"]],
+    "nodes": [
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "probe",
+        "definition_id": "usb.probe_device",
+        "display_name": "查找平板",
+        "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。"
+      },
+      {
+        "id": "adb",
+        "definition_id": "usb.adb_state",
+        "display_name": "检查调试连接",
+        "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。"
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
+    ],
+    "edges": [
+      [
+        "start",
+        "probe"
+      ],
+      [
+        "start",
+        "adb"
+      ],
+      [
+        "probe",
+        "end"
+      ],
+      [
+        "adb",
+        "end"
+      ]
+    ],
     "outputs": [
-      {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
-      {"type": "usb.adb_state", "cardinality": "exactly_one", "display_name": "ADB transport state"}
+      {
+        "type": "usb.device",
+        "cardinality": "exactly_one",
+        "display_name": "USB device"
+      },
+      {
+        "type": "usb.adb_state",
+        "cardinality": "exactly_one",
+        "display_name": "ADB transport state"
+      }
     ]
   }
 }

@@ -2,20 +2,102 @@
   "pipeline": {
     "inputs": [],
     "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Start teardown", "description": "Starts the teardown session."},
-      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads tablet settings."},
-      {"id": "stream", "definition_id": "usb.sunshine_stop", "display_name": "Stop Sunshine stream", "description": "Stops the screen cast before the virtual output is removed."},
-      {"id": "display", "definition_id": "usb.display_apply", "display_name": "Disable virtual output", "description": "Applies the disable layout only after the stream is stopped.", "config": {"target": "disable", "allow_disable": true}},
-      {"id": "check", "definition_id": "usb.display_matches", "display_name": "Verify teardown", "description": "Verifies the disable layout.", "config": {"target": "disable"}},
-      {"id": "summary", "definition_id": "usb.teardown_summary", "display_name": "Summarize teardown", "description": "Reports the teardown outcome."},
-      {"id": "end", "definition_id": "usb.end", "display_name": "End teardown", "description": "Ends the teardown session."}
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "io",
+        "definition_id": "usb.state_io",
+        "display_name": "读取设置与状态",
+        "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。"
+      },
+      {
+        "id": "stream",
+        "definition_id": "usb.sunshine_stop",
+        "display_name": "停止串流程序",
+        "description": "停止电脑端的串流程序，确保移除虚拟屏幕时没有画面仍在传输。"
+      },
+      {
+        "id": "display",
+        "definition_id": "usb.display_apply",
+        "display_name": "调整副屏",
+        "description": "需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。",
+        "config": {
+          "target": "disable",
+          "allow_disable": true
+        }
+      },
+      {
+        "id": "check",
+        "definition_id": "usb.display_matches",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
+        "config": {
+          "target": "disable"
+        }
+      },
+      {
+        "id": "summary",
+        "definition_id": "usb.teardown_summary",
+        "display_name": "汇总断开结果",
+        "description": "把这次断开是否成功、屏幕是否已撤销等关键结果整理成结论。"
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
     ],
-    "edges": [["start", "io"], ["io", "stream"], ["stream", "display"], ["io", "display"],
-              ["io", "check"], ["display", "summary"], ["check", "summary"], ["summary", "end"]],
+    "edges": [
+      [
+        "start",
+        "io"
+      ],
+      [
+        "io",
+        "stream"
+      ],
+      [
+        "stream",
+        "display"
+      ],
+      [
+        "io",
+        "display"
+      ],
+      [
+        "io",
+        "check"
+      ],
+      [
+        "display",
+        "summary"
+      ],
+      [
+        "check",
+        "summary"
+      ],
+      [
+        "summary",
+        "end"
+      ]
+    ],
     "outputs": [
-      {"type": "usb.session_result", "cardinality": "exactly_one", "display_name": "Session result"}
+      {
+        "type": "usb.session_result",
+        "cardinality": "exactly_one",
+        "display_name": "Session result"
+      }
     ]
   },
-  "nodeset_imports": [{"path": "../nodeset_types/state_io.jsonc"}],
+  "nodeset_imports": [
+    {
+      "path": "../nodeset_types/state_io.jsonc"
+    }
+  ],
   "plugins": []
 }

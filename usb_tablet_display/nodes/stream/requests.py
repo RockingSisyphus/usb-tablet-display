@@ -11,8 +11,8 @@ REQUESTS_PATH = "/tmp/usb-tablet-display/requests"
 
 @node(
     id="usb.take_request", node_type="vibeflow.node",
-    display_name="Take CLI request",
-    description="Claims the oldest pending request file written by the command line interface.",
+    display_name="处理用户命令",
+    description="检查用户在电脑上执行过什么命令（例如开关副屏），每次只取一条来处理。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

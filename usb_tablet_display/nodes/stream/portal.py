@@ -22,8 +22,8 @@ def _run(argv, timeout=10):
 
 @node(
     id="usb.portal_pin", node_type="vibeflow.node",
-    display_name="Pin portal permission",
-    description="Adds the virtual display to Sunshine's remote-desktop portal permission entry.",
+    display_name="授权录屏",
+    description="把虚拟副屏加入系统的录屏授权名单，避免每次串流都被系统弹窗拦住。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

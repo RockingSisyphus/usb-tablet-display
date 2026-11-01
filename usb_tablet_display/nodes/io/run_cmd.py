@@ -8,8 +8,8 @@ from vibeflow.targets.python.sdk import node
 
 @node(
     id="usb.run_command", node_type="vibeflow.node",
-    display_name="Run command",
-    description="Runs one external command with a bounded timeout and returns its exit status and output.",
+    display_name="执行系统命令",
+    description="运行一条系统命令并记录它的结果，供其它步骤判断使用。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

@@ -1,19 +1,66 @@
 {
   "type_key": "usb.display_control",
-  "display_name": "Display control",
-  "description": "Matches, applies and verifies the GNOME monitor layout for the tablet target.",
-  "requires": [{"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"}],
-  "provides": [{"key": "display_result", "type": "usb.display_result", "display_name": "Display result"}],
+  "display_name": "调整副屏",
+  "description": "检查并调整屏幕布局，让副屏按要求打开或关闭。",
+  "requires": [
+    {
+      "type": "usb.settings",
+      "cardinality": "exactly_one",
+      "display_name": "Tablet settings"
+    }
+  ],
+  "provides": [
+    {
+      "key": "display_result",
+      "type": "usb.display_result",
+      "display_name": "Display result"
+    }
+  ],
   "pipeline": {
-    "inputs": [{"key": "settings", "type": "usb.settings", "display_name": "Tablet settings", "required": true}],
-    "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Begin display control", "description": "Begins display layout control."},
-      {"id": "apply", "definition_id": "usb.display_apply", "display_name": "Apply display layout", "description": "Applies the layout when the current state differs and verifies the result."},
-      {"id": "end", "definition_id": "usb.end", "display_name": "Finish display control", "description": "Finishes display layout control."}
+    "inputs": [
+      {
+        "key": "settings",
+        "type": "usb.settings",
+        "display_name": "Tablet settings",
+        "required": true
+      }
     ],
-    "edges": [["start", "apply"], ["apply", "end"]],
+    "nodes": [
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "apply",
+        "definition_id": "usb.display_apply",
+        "display_name": "调整副屏",
+        "description": "需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。"
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
+    ],
+    "edges": [
+      [
+        "start",
+        "apply"
+      ],
+      [
+        "apply",
+        "end"
+      ]
+    ],
     "outputs": [
-      {"type": "usb.display_result", "cardinality": "exactly_one", "display_name": "Display result"}
+      {
+        "type": "usb.display_result",
+        "cardinality": "exactly_one",
+        "display_name": "Display result"
+      }
     ]
   }
 }

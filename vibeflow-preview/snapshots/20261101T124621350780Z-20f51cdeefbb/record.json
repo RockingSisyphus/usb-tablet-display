@@ -1,0 +1,23 @@
+{
+  "version": 5,
+  "id": "20261101T124621350780Z-20f51cdeefbb",
+  "category": "review",
+  "status": "passed",
+  "created_at": "2026-11-01T12:46:21.350775+00:00",
+  "updated_at": "2026-11-01T12:46:21.352015+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-display",
+    "path": "configs/install.jsonc",
+    "id": "usb-tablet-display:configs/install.jsonc",
+    "name": "install",
+    "target": "python"
+  },
+  "views": [
+    "flow",
+    "base_lib",
+    "plugin",
+    "links"
+  ],
+  "check_status": "CONCERNS",
+  "revision": 2
+}

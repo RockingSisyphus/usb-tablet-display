@@ -67,8 +67,8 @@ def _usb_address(interface: str) -> str:
 
 @node(
     id="usb.sunshine_configure", node_type="vibeflow.node",
-    display_name="Configure Sunshine",
-    description="Points Sunshine capture at the virtual connector with the configured encoder and USB address.",
+    display_name="配置串流程序",
+    description="让电脑端的串流程序以虚拟副屏作为画面来源，并绑定到当前 USB 网络地址。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={
@@ -112,8 +112,8 @@ class SunshineConfigure:
 
 @node(
     id="usb.sunshine_start", node_type="vibeflow.node",
-    display_name="Start Sunshine stream",
-    description="Resets a failed unit, starts Sunshine and waits for its streaming ports.",
+    display_name="启动串流程序",
+    description="启动电脑端的串流程序，并等它把接收连接的端口准备好。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={
@@ -153,8 +153,8 @@ class SunshineStart:
 
 @node(
     id="usb.stream_verify", node_type="vibeflow.node",
-    display_name="Verify stream",
-    description="Waits for Sunshine client events and the Moonlight activity before reporting the stream.",
+    display_name="确认画面在传输",
+    description="等待平板端的投屏程序连上，并确认电脑已经开始向平板推送画面。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     implementation_files=["session.py"],
@@ -193,8 +193,8 @@ class StreamVerify:
 
 @node(
     id="usb.sunshine_stop", node_type="vibeflow.node",
-    display_name="Stop Sunshine stream",
-    description="Stops the Sunshine unit so no screen cast targets the virtual output before it is removed.",
+    display_name="停止串流程序",
+    description="停止电脑端的串流程序，确保移除虚拟屏幕时没有画面仍在传输。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={
@@ -221,8 +221,8 @@ class SunshineStop:
 @node(
     id="usb.sunshine_ready", node_type="vibeflow.node",
     implementation_files=["session.py"],
-    display_name="Restart Sunshine after portal change",
-    description="Restarts Sunshine when portal authorization changed, then waits for its streaming ports again.",
+    display_name="让串流程序就绪",
+    description="如果录屏授权刚刚发生变化，就重启一次串流程序，并重新等它准备好。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

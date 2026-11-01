@@ -1,24 +1,73 @@
 {
   "type_key": "usb.state_io",
-  "display_name": "Load state and settings",
-  "description": "Loads tablet settings and the persisted runtime state for one operation.",
+  "display_name": "读取设置与状态",
+  "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
   "requires": [],
   "provides": [
-    {"key": "settings", "type": "usb.settings", "display_name": "Tablet settings"},
-    {"key": "loaded_state", "type": "usb.state", "display_name": "Runtime state"}
+    {
+      "key": "settings",
+      "type": "usb.settings",
+      "display_name": "Tablet settings"
+    },
+    {
+      "key": "loaded_state",
+      "type": "usb.state",
+      "display_name": "Runtime state"
+    }
   ],
   "pipeline": {
     "inputs": [],
     "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Begin load", "description": "Begins the settings and state load."},
-      {"id": "settings", "definition_id": "usb.load_settings", "display_name": "Load settings", "description": "Reads the tablet TOML configuration."},
-      {"id": "state", "definition_id": "usb.read_state", "display_name": "Read state", "description": "Reads the persisted runtime state."},
-      {"id": "end", "definition_id": "usb.end", "display_name": "Finish load", "description": "Finishes the settings and state load."}
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "settings",
+        "definition_id": "usb.load_settings",
+        "display_name": "读取设置",
+        "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。"
+      },
+      {
+        "id": "state",
+        "definition_id": "usb.read_state",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。"
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
     ],
-    "edges": [["start", "settings"], ["settings", "state"], ["state", "end"]],
+    "edges": [
+      [
+        "start",
+        "settings"
+      ],
+      [
+        "settings",
+        "state"
+      ],
+      [
+        "state",
+        "end"
+      ]
+    ],
     "outputs": [
-      {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
-      {"type": "usb.state", "cardinality": "exactly_one", "display_name": "Runtime state"}
+      {
+        "type": "usb.settings",
+        "cardinality": "exactly_one",
+        "display_name": "Tablet settings"
+      },
+      {
+        "type": "usb.state",
+        "cardinality": "exactly_one",
+        "display_name": "Runtime state"
+      }
     ]
   }
 }

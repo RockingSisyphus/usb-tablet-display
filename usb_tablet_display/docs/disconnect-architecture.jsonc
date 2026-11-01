@@ -51,8 +51,8 @@
           "path": "configs/disconnect.jsonc"
         },
         "role": {
-          "display_name": "Start teardown",
-          "description": "Starts the teardown session.",
+          "display_name": "开始",
+          "description": "表示这个流程从这里开始，本身不做任何事。",
           "description_source": "call"
         },
         "flow_kind": "terminal",
@@ -120,8 +120,8 @@
           "path": "configs/disconnect.jsonc"
         },
         "role": {
-          "display_name": "Load state and settings",
-          "description": "Loads tablet settings.",
+          "display_name": "读取设置与状态",
+          "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
           "description_source": "call"
         },
         "flow_kind": "predefined",
@@ -200,8 +200,8 @@
           "path": "configs/disconnect.jsonc"
         },
         "role": {
-          "display_name": "Stop Sunshine stream",
-          "description": "Stops the screen cast before the virtual output is removed.",
+          "display_name": "停止串流程序",
+          "description": "停止电脑端的串流程序，确保移除虚拟屏幕时没有画面仍在传输。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -281,8 +281,8 @@
           "path": "configs/disconnect.jsonc"
         },
         "role": {
-          "display_name": "Disable virtual output",
-          "description": "Applies the disable layout only after the stream is stopped.",
+          "display_name": "调整副屏",
+          "description": "需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -365,8 +365,8 @@
           "path": "configs/disconnect.jsonc"
         },
         "role": {
-          "display_name": "Verify teardown",
-          "description": "Verifies the disable layout.",
+          "display_name": "检查副屏是否已就位",
+          "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -448,8 +448,8 @@
           "path": "configs/disconnect.jsonc"
         },
         "role": {
-          "display_name": "Summarize teardown",
-          "description": "Reports the teardown outcome.",
+          "display_name": "汇总断开结果",
+          "description": "把这次断开是否成功、屏幕是否已撤销等关键结果整理成结论。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -534,8 +534,8 @@
           "path": "configs/disconnect.jsonc"
         },
         "role": {
-          "display_name": "End teardown",
-          "description": "Ends the teardown session.",
+          "display_name": "结束",
+          "description": "表示这个流程到此结束，本身不做任何事。",
           "description_source": "call"
         },
         "flow_kind": "terminal",
@@ -765,8 +765,8 @@
         "root_id": "usb-tablet-display",
         "path": "nodeset_types/state_io.jsonc"
       },
-      "display_name": "Load state and settings",
-      "description": "Loads tablet settings and the persisted runtime state for one operation.",
+      "display_name": "读取设置与状态",
+      "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
       "status": "implemented",
       "planned_behavior": null,
       "expand": true,
@@ -843,8 +843,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Begin load",
-              "description": "Begins the settings and state load.",
+              "display_name": "开始",
+              "description": "表示这个流程从这里开始，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -911,8 +911,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Load settings",
-              "description": "Reads the tablet TOML configuration.",
+              "display_name": "读取设置",
+              "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -985,8 +985,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Read state",
-              "description": "Reads the persisted runtime state.",
+              "display_name": "读取运行状态",
+              "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -1059,8 +1059,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Finish load",
-              "description": "Finishes the settings and state load.",
+              "display_name": "结束",
+              "description": "表示这个流程到此结束，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -1174,8 +1174,8 @@
         "path": "nodes/display/nodes.py"
       },
       "info": {
-        "display_name": "Apply display layout",
-        "description": "Applies the requested layout when needed and verifies the result by re-reading Mutter state.",
+        "display_name": "调整副屏",
+        "description": "需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -1283,8 +1283,8 @@
         "path": "nodes/display/nodes.py"
       },
       "info": {
-        "display_name": "Match display layout",
-        "description": "Reads the Mutter layout and reports whether it already equals the requested target.",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -1368,8 +1368,8 @@
         "path": "nodes/boundary.py"
       },
       "info": {
-        "display_name": "End",
-        "description": "Marks the structural end of a USB display workflow.",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "author": null,
@@ -1427,8 +1427,8 @@
         "path": "nodes/state/settings.py"
       },
       "info": {
-        "display_name": "Load settings",
-        "description": "Reads the tablet TOML configuration and applies historical defaults for missing keys.",
+        "display_name": "读取设置",
+        "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -1502,8 +1502,8 @@
         "path": "nodes/state/read_state.py"
       },
       "info": {
-        "display_name": "Read state",
-        "description": "Loads the runtime state document; a missing or invalid file yields a baseline state.",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -1577,8 +1577,8 @@
         "path": "nodes/boundary.py"
       },
       "info": {
-        "display_name": "Start",
-        "description": "Marks the structural start of a USB display workflow.",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "author": null,
@@ -1636,8 +1636,8 @@
         "path": "nodes/stream/sunshine.py"
       },
       "info": {
-        "display_name": "Stop Sunshine stream",
-        "description": "Stops the Sunshine unit so no screen cast targets the virtual output before it is removed.",
+        "display_name": "停止串流程序",
+        "description": "停止电脑端的串流程序，确保移除虚拟屏幕时没有画面仍在传输。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -1721,8 +1721,8 @@
         "path": "nodes/session/gates.py"
       },
       "info": {
-        "display_name": "Summarize teardown session",
-        "description": "Reports the outcome of a teardown session after layout verification.",
+        "display_name": "汇总断开结果",
+        "description": "把这次断开是否成功、屏幕是否已撤销等关键结果整理成结论。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -2312,8 +2312,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.display_apply",
-        "display_name": "Apply display layout",
-        "description": "Applies the requested layout when needed and verifies the result by re-reading Mutter state.",
+        "display_name": "调整副屏",
+        "description": "需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -2736,8 +2736,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.display_matches",
-        "display_name": "Match display layout",
-        "description": "Reads the Mutter layout and reports whether it already equals the requested target.",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -3136,8 +3136,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.end",
-        "display_name": "End",
-        "description": "Marks the structural end of a USB display workflow.",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "tags": [],
@@ -3496,8 +3496,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.load_settings",
-        "display_name": "Load settings",
-        "description": "Reads the tablet TOML configuration and applies historical defaults for missing keys.",
+        "display_name": "读取设置",
+        "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -3872,8 +3872,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.read_state",
-        "display_name": "Read state",
-        "description": "Loads the runtime state document; a missing or invalid file yields a baseline state.",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -4248,8 +4248,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.start",
-        "display_name": "Start",
-        "description": "Marks the structural start of a USB display workflow.",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "tags": [],
@@ -4608,8 +4608,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.sunshine_stop",
-        "display_name": "Stop Sunshine stream",
-        "description": "Stops the Sunshine unit so no screen cast targets the virtual output before it is removed.",
+        "display_name": "停止串流程序",
+        "description": "停止电脑端的串流程序，确保移除虚拟屏幕时没有画面仍在传输。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -4994,8 +4994,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.teardown_summary",
-        "display_name": "Summarize teardown session",
-        "description": "Reports the outcome of a teardown session after layout verification.",
+        "display_name": "汇总断开结果",
+        "description": "把这次断开是否成功、屏幕是否已撤销等关键结果整理成结论。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],

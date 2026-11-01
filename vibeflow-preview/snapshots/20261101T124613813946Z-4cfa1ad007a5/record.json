@@ -1,0 +1,23 @@
+{
+  "version": 5,
+  "id": "20261101T124613813946Z-4cfa1ad007a5",
+  "category": "review",
+  "status": "passed",
+  "created_at": "2026-11-01T12:46:13.813940+00:00",
+  "updated_at": "2026-11-01T12:46:13.815562+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-display",
+    "path": "configs/display-check.jsonc",
+    "id": "usb-tablet-display:configs/display-check.jsonc",
+    "name": "display-check",
+    "target": "python"
+  },
+  "views": [
+    "flow",
+    "base_lib",
+    "plugin",
+    "links"
+  ],
+  "check_status": "CONCERNS",
+  "revision": 2
+}

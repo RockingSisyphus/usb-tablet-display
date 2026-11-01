@@ -54,8 +54,8 @@ def _host_internet(settings):
 
 @node(
     id="usb.internet_sync", node_type="vibeflow.node",
-    display_name="Sync tablet internet",
-    description="Keeps the gnirehtet VPN unit present and probes tablet internet through tun0.",
+    display_name="同步平板网络",
+    description="确保平板能通过 USB 共享电脑的网络，并实际测试平板是否真的能上网。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={
@@ -94,8 +94,8 @@ class InternetSync:
 
 @node(
     id="usb.internet_tick", node_type="vibeflow.node",
-    display_name="Internet tick",
-    description="Runs the internet supervision at most once per interval and reports the last known state.",
+    display_name="定期检查网络",
+    description="每隔一段时间检查一次平板网络；一切正常时不做多余操作。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

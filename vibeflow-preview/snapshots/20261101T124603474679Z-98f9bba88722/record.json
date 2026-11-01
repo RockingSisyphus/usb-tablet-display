@@ -1,0 +1,23 @@
+{
+  "version": 5,
+  "id": "20261101T124603474679Z-98f9bba88722",
+  "category": "review",
+  "status": "passed",
+  "created_at": "2026-11-01T12:46:03.474674+00:00",
+  "updated_at": "2026-11-01T12:46:03.477778+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-display",
+    "path": "configs/daemon.jsonc",
+    "id": "usb-tablet-display:configs/daemon.jsonc",
+    "name": "daemon",
+    "target": "python"
+  },
+  "views": [
+    "flow",
+    "base_lib",
+    "plugin",
+    "links"
+  ],
+  "check_status": "CONCERNS",
+  "revision": 2
+}

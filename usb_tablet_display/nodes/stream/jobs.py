@@ -59,8 +59,8 @@ def job_state():
 
 @node(
     id="usb.collect_job", node_type="vibeflow.node",
-    display_name="Collect background job",
-    description="Reports whether the background session job is running and its exit code once finished.",
+    display_name="查看后台任务",
+    description="查看之前启动的连接或断开任务是否还在进行，以及它最终是成功还是失败。",
     version="0.2.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

@@ -2,21 +2,91 @@
   "pipeline": {
     "inputs": [],
     "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Start status", "description": "Starts the status snapshot workflow."},
-      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads settings and persisted state."},
-      {"id": "probe", "definition_id": "usb.device_probe", "display_name": "Probe tablet", "description": "Resolves USB presence and ADB transport state."},
-      {"id": "display", "definition_id": "usb.display_matches", "display_name": "Match display layout", "description": "Compares the current Mutter layout with the enable target."},
-      {"id": "status", "definition_id": "usb.build_status", "display_name": "Build status", "description": "Composes the published status document.", "config": {"state_path": "/tmp/usb-tablet-display/status.json"}},
-      {"id": "end", "definition_id": "usb.end", "display_name": "End status", "description": "Ends the status snapshot workflow."}
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "io",
+        "definition_id": "usb.state_io",
+        "display_name": "读取设置与状态",
+        "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。"
+      },
+      {
+        "id": "probe",
+        "definition_id": "usb.device_probe",
+        "display_name": "检查平板状态",
+        "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。"
+      },
+      {
+        "id": "display",
+        "definition_id": "usb.display_matches",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。"
+      },
+      {
+        "id": "status",
+        "definition_id": "usb.build_status",
+        "display_name": "Build status",
+        "description": "Composes the published status document.",
+        "config": {
+          "state_path": "/tmp/usb-tablet-display/status.json"
+        }
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
     ],
-    "edges": [["start", "io"], ["io", "probe"], ["io", "display"], ["io", "status"], ["probe", "status"], ["display", "status"], ["status", "end"]],
+    "edges": [
+      [
+        "start",
+        "io"
+      ],
+      [
+        "io",
+        "probe"
+      ],
+      [
+        "io",
+        "display"
+      ],
+      [
+        "io",
+        "status"
+      ],
+      [
+        "probe",
+        "status"
+      ],
+      [
+        "display",
+        "status"
+      ],
+      [
+        "status",
+        "end"
+      ]
+    ],
     "outputs": [
-      {"type": "usb.status", "cardinality": "exactly_one", "display_name": "Status document"}
+      {
+        "type": "usb.status",
+        "cardinality": "exactly_one",
+        "display_name": "Status document"
+      }
     ]
   },
   "nodeset_imports": [
-    {"path": "../nodeset_types/state_io.jsonc"},
-    {"path": "../nodeset_types/device_probe.jsonc"}
+    {
+      "path": "../nodeset_types/state_io.jsonc"
+    },
+    {
+      "path": "../nodeset_types/device_probe.jsonc"
+    }
   ],
   "plugins": []
 }

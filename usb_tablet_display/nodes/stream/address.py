@@ -11,8 +11,8 @@ from usb_tablet_display.nodes.stream import session
 
 @node(
     id="usb.wait_usb_address", node_type="vibeflow.node",
-    display_name="Wait for USB address",
-    description="Polls the RNDIS interface until it receives an IPv4 address after a reconnect.",
+    display_name="等待网络地址",
+    description="平板插上后，等它从电脑分配到 USB 网络地址；长时间等不到就明确报错。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     implementation_files=["session.py"],

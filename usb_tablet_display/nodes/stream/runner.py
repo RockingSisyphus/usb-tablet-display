@@ -19,8 +19,8 @@ def _configs():
 
 @node(
     id="usb.auto_session", node_type="vibeflow.node",
-    display_name="Run session action",
-    description="Starts the verified connect or disconnect workflow in the background so the loop keeps ticking.",
+    display_name="执行连接或断开",
+    description="按照上一步的决定，在后台启动已经验证过的连接或断开流程，不阻塞常驻程序的其它工作。",
     version="0.2.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     implementation_files=["jobs.py"],

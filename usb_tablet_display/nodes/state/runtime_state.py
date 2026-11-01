@@ -21,8 +21,8 @@ def _write_json(path: Path, value) -> None:
 
 @node(
     id="usb.tick_merge", node_type="vibeflow.node",
-    display_name="Advance tick",
-    description="Waits one tick interval, merges probe results into the runtime state and publishes it.",
+    display_name="推进一轮循环",
+    description="等待一个很短的间隔，把本轮看到的信息写进运行状态，并判断是否需要停止常驻程序。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

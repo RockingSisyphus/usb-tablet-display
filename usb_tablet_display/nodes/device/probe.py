@@ -29,8 +29,8 @@ def _net_interface(sys_path: str) -> str:
 
 @node(
     id="usb.probe_device", node_type="vibeflow.node",
-    display_name="Probe USB device",
-    description="Scans sysfs for the configured USB serial and resolves its RNDIS interface.",
+    display_name="查找平板",
+    description="在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

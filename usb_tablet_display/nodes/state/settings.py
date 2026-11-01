@@ -40,8 +40,8 @@ def _config_path() -> Path:
 
 @node(
     id="usb.load_settings", node_type="vibeflow.node",
-    display_name="Load settings",
-    description="Reads the tablet TOML configuration and applies historical defaults for missing keys.",
+    display_name="读取设置",
+    description="从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

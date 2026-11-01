@@ -16,8 +16,8 @@ def _value(inputs, key):
 
 @node(
     id="usb.session_status", node_type="vibeflow.node",
-    display_name="Read session status",
-    description="Reads Sunshine and Moonlight state so the loop can decide whether a session exists.",
+    display_name="检查是否正在投屏",
+    description="综合串流程序、投屏程序与端口状态，判断平板现在是否真的在显示电脑画面。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     implementation_files=["session.py"],
@@ -45,8 +45,8 @@ class SessionStatus:
 
 @node(
     id="usb.decide_action", node_type="vibeflow.node",
-    display_name="Decide session action",
-    description="Chooses connect, disconnect or no action from presence, ADB state, auto policy and session status.",
+    display_name="决定要做什么",
+    description="根据平板是否插着、调试连接是否可用、是否开启自动模式以及当前投屏状态，决定连接、断开还是什么都不做。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.process"],
     contract={

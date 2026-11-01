@@ -1,30 +1,171 @@
 {
   "type_key": "usb.daemon_tick",
-  "display_name": "Daemon tick",
-  "description": "One iteration of the long-running controller loop.",
+  "display_name": "常驻程序的一轮",
+  "description": "常驻程序每一轮要做的事：收集信息、判断当前状态，必要时执行一次连接或断开。",
   "requires": [],
   "provides": [],
   "pipeline": {
     "inputs": [],
     "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Begin tick", "description": "Begins one controller iteration."},
-      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads settings and persisted state."},
-      {"id": "probe", "definition_id": "usb.device_probe", "display_name": "Probe tablet", "description": "Resolves USB presence and ADB transport state."},
-      {"id": "inet", "definition_id": "usb.internet_tick", "display_name": "Internet tick", "description": "Supervises the tablet internet at most once per interval."},
-      {"id": "job", "definition_id": "usb.collect_job", "display_name": "Collect background job", "description": "Reports whether the session job is still running."},
-      {"id": "request", "definition_id": "usb.take_request", "display_name": "Take CLI request", "description": "Claims one pending CLI request."},
-      {"id": "sstatus", "definition_id": "usb.session_status", "display_name": "Read session status", "description": "Reads Sunshine/Moonlight session state."},
-      {"id": "decide", "definition_id": "usb.decide_action", "display_name": "Decide session action", "description": "Chooses connect, disconnect or none."},
-      {"id": "runner", "definition_id": "usb.auto_session", "display_name": "Run session action", "description": "Invokes the verified connect/disconnect workflow when needed."},
-      {"id": "tick", "definition_id": "usb.tick_merge", "display_name": "Advance tick", "description": "Merges probe and action results, persists state and reports whether to stop."},
-      {"id": "end", "definition_id": "usb.end", "display_name": "Finish tick", "description": "Finishes one controller iteration."}
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "io",
+        "definition_id": "usb.state_io",
+        "display_name": "读取设置与状态",
+        "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。"
+      },
+      {
+        "id": "probe",
+        "definition_id": "usb.device_probe",
+        "display_name": "检查平板状态",
+        "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。"
+      },
+      {
+        "id": "inet",
+        "definition_id": "usb.internet_tick",
+        "display_name": "定期检查网络",
+        "description": "每隔一段时间检查一次平板网络；一切正常时不做多余操作。"
+      },
+      {
+        "id": "job",
+        "definition_id": "usb.collect_job",
+        "display_name": "查看后台任务",
+        "description": "查看之前启动的连接或断开任务是否还在进行，以及它最终是成功还是失败。"
+      },
+      {
+        "id": "request",
+        "definition_id": "usb.take_request",
+        "display_name": "处理用户命令",
+        "description": "检查用户在电脑上执行过什么命令（例如开关副屏），每次只取一条来处理。"
+      },
+      {
+        "id": "sstatus",
+        "definition_id": "usb.session_status",
+        "display_name": "检查是否正在投屏",
+        "description": "综合串流程序、投屏程序与端口状态，判断平板现在是否真的在显示电脑画面。"
+      },
+      {
+        "id": "decide",
+        "definition_id": "usb.decide_action",
+        "display_name": "决定要做什么",
+        "description": "根据平板是否插着、调试连接是否可用、是否开启自动模式以及当前投屏状态，决定连接、断开还是什么都不做。"
+      },
+      {
+        "id": "runner",
+        "definition_id": "usb.auto_session",
+        "display_name": "执行连接或断开",
+        "description": "按照上一步的决定，在后台启动已经验证过的连接或断开流程，不阻塞常驻程序的其它工作。"
+      },
+      {
+        "id": "tick",
+        "definition_id": "usb.tick_merge",
+        "display_name": "推进一轮循环",
+        "description": "等待一个很短的间隔，把本轮看到的信息写进运行状态，并判断是否需要停止常驻程序。"
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
     ],
-    "edges": [["start", "io"], ["start", "request"], ["start", "job"], ["io", "inet"], ["inet", "tick"], ["job", "decide"], ["job", "tick"], ["request", "decide"], ["io", "probe"], ["io", "sstatus"], ["probe", "sstatus"],
-              ["io", "decide"], ["probe", "decide"], ["sstatus", "decide"], ["request", "decide"],
-              ["decide", "runner"], ["io", "runner"],
-              ["io", "tick"], ["probe", "tick"], ["runner", "tick"], ["tick", "end"]],
+    "edges": [
+      [
+        "start",
+        "io"
+      ],
+      [
+        "start",
+        "request"
+      ],
+      [
+        "start",
+        "job"
+      ],
+      [
+        "io",
+        "inet"
+      ],
+      [
+        "inet",
+        "tick"
+      ],
+      [
+        "job",
+        "decide"
+      ],
+      [
+        "job",
+        "tick"
+      ],
+      [
+        "request",
+        "decide"
+      ],
+      [
+        "io",
+        "probe"
+      ],
+      [
+        "io",
+        "sstatus"
+      ],
+      [
+        "probe",
+        "sstatus"
+      ],
+      [
+        "io",
+        "decide"
+      ],
+      [
+        "probe",
+        "decide"
+      ],
+      [
+        "sstatus",
+        "decide"
+      ],
+      [
+        "request",
+        "decide"
+      ],
+      [
+        "decide",
+        "runner"
+      ],
+      [
+        "io",
+        "runner"
+      ],
+      [
+        "io",
+        "tick"
+      ],
+      [
+        "probe",
+        "tick"
+      ],
+      [
+        "runner",
+        "tick"
+      ],
+      [
+        "tick",
+        "end"
+      ]
+    ],
     "outputs": [
-      {"type": "usb.shutdown", "cardinality": "exactly_one", "display_name": "Stop flag"}
+      {
+        "type": "usb.shutdown",
+        "cardinality": "exactly_one",
+        "display_name": "Stop flag"
+      }
     ]
   }
 }

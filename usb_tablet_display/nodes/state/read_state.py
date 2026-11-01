@@ -11,8 +11,8 @@ DEFAULT_STATE_PATH = "/tmp/usb-tablet-display/state.json"
 
 @node(
     id="usb.read_state", node_type="vibeflow.node",
-    display_name="Read state",
-    description="Loads the runtime state document; a missing or invalid file yields a baseline state.",
+    display_name="读取运行状态",
+    description="读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

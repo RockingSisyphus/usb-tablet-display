@@ -6,8 +6,8 @@ from vibeflow.targets.python.sdk import node
 
 @node(
     id="usb.require_ready", node_type="vibeflow.node",
-    display_name="Require ADB readiness",
-    description="Fails the session when the tablet is absent or its ADB transport is not usable.",
+    display_name="确认平板可用",
+    description="平板没有插好或调试连接未获授权时，立刻停下并说明原因。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.process"],
     contract={
@@ -39,8 +39,8 @@ class RequireReady:
 
 @node(
     id="usb.session_summary", node_type="vibeflow.node",
-    display_name="Summarize connect session",
-    description="Reports the outcome of a connect session after layout verification.",
+    display_name="汇总连接结果",
+    description="把这次连接是否成功、画面是否连上等关键结果整理成结论。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.process"],
     contract={
@@ -80,8 +80,8 @@ class SessionSummary:
 
 @node(
     id="usb.teardown_summary", node_type="vibeflow.node",
-    display_name="Summarize teardown session",
-    description="Reports the outcome of a teardown session after layout verification.",
+    display_name="汇总断开结果",
+    description="把这次断开是否成功、屏幕是否已撤销等关键结果整理成结论。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.process"],
     contract={

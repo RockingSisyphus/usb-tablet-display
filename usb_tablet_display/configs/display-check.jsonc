@@ -2,16 +2,57 @@
   "pipeline": {
     "inputs": [],
     "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Start display check", "description": "Starts the read-only display layout check."},
-      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads tablet settings."},
-      {"id": "check", "definition_id": "usb.display_matches", "display_name": "Match display layout", "description": "Compares the current Mutter layout with the enable target."},
-      {"id": "end", "definition_id": "usb.end", "display_name": "End display check", "description": "Ends the read-only display layout check."}
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "io",
+        "definition_id": "usb.state_io",
+        "display_name": "读取设置与状态",
+        "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。"
+      },
+      {
+        "id": "check",
+        "definition_id": "usb.display_matches",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。"
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
     ],
-    "edges": [["start", "io"], ["io", "check"], ["check", "end"]],
+    "edges": [
+      [
+        "start",
+        "io"
+      ],
+      [
+        "io",
+        "check"
+      ],
+      [
+        "check",
+        "end"
+      ]
+    ],
     "outputs": [
-      {"type": "usb.display_check", "cardinality": "exactly_one", "display_name": "Display match result"}
+      {
+        "type": "usb.display_check",
+        "cardinality": "exactly_one",
+        "display_name": "Display match result"
+      }
     ]
   },
-  "nodeset_imports": [{"path": "../nodeset_types/state_io.jsonc"}],
+  "nodeset_imports": [
+    {
+      "path": "../nodeset_types/state_io.jsonc"
+    }
+  ],
   "plugins": []
 }

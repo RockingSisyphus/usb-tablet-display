@@ -2,13 +2,41 @@
   "pipeline": {
     "inputs": [],
     "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Start install", "description": "Starts the install action."},
-      {"id": "run", "definition_id": "usb.install_run", "display_name": "Run install action", "description": "Runs the requested backup, quiesce, install, restore or verify action."},
-      {"id": "end", "definition_id": "usb.end", "display_name": "End install", "description": "Ends the install action."}
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "run",
+        "definition_id": "usb.install_run",
+        "display_name": "执行安装操作",
+        "description": "按用户选择的动作，完成备份、停止服务、安装、还原或自检中的一项。"
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
     ],
-    "edges": [["start", "run"], ["run", "end"]],
+    "edges": [
+      [
+        "start",
+        "run"
+      ],
+      [
+        "run",
+        "end"
+      ]
+    ],
     "outputs": [
-      {"type": "usb.install_result", "cardinality": "exactly_one", "display_name": "Install result"}
+      {
+        "type": "usb.install_result",
+        "cardinality": "exactly_one",
+        "display_name": "Install result"
+      }
     ]
   },
   "plugins": []

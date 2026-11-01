@@ -55,8 +55,8 @@
           "path": "configs/status.jsonc"
         },
         "role": {
-          "display_name": "Start status",
-          "description": "Starts the status snapshot workflow.",
+          "display_name": "开始",
+          "description": "表示这个流程从这里开始，本身不做任何事。",
           "description_source": "call"
         },
         "flow_kind": "terminal",
@@ -124,8 +124,8 @@
           "path": "configs/status.jsonc"
         },
         "role": {
-          "display_name": "Load state and settings",
-          "description": "Loads settings and persisted state.",
+          "display_name": "读取设置与状态",
+          "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
           "description_source": "call"
         },
         "flow_kind": "predefined",
@@ -204,8 +204,8 @@
           "path": "configs/status.jsonc"
         },
         "role": {
-          "display_name": "Probe tablet",
-          "description": "Resolves USB presence and ADB transport state.",
+          "display_name": "检查平板状态",
+          "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。",
           "description_source": "call"
         },
         "flow_kind": "predefined",
@@ -290,8 +290,8 @@
           "path": "configs/status.jsonc"
         },
         "role": {
-          "display_name": "Match display layout",
-          "description": "Compares the current Mutter layout with the enable target.",
+          "display_name": "检查副屏是否已就位",
+          "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -474,8 +474,8 @@
           "path": "configs/status.jsonc"
         },
         "role": {
-          "display_name": "End status",
-          "description": "Ends the status snapshot workflow.",
+          "display_name": "结束",
+          "description": "表示这个流程到此结束，本身不做任何事。",
           "description_source": "call"
         },
         "flow_kind": "terminal",
@@ -718,8 +718,8 @@
         "root_id": "usb-tablet-display",
         "path": "nodeset_types/device_probe.jsonc"
       },
-      "display_name": "Probe tablet",
-      "description": "Resolves USB presence and ADB transport state for the configured tablet.",
+      "display_name": "检查平板状态",
+      "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。",
       "status": "implemented",
       "planned_behavior": null,
       "expand": true,
@@ -809,8 +809,8 @@
               "path": "nodeset_types/device_probe.jsonc"
             },
             "role": {
-              "display_name": "Begin probe",
-              "description": "Begins the device probe.",
+              "display_name": "开始",
+              "description": "表示这个流程从这里开始，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -877,8 +877,8 @@
               "path": "nodeset_types/device_probe.jsonc"
             },
             "role": {
-              "display_name": "Probe USB device",
-              "description": "Scans sysfs for the configured serial.",
+              "display_name": "查找平板",
+              "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -957,8 +957,8 @@
               "path": "nodeset_types/device_probe.jsonc"
             },
             "role": {
-              "display_name": "ADB transport state",
-              "description": "Queries the ADB transport state.",
+              "display_name": "检查调试连接",
+              "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -1037,8 +1037,8 @@
               "path": "nodeset_types/device_probe.jsonc"
             },
             "role": {
-              "display_name": "Finish probe",
-              "description": "Finishes the device probe.",
+              "display_name": "结束",
+              "description": "表示这个流程到此结束，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -1152,8 +1152,8 @@
         "root_id": "usb-tablet-display",
         "path": "nodeset_types/state_io.jsonc"
       },
-      "display_name": "Load state and settings",
-      "description": "Loads tablet settings and the persisted runtime state for one operation.",
+      "display_name": "读取设置与状态",
+      "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
       "status": "implemented",
       "planned_behavior": null,
       "expand": true,
@@ -1230,8 +1230,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Begin load",
-              "description": "Begins the settings and state load.",
+              "display_name": "开始",
+              "description": "表示这个流程从这里开始，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -1298,8 +1298,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Load settings",
-              "description": "Reads the tablet TOML configuration.",
+              "display_name": "读取设置",
+              "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -1372,8 +1372,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Read state",
-              "description": "Reads the persisted runtime state.",
+              "display_name": "读取运行状态",
+              "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -1446,8 +1446,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Finish load",
-              "description": "Finishes the settings and state load.",
+              "display_name": "结束",
+              "description": "表示这个流程到此结束，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -1561,8 +1561,8 @@
         "path": "nodes/device/adb_state.py"
       },
       "info": {
-        "display_name": "ADB transport state",
-        "description": "Queries adb get-state for the configured serial and classifies the transport.",
+        "display_name": "检查调试连接",
+        "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -1763,8 +1763,8 @@
         "path": "nodes/display/nodes.py"
       },
       "info": {
-        "display_name": "Match display layout",
-        "description": "Reads the Mutter layout and reports whether it already equals the requested target.",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -1848,8 +1848,8 @@
         "path": "nodes/boundary.py"
       },
       "info": {
-        "display_name": "End",
-        "description": "Marks the structural end of a USB display workflow.",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "author": null,
@@ -1907,8 +1907,8 @@
         "path": "nodes/state/settings.py"
       },
       "info": {
-        "display_name": "Load settings",
-        "description": "Reads the tablet TOML configuration and applies historical defaults for missing keys.",
+        "display_name": "读取设置",
+        "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -1982,8 +1982,8 @@
         "path": "nodes/device/probe.py"
       },
       "info": {
-        "display_name": "Probe USB device",
-        "description": "Scans sysfs for the configured USB serial and resolves its RNDIS interface.",
+        "display_name": "查找平板",
+        "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -2061,8 +2061,8 @@
         "path": "nodes/state/read_state.py"
       },
       "info": {
-        "display_name": "Read state",
-        "description": "Loads the runtime state document; a missing or invalid file yields a baseline state.",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -2136,8 +2136,8 @@
         "path": "nodes/boundary.py"
       },
       "info": {
-        "display_name": "Start",
-        "description": "Marks the structural start of a USB display workflow.",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "author": null,
@@ -2699,8 +2699,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.adb_state",
-        "display_name": "ADB transport state",
-        "description": "Queries adb get-state for the configured serial and classifies the transport.",
+        "display_name": "检查调试连接",
+        "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -3503,8 +3503,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.display_matches",
-        "display_name": "Match display layout",
-        "description": "Reads the Mutter layout and reports whether it already equals the requested target.",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -3903,8 +3903,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.end",
-        "display_name": "End",
-        "description": "Marks the structural end of a USB display workflow.",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "tags": [],
@@ -4263,8 +4263,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.load_settings",
-        "display_name": "Load settings",
-        "description": "Reads the tablet TOML configuration and applies historical defaults for missing keys.",
+        "display_name": "读取设置",
+        "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -4639,8 +4639,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.probe_device",
-        "display_name": "Probe USB device",
-        "description": "Scans sysfs for the configured USB serial and resolves its RNDIS interface.",
+        "display_name": "查找平板",
+        "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -5019,8 +5019,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.read_state",
-        "display_name": "Read state",
-        "description": "Loads the runtime state document; a missing or invalid file yields a baseline state.",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -5395,8 +5395,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.start",
-        "display_name": "Start",
-        "description": "Marks the structural start of a USB display workflow.",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "tags": [],

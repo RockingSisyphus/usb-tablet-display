@@ -2,30 +2,62 @@
   "pipeline": {
     "inputs": [],
     "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Start daemon", "description": "Starts the long-running controller workflow."},
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
       {
         "id": "loop",
         "definition_id": "vibeflow.loop.while",
-        "display_name": "Controller loop",
-        "description": "Runs daemon ticks until shutdown is requested.",
+        "display_name": "常驻循环",
+        "description": "反复执行每一轮检查，直到收到停止信号为止。",
         "requires": [],
         "provides": [],
         "loop": {
           "body": "usb.daemon_tick",
           "max_iterations": null,
-          "stop_when": {"from": "usb.shutdown", "equals": true}
+          "stop_when": {
+            "from": "usb.shutdown",
+            "equals": true
+          }
         }
       },
-      {"id": "end", "definition_id": "usb.end", "display_name": "End daemon", "description": "Ends after the loop reports shutdown.",
-        "similar_to": {"node": "start", "relationship": "copy", "reason": "Both terminals intentionally return no data at opposite graph boundaries."}}
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。",
+        "similar_to": {
+          "node": "start",
+          "relationship": "copy",
+          "reason": "Both terminals intentionally return no data at opposite graph boundaries."
+        }
+      }
     ],
-    "edges": [["start", "loop"], ["loop", "end"]],
+    "edges": [
+      [
+        "start",
+        "loop"
+      ],
+      [
+        "loop",
+        "end"
+      ]
+    ],
     "outputs": []
   },
   "nodeset_imports": [
-    {"path": "../nodeset_types/state_io.jsonc"},
-    {"path": "../nodeset_types/device_probe.jsonc"},
-    {"path": "../nodeset_types/daemon_tick.jsonc"}
+    {
+      "path": "../nodeset_types/state_io.jsonc"
+    },
+    {
+      "path": "../nodeset_types/device_probe.jsonc"
+    },
+    {
+      "path": "../nodeset_types/daemon_tick.jsonc"
+    }
   ],
   "plugins": []
 }

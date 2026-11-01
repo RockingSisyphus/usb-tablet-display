@@ -51,8 +51,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Start connect",
-          "description": "Starts the connect session.",
+          "display_name": "开始",
+          "description": "表示这个流程从这里开始，本身不做任何事。",
           "description_source": "call"
         },
         "flow_kind": "terminal",
@@ -120,8 +120,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Load state and settings",
-          "description": "Loads tablet settings.",
+          "display_name": "读取设置与状态",
+          "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
           "description_source": "call"
         },
         "flow_kind": "predefined",
@@ -200,8 +200,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Probe tablet",
-          "description": "Resolves USB presence and ADB transport state.",
+          "display_name": "检查平板状态",
+          "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。",
           "description_source": "call"
         },
         "flow_kind": "predefined",
@@ -286,8 +286,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Wait for USB address",
-          "description": "Waits for the RNDIS IPv4 address after a reconnect.",
+          "display_name": "等待网络地址",
+          "description": "平板插上后，等它从电脑分配到 USB 网络地址；长时间等不到就明确报错。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -372,8 +372,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Require ADB readiness",
-          "description": "Fails fast when the tablet is unusable.",
+          "display_name": "确认平板可用",
+          "description": "平板没有插好或调试连接未获授权时，立刻停下并说明原因。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -458,8 +458,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Enable virtual output",
-          "description": "Applies the enable layout when needed.",
+          "display_name": "调整副屏",
+          "description": "需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -541,8 +541,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Configure Sunshine",
-          "description": "Points capture at the virtual connector and USB address.",
+          "display_name": "配置串流程序",
+          "description": "让电脑端的串流程序以虚拟副屏作为画面来源，并绑定到当前 USB 网络地址。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -627,8 +627,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Pin portal permission",
-          "description": "Authorizes the virtual display for Sunshine.",
+          "display_name": "授权录屏",
+          "description": "把虚拟副屏加入系统的录屏授权名单，避免每次串流都被系统弹窗拦住。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -713,8 +713,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Start Sunshine stream",
-          "description": "Starts Sunshine and waits for its streaming ports.",
+          "display_name": "启动串流程序",
+          "description": "启动电脑端的串流程序，并等它把接收连接的端口准备好。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -799,8 +799,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Restart Sunshine after portal change",
-          "description": "Waits for streaming ports, restarting after portal authorization changes.",
+          "display_name": "让串流程序就绪",
+          "description": "如果录屏授权刚刚发生变化，就重启一次串流程序，并重新等它准备好。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -890,8 +890,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Start Moonlight session",
-          "description": "Registers the USB address, launches Moonlight once, then waits for the stream.",
+          "display_name": "让平板开始投屏",
+          "description": "在平板上登记电脑当前的 USB 地址并打开投屏；首次使用或地址变化时会自动完成登记。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -986,8 +986,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Verify stream",
-          "description": "Waits for Sunshine client events and the Moonlight activity.",
+          "display_name": "确认画面在传输",
+          "description": "等待平板端的投屏程序连上，并确认电脑已经开始向平板推送画面。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -1077,8 +1077,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Verify virtual output",
-          "description": "Verifies the enable layout.",
+          "display_name": "检查副屏是否已就位",
+          "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -1160,8 +1160,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Require stream",
-          "description": "Fails the session when the stream is not connected.",
+          "display_name": "要求画面已连上",
+          "description": "如果最终没有连上，就明确报错结束，避免把失败误当成成功。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -1246,8 +1246,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "Summarize connect",
-          "description": "Reports the connect outcome.",
+          "display_name": "汇总连接结果",
+          "description": "把这次连接是否成功、画面是否连上等关键结果整理成结论。",
           "description_source": "call"
         },
         "flow_kind": "process",
@@ -1342,8 +1342,8 @@
           "path": "configs/connect.jsonc"
         },
         "role": {
-          "display_name": "End connect",
-          "description": "Ends the connect session.",
+          "display_name": "结束",
+          "description": "表示这个流程到此结束，本身不做任何事。",
           "description_source": "call"
         },
         "flow_kind": "terminal",
@@ -2143,8 +2143,8 @@
         "root_id": "usb-tablet-display",
         "path": "nodeset_types/device_probe.jsonc"
       },
-      "display_name": "Probe tablet",
-      "description": "Resolves USB presence and ADB transport state for the configured tablet.",
+      "display_name": "检查平板状态",
+      "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。",
       "status": "implemented",
       "planned_behavior": null,
       "expand": true,
@@ -2234,8 +2234,8 @@
               "path": "nodeset_types/device_probe.jsonc"
             },
             "role": {
-              "display_name": "Begin probe",
-              "description": "Begins the device probe.",
+              "display_name": "开始",
+              "description": "表示这个流程从这里开始，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -2302,8 +2302,8 @@
               "path": "nodeset_types/device_probe.jsonc"
             },
             "role": {
-              "display_name": "Probe USB device",
-              "description": "Scans sysfs for the configured serial.",
+              "display_name": "查找平板",
+              "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -2382,8 +2382,8 @@
               "path": "nodeset_types/device_probe.jsonc"
             },
             "role": {
-              "display_name": "ADB transport state",
-              "description": "Queries the ADB transport state.",
+              "display_name": "检查调试连接",
+              "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -2462,8 +2462,8 @@
               "path": "nodeset_types/device_probe.jsonc"
             },
             "role": {
-              "display_name": "Finish probe",
-              "description": "Finishes the device probe.",
+              "display_name": "结束",
+              "description": "表示这个流程到此结束，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -2577,8 +2577,8 @@
         "root_id": "usb-tablet-display",
         "path": "nodeset_types/state_io.jsonc"
       },
-      "display_name": "Load state and settings",
-      "description": "Loads tablet settings and the persisted runtime state for one operation.",
+      "display_name": "读取设置与状态",
+      "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
       "status": "implemented",
       "planned_behavior": null,
       "expand": true,
@@ -2655,8 +2655,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Begin load",
-              "description": "Begins the settings and state load.",
+              "display_name": "开始",
+              "description": "表示这个流程从这里开始，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -2723,8 +2723,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Load settings",
-              "description": "Reads the tablet TOML configuration.",
+              "display_name": "读取设置",
+              "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -2797,8 +2797,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Read state",
-              "description": "Reads the persisted runtime state.",
+              "display_name": "读取运行状态",
+              "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -2871,8 +2871,8 @@
               "path": "nodeset_types/state_io.jsonc"
             },
             "role": {
-              "display_name": "Finish load",
-              "description": "Finishes the settings and state load.",
+              "display_name": "结束",
+              "description": "表示这个流程到此结束，本身不做任何事。",
               "description_source": "call"
             },
             "flow_kind": "terminal",
@@ -2986,8 +2986,8 @@
         "path": "nodes/device/adb_state.py"
       },
       "info": {
-        "display_name": "ADB transport state",
-        "description": "Queries adb get-state for the configured serial and classifies the transport.",
+        "display_name": "检查调试连接",
+        "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3071,8 +3071,8 @@
         "path": "nodes/display/nodes.py"
       },
       "info": {
-        "display_name": "Apply display layout",
-        "description": "Applies the requested layout when needed and verifies the result by re-reading Mutter state.",
+        "display_name": "调整副屏",
+        "description": "需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3180,8 +3180,8 @@
         "path": "nodes/display/nodes.py"
       },
       "info": {
-        "display_name": "Match display layout",
-        "description": "Reads the Mutter layout and reports whether it already equals the requested target.",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3265,8 +3265,8 @@
         "path": "nodes/boundary.py"
       },
       "info": {
-        "display_name": "End",
-        "description": "Marks the structural end of a USB display workflow.",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "author": null,
@@ -3324,8 +3324,8 @@
         "path": "nodes/state/settings.py"
       },
       "info": {
-        "display_name": "Load settings",
-        "description": "Reads the tablet TOML configuration and applies historical defaults for missing keys.",
+        "display_name": "读取设置",
+        "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3399,8 +3399,8 @@
         "path": "nodes/stream/moonlight.py"
       },
       "info": {
-        "display_name": "Start Moonlight session",
-        "description": "Registers the USB host address first, launches Moonlight once, then waits for the stream without touching the UI.",
+        "display_name": "让平板开始投屏",
+        "description": "在平板上登记电脑当前的 USB 地址并打开投屏；首次使用或地址变化时会自动完成登记。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3516,8 +3516,8 @@
         "path": "nodes/stream/portal.py"
       },
       "info": {
-        "display_name": "Pin portal permission",
-        "description": "Adds the virtual display to Sunshine's remote-desktop portal permission entry.",
+        "display_name": "授权录屏",
+        "description": "把虚拟副屏加入系统的录屏授权名单，避免每次串流都被系统弹窗拦住。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3603,8 +3603,8 @@
         "path": "nodes/device/probe.py"
       },
       "info": {
-        "display_name": "Probe USB device",
-        "description": "Scans sysfs for the configured USB serial and resolves its RNDIS interface.",
+        "display_name": "查找平板",
+        "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3682,8 +3682,8 @@
         "path": "nodes/state/read_state.py"
       },
       "info": {
-        "display_name": "Read state",
-        "description": "Loads the runtime state document; a missing or invalid file yields a baseline state.",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3757,8 +3757,8 @@
         "path": "nodes/session/gates.py"
       },
       "info": {
-        "display_name": "Require ADB readiness",
-        "description": "Fails the session when the tablet is absent or its ADB transport is not usable.",
+        "display_name": "确认平板可用",
+        "description": "平板没有插好或调试连接未获授权时，立刻停下并说明原因。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3844,8 +3844,8 @@
         "path": "nodes/stream/moonlight.py"
       },
       "info": {
-        "display_name": "Require stream",
-        "description": "Fails the connect session when the stream never became connected.",
+        "display_name": "要求画面已连上",
+        "description": "如果最终没有连上，就明确报错结束，避免把失败误当成成功。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3931,8 +3931,8 @@
         "path": "nodes/session/gates.py"
       },
       "info": {
-        "display_name": "Summarize connect session",
-        "description": "Reports the outcome of a connect session after layout verification.",
+        "display_name": "汇总连接结果",
+        "description": "把这次连接是否成功、画面是否连上等关键结果整理成结论。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -4034,8 +4034,8 @@
         "path": "nodes/boundary.py"
       },
       "info": {
-        "display_name": "Start",
-        "description": "Marks the structural start of a USB display workflow.",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "author": null,
@@ -4093,8 +4093,8 @@
         "path": "nodes/stream/sunshine.py"
       },
       "info": {
-        "display_name": "Verify stream",
-        "description": "Waits for Sunshine client events and the Moonlight activity before reporting the stream.",
+        "display_name": "确认画面在传输",
+        "description": "等待平板端的投屏程序连上，并确认电脑已经开始向平板推送画面。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -4194,8 +4194,8 @@
         "path": "nodes/stream/sunshine.py"
       },
       "info": {
-        "display_name": "Configure Sunshine",
-        "description": "Points Sunshine capture at the virtual connector with the configured encoder and USB address.",
+        "display_name": "配置串流程序",
+        "description": "让电脑端的串流程序以虚拟副屏作为画面来源，并绑定到当前 USB 网络地址。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -4281,8 +4281,8 @@
         "path": "nodes/stream/sunshine.py"
       },
       "info": {
-        "display_name": "Restart Sunshine after portal change",
-        "description": "Restarts Sunshine when portal authorization changed, then waits for its streaming ports again.",
+        "display_name": "让串流程序就绪",
+        "description": "如果录屏授权刚刚发生变化，就重启一次串流程序，并重新等它准备好。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -4386,8 +4386,8 @@
         "path": "nodes/stream/sunshine.py"
       },
       "info": {
-        "display_name": "Start Sunshine stream",
-        "description": "Resets a failed unit, starts Sunshine and waits for its streaming ports.",
+        "display_name": "启动串流程序",
+        "description": "启动电脑端的串流程序，并等它把接收连接的端口准备好。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -4479,8 +4479,8 @@
         "path": "nodes/stream/address.py"
       },
       "info": {
-        "display_name": "Wait for USB address",
-        "description": "Polls the RNDIS interface until it receives an IPv4 address after a reconnect.",
+        "display_name": "等待网络地址",
+        "description": "平板插上后，等它从电脑分配到 USB 网络地址；长时间等不到就明确报错。",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -5076,8 +5076,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.adb_state",
-        "display_name": "ADB transport state",
-        "description": "Queries adb get-state for the configured serial and classifies the transport.",
+        "display_name": "检查调试连接",
+        "description": "查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -5462,8 +5462,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.display_apply",
-        "display_name": "Apply display layout",
-        "description": "Applies the requested layout when needed and verifies the result by re-reading Mutter state.",
+        "display_name": "调整副屏",
+        "description": "需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -5886,8 +5886,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.display_matches",
-        "display_name": "Match display layout",
-        "description": "Reads the Mutter layout and reports whether it already equals the requested target.",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -6286,8 +6286,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.end",
-        "display_name": "End",
-        "description": "Marks the structural end of a USB display workflow.",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "tags": [],
@@ -6646,8 +6646,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.load_settings",
-        "display_name": "Load settings",
-        "description": "Reads the tablet TOML configuration and applies historical defaults for missing keys.",
+        "display_name": "读取设置",
+        "description": "从电脑上的配置文件读取这台平板的设置（例如序列号、副屏接口、程序路径），缺少的项用默认值补齐。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -7022,8 +7022,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.moonlight_connect",
-        "display_name": "Start Moonlight session",
-        "description": "Registers the USB host address first, launches Moonlight once, then waits for the stream without touching the UI.",
+        "display_name": "让平板开始投屏",
+        "description": "在平板上登记电脑当前的 USB 地址并打开投屏；首次使用或地址变化时会自动完成登记。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -7466,8 +7466,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.portal_pin",
-        "display_name": "Pin portal permission",
-        "description": "Adds the virtual display to Sunshine's remote-desktop portal permission entry.",
+        "display_name": "授权录屏",
+        "description": "把虚拟副屏加入系统的录屏授权名单，避免每次串流都被系统弹窗拦住。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -7854,8 +7854,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.probe_device",
-        "display_name": "Probe USB device",
-        "description": "Scans sysfs for the configured USB serial and resolves its RNDIS interface.",
+        "display_name": "查找平板",
+        "description": "在电脑的 USB 设备里查找这台平板，判断是否已经插上，并找到它对应的网络接口。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -8234,8 +8234,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.read_state",
-        "display_name": "Read state",
-        "description": "Loads the runtime state document; a missing or invalid file yields a baseline state.",
+        "display_name": "读取运行状态",
+        "description": "读取上一次保存的运行状态；没有或损坏时从初始状态开始。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -8610,8 +8610,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.require_ready",
-        "display_name": "Require ADB readiness",
-        "description": "Fails the session when the tablet is absent or its ADB transport is not usable.",
+        "display_name": "确认平板可用",
+        "description": "平板没有插好或调试连接未获授权时，立刻停下并说明原因。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -8998,8 +8998,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.require_stream",
-        "display_name": "Require stream",
-        "description": "Fails the connect session when the stream never became connected.",
+        "display_name": "要求画面已连上",
+        "description": "如果最终没有连上，就明确报错结束，避免把失败误当成成功。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -9386,8 +9386,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.session_summary",
-        "display_name": "Summarize connect session",
-        "description": "Reports the outcome of a connect session after layout verification.",
+        "display_name": "汇总连接结果",
+        "description": "把这次连接是否成功、画面是否连上等关键结果整理成结论。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -9790,8 +9790,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.start",
-        "display_name": "Start",
-        "description": "Marks the structural start of a USB display workflow.",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。",
         "version": "0.1.0",
         "flow_kind": "terminal",
         "tags": [],
@@ -10150,8 +10150,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.stream_verify",
-        "display_name": "Verify stream",
-        "description": "Waits for Sunshine client events and the Moonlight activity before reporting the stream.",
+        "display_name": "确认画面在传输",
+        "description": "等待平板端的投屏程序连上，并确认电脑已经开始向平板推送画面。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -10566,8 +10566,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.sunshine_configure",
-        "display_name": "Configure Sunshine",
-        "description": "Points Sunshine capture at the virtual connector with the configured encoder and USB address.",
+        "display_name": "配置串流程序",
+        "description": "让电脑端的串流程序以虚拟副屏作为画面来源，并绑定到当前 USB 网络地址。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -10954,8 +10954,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.sunshine_ready",
-        "display_name": "Restart Sunshine after portal change",
-        "description": "Restarts Sunshine when portal authorization changed, then waits for its streaming ports again.",
+        "display_name": "让串流程序就绪",
+        "description": "如果录屏授权刚刚发生变化，就重启一次串流程序，并重新等它准备好。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -11374,8 +11374,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.sunshine_start",
-        "display_name": "Start Sunshine stream",
-        "description": "Resets a failed unit, starts Sunshine and waits for its streaming ports.",
+        "display_name": "启动串流程序",
+        "description": "启动电脑端的串流程序，并等它把接收连接的端口准备好。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -11768,8 +11768,8 @@
         "kind": "node",
         "node_type": "vibeflow.node",
         "id": "usb.wait_usb_address",
-        "display_name": "Wait for USB address",
-        "description": "Polls the RNDIS interface until it receives an IPv4 address after a reconnect.",
+        "display_name": "等待网络地址",
+        "description": "平板插上后，等它从电脑分配到 USB 网络地址；长时间等不到就明确报错。",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],

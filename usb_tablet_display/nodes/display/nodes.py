@@ -78,8 +78,8 @@ def _apply(connection: Gio.DBusConnection, state: tuple, config: list, method: i
 
 @node(
     id="usb.display_matches", node_type="vibeflow.node",
-    display_name="Match display layout",
-    description="Reads the Mutter layout and reports whether it already equals the requested target.",
+    display_name="检查副屏是否已就位",
+    description="把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     implementation_files=["layout.py"],
@@ -103,8 +103,8 @@ class DisplayMatches:
 
 @node(
     id="usb.display_apply", node_type="vibeflow.node",
-    display_name="Apply display layout",
-    description="Applies the requested layout when needed and verifies the result by re-reading Mutter state.",
+    display_name="调整副屏",
+    description="需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     implementation_files=["layout.py"],

@@ -2,41 +2,258 @@
   "pipeline": {
     "inputs": [],
     "nodes": [
-      {"id": "start", "definition_id": "usb.start", "display_name": "Start connect", "description": "Starts the connect session."},
-      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads tablet settings."},
-      {"id": "probe", "definition_id": "usb.device_probe", "display_name": "Probe tablet", "description": "Resolves USB presence and ADB transport state."},
-      {"id": "addr", "definition_id": "usb.wait_usb_address", "display_name": "Wait for USB address", "description": "Waits for the RNDIS IPv4 address after a reconnect."},
-      {"id": "ready", "definition_id": "usb.require_ready", "display_name": "Require ADB readiness", "description": "Fails fast when the tablet is unusable."},
-      {"id": "display", "definition_id": "usb.display_apply", "display_name": "Enable virtual output", "description": "Applies the enable layout when needed.", "config": {"target": "enable"}},
-      {"id": "configure", "definition_id": "usb.sunshine_configure", "display_name": "Configure Sunshine", "description": "Points capture at the virtual connector and USB address."},
-      {"id": "portal", "definition_id": "usb.portal_pin", "display_name": "Pin portal permission", "description": "Authorizes the virtual display for Sunshine."},
-      {"id": "stream", "definition_id": "usb.sunshine_start", "display_name": "Start Sunshine stream", "description": "Starts Sunshine and waits for its streaming ports."},
-      {"id": "sready", "definition_id": "usb.sunshine_ready", "display_name": "Restart Sunshine after portal change", "description": "Waits for streaming ports, restarting after portal authorization changes."},
-      {"id": "moonlight", "definition_id": "usb.moonlight_connect", "display_name": "Start Moonlight session", "description": "Registers the USB address, launches Moonlight once, then waits for the stream."},
-      {"id": "verify", "definition_id": "usb.stream_verify", "display_name": "Verify stream", "description": "Waits for Sunshine client events and the Moonlight activity."},
-      {"id": "check", "definition_id": "usb.display_matches", "display_name": "Verify virtual output", "description": "Verifies the enable layout.", "config": {"target": "enable"}},
-      {"id": "require", "definition_id": "usb.require_stream", "display_name": "Require stream", "description": "Fails the session when the stream is not connected."},
-      {"id": "summary", "definition_id": "usb.session_summary", "display_name": "Summarize connect", "description": "Reports the connect outcome."},
-      {"id": "end", "definition_id": "usb.end", "display_name": "End connect", "description": "Ends the connect session."}
+      {
+        "id": "start",
+        "definition_id": "usb.start",
+        "display_name": "开始",
+        "description": "表示这个流程从这里开始，本身不做任何事。"
+      },
+      {
+        "id": "io",
+        "definition_id": "usb.state_io",
+        "display_name": "读取设置与状态",
+        "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。"
+      },
+      {
+        "id": "probe",
+        "definition_id": "usb.device_probe",
+        "display_name": "检查平板状态",
+        "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。"
+      },
+      {
+        "id": "addr",
+        "definition_id": "usb.wait_usb_address",
+        "display_name": "等待网络地址",
+        "description": "平板插上后，等它从电脑分配到 USB 网络地址；长时间等不到就明确报错。"
+      },
+      {
+        "id": "ready",
+        "definition_id": "usb.require_ready",
+        "display_name": "确认平板可用",
+        "description": "平板没有插好或调试连接未获授权时，立刻停下并说明原因。"
+      },
+      {
+        "id": "display",
+        "definition_id": "usb.display_apply",
+        "display_name": "调整副屏",
+        "description": "需要时把屏幕布局调整为打开或关闭副屏，并自动确认系统的变更提示；如果结果不对会自动恢复原状。",
+        "config": {
+          "target": "enable"
+        }
+      },
+      {
+        "id": "configure",
+        "definition_id": "usb.sunshine_configure",
+        "display_name": "配置串流程序",
+        "description": "让电脑端的串流程序以虚拟副屏作为画面来源，并绑定到当前 USB 网络地址。"
+      },
+      {
+        "id": "portal",
+        "definition_id": "usb.portal_pin",
+        "display_name": "授权录屏",
+        "description": "把虚拟副屏加入系统的录屏授权名单，避免每次串流都被系统弹窗拦住。"
+      },
+      {
+        "id": "stream",
+        "definition_id": "usb.sunshine_start",
+        "display_name": "启动串流程序",
+        "description": "启动电脑端的串流程序，并等它把接收连接的端口准备好。"
+      },
+      {
+        "id": "sready",
+        "definition_id": "usb.sunshine_ready",
+        "display_name": "让串流程序就绪",
+        "description": "如果录屏授权刚刚发生变化，就重启一次串流程序，并重新等它准备好。"
+      },
+      {
+        "id": "moonlight",
+        "definition_id": "usb.moonlight_connect",
+        "display_name": "让平板开始投屏",
+        "description": "在平板上登记电脑当前的 USB 地址并打开投屏；首次使用或地址变化时会自动完成登记。"
+      },
+      {
+        "id": "verify",
+        "definition_id": "usb.stream_verify",
+        "display_name": "确认画面在传输",
+        "description": "等待平板端的投屏程序连上，并确认电脑已经开始向平板推送画面。"
+      },
+      {
+        "id": "check",
+        "definition_id": "usb.display_matches",
+        "display_name": "检查副屏是否已就位",
+        "description": "把当前屏幕布局和期望的副屏状态做比较，判断还需要不需要调整。",
+        "config": {
+          "target": "enable"
+        }
+      },
+      {
+        "id": "require",
+        "definition_id": "usb.require_stream",
+        "display_name": "要求画面已连上",
+        "description": "如果最终没有连上，就明确报错结束，避免把失败误当成成功。"
+      },
+      {
+        "id": "summary",
+        "definition_id": "usb.session_summary",
+        "display_name": "汇总连接结果",
+        "description": "把这次连接是否成功、画面是否连上等关键结果整理成结论。"
+      },
+      {
+        "id": "end",
+        "definition_id": "usb.end",
+        "display_name": "结束",
+        "description": "表示这个流程到此结束，本身不做任何事。"
+      }
     ],
-    "edges": [["start", "io"], ["io", "probe"], ["probe", "ready"], ["probe", "addr"], ["io", "addr"], ["io", "display"], ["ready", "display"],
-              ["io", "configure"], ["addr", "configure"], ["display", "configure"],
-              ["io", "portal"], ["stream", "portal"],
-              ["io", "stream"], ["configure", "stream"],
-              ["io", "sready"], ["stream", "sready"], ["portal", "sready"],
-              ["io", "moonlight"], ["addr", "moonlight"], ["sready", "moonlight"],
-              ["io", "verify"], ["sready", "verify"], ["moonlight", "verify"],
-              ["io", "check"], ["verify", "check"],
-              ["verify", "require"], ["moonlight", "require"],
-              ["ready", "summary"], ["display", "summary"], ["check", "summary"], ["verify", "summary"],
-              ["require", "end"], ["summary", "end"]],
+    "edges": [
+      [
+        "start",
+        "io"
+      ],
+      [
+        "io",
+        "probe"
+      ],
+      [
+        "probe",
+        "ready"
+      ],
+      [
+        "probe",
+        "addr"
+      ],
+      [
+        "io",
+        "addr"
+      ],
+      [
+        "io",
+        "display"
+      ],
+      [
+        "ready",
+        "display"
+      ],
+      [
+        "io",
+        "configure"
+      ],
+      [
+        "addr",
+        "configure"
+      ],
+      [
+        "display",
+        "configure"
+      ],
+      [
+        "io",
+        "portal"
+      ],
+      [
+        "stream",
+        "portal"
+      ],
+      [
+        "io",
+        "stream"
+      ],
+      [
+        "configure",
+        "stream"
+      ],
+      [
+        "io",
+        "sready"
+      ],
+      [
+        "stream",
+        "sready"
+      ],
+      [
+        "portal",
+        "sready"
+      ],
+      [
+        "io",
+        "moonlight"
+      ],
+      [
+        "addr",
+        "moonlight"
+      ],
+      [
+        "sready",
+        "moonlight"
+      ],
+      [
+        "io",
+        "verify"
+      ],
+      [
+        "sready",
+        "verify"
+      ],
+      [
+        "moonlight",
+        "verify"
+      ],
+      [
+        "io",
+        "check"
+      ],
+      [
+        "verify",
+        "check"
+      ],
+      [
+        "verify",
+        "require"
+      ],
+      [
+        "moonlight",
+        "require"
+      ],
+      [
+        "ready",
+        "summary"
+      ],
+      [
+        "display",
+        "summary"
+      ],
+      [
+        "check",
+        "summary"
+      ],
+      [
+        "verify",
+        "summary"
+      ],
+      [
+        "require",
+        "end"
+      ],
+      [
+        "summary",
+        "end"
+      ]
+    ],
     "outputs": [
-      {"type": "usb.session_result", "cardinality": "exactly_one", "display_name": "Session result"}
+      {
+        "type": "usb.session_result",
+        "cardinality": "exactly_one",
+        "display_name": "Session result"
+      }
     ]
   },
   "nodeset_imports": [
-    {"path": "../nodeset_types/state_io.jsonc"},
-    {"path": "../nodeset_types/device_probe.jsonc"}
+    {
+      "path": "../nodeset_types/state_io.jsonc"
+    },
+    {
+      "path": "../nodeset_types/device_probe.jsonc"
+    }
   ],
   "plugins": []
 }

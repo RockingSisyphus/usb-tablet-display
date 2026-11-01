@@ -8,8 +8,8 @@ from vibeflow.targets.python.sdk import node
 
 @node(
     id="usb.adb_state", node_type="vibeflow.node",
-    display_name="ADB transport state",
-    description="Queries adb get-state for the configured serial and classifies the transport.",
+    display_name="检查调试连接",
+    description="查询平板是否已经允许电脑通过 USB 调试连接，用于判断平板当前是否可用。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     contract={

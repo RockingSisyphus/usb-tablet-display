@@ -21,8 +21,8 @@ def _request():
 
 @node(
     id="usb.install_run", node_type="vibeflow.node",
-    display_name="Run install action",
-    description="Runs the requested backup, quiesce, install, restore or verify action for this stack.",
+    display_name="执行安装操作",
+    description="按用户选择的动作，完成备份、停止服务、安装、还原或自检中的一项。",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
     implementation_files=["ops.py"],
