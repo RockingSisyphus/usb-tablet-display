@@ -59,25 +59,41 @@ def _tap(settings, point):
     _adb(settings, ["input", "tap", point[0], point[1]])
 
 
+def _list_has_host(settings, host_name):
+    xml = _dump_ui(settings, settings.get("shared_ui_snapshot"))
+    if not xml:
+        return False, None
+    try:
+        root = ET.fromstring(xml)
+    except ET.ParseError:
+        return False, xml
+    texts = " ".join(((n.get("text") or "") + " " + (n.get("content-desc") or "")) for n in root.iter())
+    return host_name in texts, xml
+
+
 def _register_address(settings, address, deadline):
     entered = submitted = opened = False
+    package = settings["moonlight_package"]
     while time.monotonic() < deadline:
         if session.connected(settings):
-            return True
+            return True, ""
         xml = _dump_ui(settings, settings.get("shared_ui_snapshot"))
         if not xml:
-            time.sleep(0.5)
+            time.sleep(0.6)
             continue
         try:
-            root = ET.fromstring(xml)
+            error = dialog_error(xml, package)
         except ET.ParseError:
-            time.sleep(0.5)
+            time.sleep(0.6)
             continue
-        if stream_surface(root, settings["moonlight_package"]):
-            return True
-        edit = field(xml, settings["moonlight_package"], "hostTextView")
-        add = field(xml, settings["moonlight_package"], "manuallyAddPc")
-        confirm = field(xml, settings["moonlight_package"], "addPcButton")
+        if error:
+            return False, "Moonlight rejected the USB address: " + error
+        root = ET.fromstring(xml)
+        if stream_surface(root, package):
+            return True, ""
+        edit = field(xml, package, "hostTextView")
+        add = field(xml, package, "manuallyAddPc")
+        confirm = field(xml, package, "addPcButton")
         if edit and not entered:
             _tap(settings, edit[0])
             if edit[1]:
@@ -90,8 +106,12 @@ def _register_address(settings, address, deadline):
         elif add and not opened:
             _tap(settings, add[0])
             opened = True
-        time.sleep(0.5)
-    return session.connected(settings)
+        elif submitted:
+            present, _xml = _list_has_host(settings, settings["host_name"])
+            if present:
+                return True, ""
+        time.sleep(0.6)
+    return session.connected(settings), "address registration timed out"
 
 
 def _server_info(address):
@@ -106,10 +126,29 @@ def _launch_shortcut(settings, address):
     hostname, server_id = _server_info(address)
     if hostname != settings["host_name"]:
         raise RuntimeError("Sunshine hostname does not match the configured Moonlight target")
-    done = _adb(settings, ["am", "start", "-n", settings["moonlight_package"] + TRAMPOLINE,
-                           "--es", "UUID", server_id, "--es", "AppId", str(int(settings["app_id"])),
-                           "--es", "AppName", settings["app_name"]], timeout=15)
+    done = _am_start(settings, settings["moonlight_package"], TRAMPOLINE,
+                     ("--es", "UUID", server_id, "--es", "AppId", str(int(settings["app_id"])),
+                      "--es", "AppName", settings["app_name"]))
     return done is not None and done.returncode == 0
+
+
+def _am_start(settings, package, activity, extra=()):
+    last = None
+    for _attempt in range(3):
+        done = subprocess.run([settings["adb"], "-s", settings["serial"], "shell", "am", "start",
+                               "-n", f"{package}/{activity}", *extra],
+                              capture_output=True, text=True, timeout=15)
+        last = done
+        if done.returncode == 0 and "Error" not in (done.stdout or "") + (done.stderr or ""):
+            return done
+        time.sleep(0.6)
+    return last
+
+
+def _reachable(settings, address):
+    done = _adb(settings, ["/system/bin/curl", "-sS", "--max-time", "4", "-o", "/dev/null",
+                           "-w", "%{http_code}", f"http://{address}:47989/serverinfo"], 8)
+    return bool(done and done.returncode == 0 and "200" in (done.stdout or ""))
 
 
 def _try_launch(settings, address):
@@ -124,6 +163,29 @@ def _observe(settings, address):
     return session.connected(settings) and ports_ok, detail
 
 
+def _sunshine_log():
+    try:
+        done = subprocess.run(["journalctl", "--user", "-u", "app-dev.lizardbyte.app.Sunshine.service",
+                               "--since", "-4 min", "--no-pager"], capture_output=True,
+                              text=True, timeout=10)
+        return (done.stdout or "")[-8000:]
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+
+
+def _append_trace(trace):
+    path = Path("/tmp/usb-tablet-display/moonlight-failure.json")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        data = {}
+    data["trace"] = trace
+    try:
+        path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except OSError:
+        pass
+
+
 def _save_failure(stage, address, xml, detail):
     path = Path("/tmp/usb-tablet-display/moonlight-failure.json")
     try:
@@ -132,6 +194,7 @@ def _save_failure(stage, address, xml, detail):
                                     "ui_file": "/tmp/usb-tablet-display/moonlight-failure.xml"},
                                    ensure_ascii=False, indent=2), encoding="utf-8")
         (path.parent / "moonlight-failure.xml").write_text(xml or "", encoding="utf-8")
+        (path.parent / "moonlight-failure-sunshine.log").write_text(_sunshine_log(), encoding="utf-8")
     except OSError:
         pass
 
@@ -202,6 +265,7 @@ class MoonlightConnect:
     def run_pure(self, inputs, params):
         settings = inputs["usb.settings"]["value"]
         device = inputs["usb.device"]["value"]
+        trace = []
         address = _host_address(device.get("interface", ""))
         package = settings["moonlight_package"]
         if not address:
@@ -210,6 +274,10 @@ class MoonlightConnect:
         ready, detail = _observe(settings, address)
         if ready:
             return {"launch_state": {"connected": True, "address": address, "stage": "already"}}
+        if not _reachable(settings, address):
+            _save_failure("reachability", address, None, "tablet cannot reach serverinfo over usb")
+            return {"launch_state": {"connected": False, "address": address, "stage": "reachability",
+                                     "error": "tablet cannot reach http://" + address + ":47989/serverinfo"}}
         fast_deadline = time.monotonic() + 12
         fast_launched = _try_launch(settings, address)
         while time.monotonic() < fast_deadline and fast_launched:
@@ -219,10 +287,13 @@ class MoonlightConnect:
                                          "stage": "already-registered"}}
             time.sleep(0.5)
         _adb(settings, ["am", "force-stop", package])
-        _adb(settings, ["am", "start", "-n", package + PCVIEW, "--activity-clear-top"])
+        started = _am_start(settings, package, PCVIEW, ("--activity-clear-top",))
+        trace.append({"start_rc": None if started is None else started.returncode,
+                      "start_out": "" if started is None else ((started.stdout or "") + (started.stderr or "")).strip()[:200]})
         registered, error = _register_address(settings, address, time.monotonic() + max(int(params["register_ms"]), 5000) / 1000.0)
-        if error and "timed out" not in error:
+        if error:
             _save_failure("register", address, _dump_ui(settings, settings.get("shared_ui_snapshot")), error)
+            _append_trace(trace)
             return {"launch_state": {"connected": False, "address": address, "stage": "register",
                                      "error": error}}
         launched = _try_launch(settings, address)
@@ -235,7 +306,8 @@ class MoonlightConnect:
             time.sleep(0.5)
         _save_failure("launch", address, _dump_ui(settings, settings.get("shared_ui_snapshot")), detail)
         return {"launch_state": {"connected": False, "address": address, "stage": "launch",
-                                 "registered": registered, "launched": launched, "detail": detail}}
+                                 "registered": registered, "launched": launched, "detail": detail,
+                                 "reachable": _reachable(settings, address)}}
 
 
 @node(
