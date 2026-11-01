@@ -244,8 +244,23 @@ def _virtual_display_ready():
     return False
 
 
-EDID_TARGET = "/lib/firmware/edid/virtual-display.bin"
+EDID_TARGET = "/usr/lib/firmware/edid/virtual-display.bin"
+DRACUT_CONF = "/etc/dracut.conf.d/91-virtual-display-edid.conf"
 GRUB_PATH = "/etc/default/grub"
+
+
+def dracut_conf_text():
+    return f'install_items+=" {EDID_TARGET} "\n'
+
+
+def initramfs_has_edid(runner=run):
+    kernel = subprocess.run(["uname", "-r"], capture_output=True, text=True).stdout.strip()
+    if not kernel:
+        return False
+    if not _which("lsinitrd"):
+        return False
+    out = runner(["sudo", "-n", "lsinitrd", f"/boot/initrd.img-{kernel}"])
+    return "virtual-display" in (out.get("out") or "")
 
 
 def merge_cmdline(text, connector):
@@ -278,6 +293,16 @@ def ensure_virtual_display(connector="DP-1", runner=run):
     need_copy = not target.is_file() or target.stat().st_size != source.stat().st_size
     if need_copy:
         steps.append(runner(["sudo", "-n", "install", "-D", "-m", "644", str(source), EDID_TARGET]))
+        dracut = Path(DRACUT_CONF)
+        if _which("dracut"):
+            temp = Path("/tmp/usb-tablet-dracut.conf")
+            temp.write_text(dracut_conf_text(), encoding="utf-8")
+            steps.append(runner(["sudo", "-n", "install", "-D", "-m", "644", str(temp), DRACUT_CONF]))
+            temp.unlink(missing_ok=True)
+            if not initramfs_has_edid(runner):
+                steps.append(runner(["sudo", "-n", "dracut", "-f", "--kver",
+                                     subprocess.run(["uname", "-r"], capture_output=True,
+                                                    text=True).stdout.strip()]))
     grub = Path(GRUB_PATH)
     try:
         text = grub.read_text(encoding="utf-8")

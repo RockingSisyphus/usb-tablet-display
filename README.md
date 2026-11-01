@@ -78,10 +78,12 @@ tests/                       行为级测试
 `install` 会自动检测并创建：
 
 1. 检测：内核参数里已有 `drm.edid_firmware`，或 `/sys/class/drm/*-DP-*/status` 为 `connected`
-2. 未就绪时写入 `install/edid/virtual-display.bin` 到 `/lib/firmware/edid/`
-3. 在 `/etc/default/grub` 的 `GRUB_CMDLINE_LINUX_DEFAULT` 中补齐：
+2. 未就绪时写入 `install/edid/virtual-display.bin` 到 `/usr/lib/firmware/edid/`
+3. 让 initramfs 也带上它：写 `/etc/dracut.conf.d/91-virtual-display-edid.conf`，
+   并在镜像缺少该文件时执行 `sudo dracut -f`
+4. 在 `/etc/default/grub` 的 `GRUB_CMDLINE_LINUX_DEFAULT` 中补齐：
    `drm.edid_firmware=DP-1:edid/virtual-display.bin video=DP-1:e`
-4. 执行 `sudo update-grub`
+5. 执行 `sudo update-grub`
 
 **需要 sudo 权限，且重启后才生效。** 自检（`usb-tablet install verify`）会报告
 `virtual_display` 与 `sunshine_portal_token` 两项，缺失时给出明确提示。

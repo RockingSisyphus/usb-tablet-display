@@ -63,6 +63,12 @@ def test_merge_cmdline_adds_edid_parameters_once():
     assert again == merged
 
 
+def test_dracut_config_installs_the_edid():
+    text = ops.dracut_conf_text()
+    assert ops.EDID_TARGET in text
+    assert text.startswith('install_items+=')
+
+
 def test_autofill_uses_single_adb_device_and_hostname(home, monkeypatch):
     calls = []
     monkeypatch.setattr(ops, "_action_output", lambda argv, timeout=10: (
