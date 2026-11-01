@@ -23,11 +23,11 @@
     "execution_lock": null,
     "contains_global_state": false,
     "summary": {
-      "nodes": 11,
+      "nodes": 12,
       "nodeset_types": 2,
-      "explicit_edges": 19,
-      "data_edges": 9,
-      "reported_edges": 19,
+      "explicit_edges": 23,
+      "data_edges": 12,
+      "reported_edges": 23,
       "contains_global_state": false
     },
     "entry_nodes": [
@@ -39,11 +39,7 @@
     "god_nodes": [
       {
         "node": "io",
-        "degree": 7
-      },
-      {
-        "node": "summary",
-        "degree": 5
+        "degree": 8
       }
     ],
     "nodes": [
@@ -624,6 +620,97 @@
         "operations": []
       },
       {
+        "id": "moonlight",
+        "definition_id": "usb.moonlight_connect",
+        "source": {
+          "root_id": "usb-tablet-display",
+          "path": "configs/connect.jsonc"
+        },
+        "role": {
+          "display_name": "Start Moonlight session",
+          "description": "Registers the USB address and launches Moonlight.",
+          "description_source": "call"
+        },
+        "flow_kind": "process",
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "selected_rulesets": [
+          "vibeflow.python_io"
+        ],
+        "tags": [],
+        "metadata": {},
+        "presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "effect_scope": "python_io",
+        "execution_lock": null,
+        "effective_execution_lock": null,
+        "contains_global_state": false,
+        "status": "implemented",
+        "planned_behavior": null,
+        "requires": [
+          {
+            "type": "usb.settings",
+            "cardinality": "exactly_one",
+            "display_name": "Tablet settings"
+          },
+          {
+            "type": "usb.device",
+            "cardinality": "exactly_one",
+            "display_name": "USB device"
+          },
+          {
+            "type": "usb.stream_state",
+            "cardinality": "exactly_one",
+            "display_name": "Stream state"
+          }
+        ],
+        "provides": [
+          {
+            "key": "launch_state",
+            "type": "usb.launch_state",
+            "display_name": "Launch state"
+          }
+        ],
+        "contract_source": "node_definition",
+        "join_policy": "safe_any",
+        "loop": null,
+        "invokes": null,
+        "config": {
+          "call": {
+            "values": {},
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "configs/connect.jsonc"
+            }
+          },
+          "node_configs": {
+            "values": {},
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "configs/connect.jsonc"
+            }
+          },
+          "allow_config_override": false
+        },
+        "operations": []
+      },
+      {
         "id": "verify",
         "definition_id": "usb.stream_verify",
         "source": {
@@ -677,6 +764,11 @@
             "type": "usb.stream_state",
             "cardinality": "exactly_one",
             "display_name": "Stream state"
+          },
+          {
+            "type": "usb.launch_state",
+            "cardinality": "exactly_one",
+            "display_name": "Launch state"
           }
         ],
         "provides": [
@@ -1170,6 +1262,76 @@
       },
       {
         "from": "io",
+        "to": "moonlight",
+        "when": "",
+        "roles": [
+          "data_bypass",
+          "transfer"
+        ],
+        "transfers": [
+          {
+            "provider": {
+              "key": "settings",
+              "type": "usb.settings",
+              "display_name": "Tablet settings"
+            },
+            "requirement": {
+              "type": "usb.settings",
+              "cardinality": "exactly_one",
+              "display_name": "Tablet settings"
+            }
+          }
+        ]
+      },
+      {
+        "from": "probe",
+        "to": "moonlight",
+        "when": "",
+        "roles": [
+          "data_bypass",
+          "transfer"
+        ],
+        "transfers": [
+          {
+            "provider": {
+              "key": "device",
+              "type": "usb.device",
+              "display_name": "USB device"
+            },
+            "requirement": {
+              "type": "usb.device",
+              "cardinality": "exactly_one",
+              "display_name": "USB device"
+            }
+          }
+        ]
+      },
+      {
+        "from": "stream",
+        "to": "moonlight",
+        "when": "",
+        "roles": [
+          "mainline",
+          "schedule",
+          "transfer"
+        ],
+        "transfers": [
+          {
+            "provider": {
+              "key": "stream_state",
+              "type": "usb.stream_state",
+              "display_name": "Stream state"
+            },
+            "requirement": {
+              "type": "usb.stream_state",
+              "cardinality": "exactly_one",
+              "display_name": "Stream state"
+            }
+          }
+        ]
+      },
+      {
+        "from": "io",
         "to": "verify",
         "when": "",
         "roles": [
@@ -1196,8 +1358,7 @@
         "to": "verify",
         "when": "",
         "roles": [
-          "mainline",
-          "schedule",
+          "data_bypass",
           "transfer"
         ],
         "transfers": [
@@ -1211,6 +1372,30 @@
               "type": "usb.stream_state",
               "cardinality": "exactly_one",
               "display_name": "Stream state"
+            }
+          }
+        ]
+      },
+      {
+        "from": "moonlight",
+        "to": "verify",
+        "when": "",
+        "roles": [
+          "mainline",
+          "schedule",
+          "transfer"
+        ],
+        "transfers": [
+          {
+            "provider": {
+              "key": "launch_state",
+              "type": "usb.launch_state",
+              "display_name": "Launch state"
+            },
+            "requirement": {
+              "type": "usb.launch_state",
+              "cardinality": "exactly_one",
+              "display_name": "Launch state"
             }
           }
         ]
@@ -2610,6 +2795,107 @@
         }
       }
     },
+    "usb.moonlight_connect": {
+      "id": "usb.moonlight_connect",
+      "node_type": "vibeflow.node",
+      "source": {
+        "module": "nodes.stream.moonlight",
+        "class": "MoonlightConnect",
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/moonlight.py",
+        "line": 144
+      },
+      "declaration": {
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/moonlight.py"
+      },
+      "info": {
+        "display_name": "Start Moonlight session",
+        "description": "Registers the USB host address when needed and launches Moonlight on the tablet.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "author": null,
+        "tags": [],
+        "external": false,
+        "effect_scope": "python_io"
+      },
+      "contract": {
+        "requires": [
+          {
+            "type": "usb.settings",
+            "cardinality": "exactly_one",
+            "display_name": "Tablet settings"
+          },
+          {
+            "type": "usb.device",
+            "cardinality": "exactly_one",
+            "display_name": "USB device"
+          },
+          {
+            "type": "usb.stream_state",
+            "cardinality": "exactly_one",
+            "display_name": "Stream state"
+          }
+        ],
+        "provides": [
+          {
+            "key": "launch_state",
+            "type": "usb.launch_state",
+            "display_name": "Launch state"
+          }
+        ],
+        "input_semantics": {
+          "usb.device": [
+            "Interface used to resolve the current USB host address."
+          ],
+          "usb.settings": [
+            "ADB binary, serial, Moonlight package and configured app."
+          ],
+          "usb.stream_state": [
+            "Sunshine readiness before Moonlight is launched."
+          ]
+        },
+        "output_semantics": {
+          "launch_state": [
+            "Host address, launch attempts and stream connectivity."
+          ]
+        }
+      },
+      "rulesets": [
+        "vibeflow.python_io"
+      ],
+      "declared_presentation": {},
+      "declared_rulesets": [
+        "vibeflow.python_io"
+      ],
+      "presentation": {
+        "values": {
+          "fill": "#ECECFF",
+          "stroke": "#9370DB",
+          "text": "#333333",
+          "shape": "rect"
+        },
+        "sources": {
+          "fill": "native",
+          "stroke": "native",
+          "text": "native",
+          "shape": "native"
+        },
+        "modifiers": {
+          "planned": false
+        }
+      },
+      "config": {
+        "defaults": {
+          "timeout_ms": 45000
+        },
+        "schema": {
+          "timeout_ms": {
+            "type": "integer"
+          }
+        }
+      }
+    },
     "usb.probe_device": {
       "id": "usb.probe_device",
       "node_type": "vibeflow.node",
@@ -3021,7 +3307,7 @@
         "class": "StreamVerify",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 174
+        "line": 179
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3029,7 +3315,7 @@
       },
       "info": {
         "display_name": "Verify stream",
-        "description": "Checks Sunshine client events and the Moonlight activity on the tablet.",
+        "description": "Waits for Sunshine client events and the Moonlight activity before reporting the stream.",
         "version": "0.1.0",
         "flow_kind": "process",
         "author": null,
@@ -3048,6 +3334,11 @@
             "type": "usb.stream_state",
             "cardinality": "exactly_one",
             "display_name": "Stream state"
+          },
+          {
+            "type": "usb.launch_state",
+            "cardinality": "exactly_one",
+            "display_name": "Launch state"
           }
         ],
         "provides": [
@@ -3058,6 +3349,9 @@
           }
         ],
         "input_semantics": {
+          "usb.launch_state": [
+            "Launch attempt result from the Moonlight step."
+          ],
           "usb.settings": [
             "ADB binary, serial and Moonlight package."
           ],
@@ -3097,10 +3391,10 @@
       },
       "config": {
         "defaults": {
-          "timeout_ms": 5000
+          "wait_ms": 30000
         },
         "schema": {
-          "timeout_ms": {
+          "wait_ms": {
             "type": "integer"
           }
         }
@@ -3114,7 +3408,7 @@
         "class": "SunshineConfigure",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 87
+        "line": 89
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3201,7 +3495,7 @@
         "class": "SunshineStart",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 133
+        "line": 135
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3332,7 +3626,17 @@
       },
       {
         "kind": "node",
+        "id": "usb.internet_sync",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.load_settings",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.moonlight_connect",
         "reason": "declaration"
       },
       {
@@ -5682,6 +5986,434 @@
           }
         ]
       },
+      "node:usb.moonlight_connect": {
+        "kind": "node",
+        "node_type": "vibeflow.node",
+        "id": "usb.moonlight_connect",
+        "display_name": "Start Moonlight session",
+        "description": "Registers the USB host address when needed and launches Moonlight on the tablet.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "tags": [],
+        "external": false,
+        "contract": {
+          "requires": [
+            {
+              "type": "usb.settings",
+              "cardinality": "exactly_one",
+              "display_name": "Tablet settings"
+            },
+            {
+              "type": "usb.device",
+              "cardinality": "exactly_one",
+              "display_name": "USB device"
+            },
+            {
+              "type": "usb.stream_state",
+              "cardinality": "exactly_one",
+              "display_name": "Stream state"
+            }
+          ],
+          "provides": [
+            {
+              "key": "launch_state",
+              "type": "usb.launch_state",
+              "display_name": "Launch state"
+            }
+          ],
+          "input_semantics": {
+            "usb.settings": [
+              "ADB binary, serial, Moonlight package and configured app."
+            ],
+            "usb.device": [
+              "Interface used to resolve the current USB host address."
+            ],
+            "usb.stream_state": [
+              "Sunshine readiness before Moonlight is launched."
+            ]
+          },
+          "output_semantics": {
+            "launch_state": [
+              "Host address, launch attempts and stream connectivity."
+            ]
+          },
+          "params_schema": {
+            "timeout_ms": {
+              "type": "integer"
+            }
+          },
+          "params_defaults": {
+            "timeout_ms": 45000
+          },
+          "examples": []
+        },
+        "implementations": [
+          {
+            "language": "python",
+            "targets": [
+              "python"
+            ],
+            "source": {
+              "kind": "file",
+              "ref": "nodes/stream/moonlight.py",
+              "export": "MoonlightConnect"
+            },
+            "completion": "immediate",
+            "implementation_files": [
+              {
+                "kind": "file",
+                "ref": "nodes/stream/moonlight_ui.py"
+              },
+              {
+                "kind": "file",
+                "ref": "nodes/stream/session.py"
+              }
+            ]
+          }
+        ],
+        "base_libs": [],
+        "workflow_operations": [],
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "presentation": {},
+        "metadata": {},
+        "plugin_id": "",
+        "owner": {
+          "kind": "root",
+          "id": "usb-tablet-display",
+          "root_id": "usb-tablet-display",
+          "path": "."
+        },
+        "origin": {
+          "owner": {
+            "kind": "root",
+            "id": "usb-tablet-display",
+            "root_id": "usb-tablet-display",
+            "path": "."
+          },
+          "path": "nodes/stream/moonlight.py",
+          "line": 120,
+          "symbol": "MoonlightConnect"
+        },
+        "status": "implemented",
+        "markers": [],
+        "diagnostics": [],
+        "effective_rules": {
+          "import": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "import",
+              "graph_scope": "current_graph",
+              "order": [
+                "imports"
+              ],
+              "calls": [
+                {
+                  "id": "imports",
+                  "rule_id": "vibeflow.import_side_effects",
+                  "original_rule_id": "vibeflow.import_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:imports",
+                    "policy": "default:vibeflow.import_side_effects"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "static": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "static",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "run": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "run",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ]
+        },
+        "effective_presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "sources": [
+          {
+            "id": "file:355f2055592efe90",
+            "path": "nodes/stream/moonlight.py",
+            "role": "entry",
+            "symbol": "MoonlightConnect",
+            "language": "python",
+            "load_state": "loaded"
+          },
+          {
+            "id": "file:63c44c91be0fe133",
+            "path": "nodes/stream/moonlight_ui.py",
+            "role": "support",
+            "symbol": "",
+            "language": "python",
+            "load_state": "loaded"
+          },
+          {
+            "id": "file:4fd3ae8cf3ab83de",
+            "path": "nodes/stream/session.py",
+            "role": "support",
+            "symbol": "",
+            "language": "python",
+            "load_state": "loaded"
+          }
+        ]
+      },
       "node:usb.probe_device": {
         "kind": "node",
         "node_type": "vibeflow.node",
@@ -7595,7 +8327,7 @@
         "node_type": "vibeflow.node",
         "id": "usb.stream_verify",
         "display_name": "Verify stream",
-        "description": "Checks Sunshine client events and the Moonlight activity on the tablet.",
+        "description": "Waits for Sunshine client events and the Moonlight activity before reporting the stream.",
         "version": "0.1.0",
         "flow_kind": "process",
         "tags": [],
@@ -7611,6 +8343,11 @@
               "type": "usb.stream_state",
               "cardinality": "exactly_one",
               "display_name": "Stream state"
+            },
+            {
+              "type": "usb.launch_state",
+              "cardinality": "exactly_one",
+              "display_name": "Launch state"
             }
           ],
           "provides": [
@@ -7626,6 +8363,9 @@
             ],
             "usb.stream_state": [
               "Unit and port readiness from the start step."
+            ],
+            "usb.launch_state": [
+              "Launch attempt result from the Moonlight step."
             ]
           },
           "output_semantics": {
@@ -7634,12 +8374,12 @@
             ]
           },
           "params_schema": {
-            "timeout_ms": {
+            "wait_ms": {
               "type": "integer"
             }
           },
           "params_defaults": {
-            "timeout_ms": 5000
+            "wait_ms": 30000
           },
           "examples": []
         },
@@ -7654,7 +8394,13 @@
               "ref": "nodes/stream/sunshine.py",
               "export": "StreamVerify"
             },
-            "completion": "immediate"
+            "completion": "immediate",
+            "implementation_files": [
+              {
+                "kind": "file",
+                "ref": "nodes/stream/session.py"
+              }
+            ]
           }
         ],
         "base_libs": [],
@@ -7679,7 +8425,7 @@
             "path": "."
           },
           "path": "nodes/stream/sunshine.py",
-          "line": 153,
+          "line": 155,
           "symbol": "StreamVerify"
         },
         "status": "implemented",
@@ -7981,6 +8727,14 @@
             "symbol": "StreamVerify",
             "language": "python",
             "load_state": "loaded"
+          },
+          {
+            "id": "file:4fd3ae8cf3ab83de",
+            "path": "nodes/stream/session.py",
+            "role": "support",
+            "symbol": "",
+            "language": "python",
+            "load_state": "loaded"
           }
         ]
       },
@@ -8067,7 +8821,7 @@
             "path": "."
           },
           "path": "nodes/stream/sunshine.py",
-          "line": 66,
+          "line": 68,
           "symbol": "SunshineConfigure"
         },
         "status": "implemented",
@@ -8461,7 +9215,7 @@
             "path": "."
           },
           "path": "nodes/stream/sunshine.py",
-          "line": 112,
+          "line": 114,
           "symbol": "SunshineStart"
         },
         "status": "implemented",
@@ -8851,6 +9605,51 @@
         ],
         "load_state": "loaded"
       },
+      "file:355f2055592efe90": {
+        "id": "file:355f2055592efe90",
+        "path": "nodes/stream/moonlight.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.moonlight_connect",
+            "role": "entry",
+            "symbol": "MoonlightConnect"
+          }
+        ],
+        "load_state": "loaded"
+      },
+      "file:63c44c91be0fe133": {
+        "id": "file:63c44c91be0fe133",
+        "path": "nodes/stream/moonlight_ui.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.moonlight_connect",
+            "role": "support",
+            "symbol": ""
+          }
+        ],
+        "load_state": "loaded"
+      },
+      "file:4fd3ae8cf3ab83de": {
+        "id": "file:4fd3ae8cf3ab83de",
+        "path": "nodes/stream/session.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.moonlight_connect",
+            "role": "support",
+            "symbol": ""
+          },
+          {
+            "kind": "node",
+            "id": "usb.stream_verify",
+            "role": "support",
+            "symbol": ""
+          }
+        ],
+        "load_state": "loaded"
+      },
       "file:eda9e98964b39865": {
         "id": "file:eda9e98964b39865",
         "path": "nodes/device/probe.py",
@@ -8938,6 +9737,12 @@
         "path": "nodes/display/__init__.py",
         "owners": [],
         "load_state": "loaded"
+      },
+      "file:5dde3ec466af2223": {
+        "id": "file:5dde3ec466af2223",
+        "path": "nodes/stream/__init__.py",
+        "owners": [],
+        "load_state": "loaded"
       }
     },
     "relations": [
@@ -8977,6 +9782,21 @@
         "relation": "entry"
       },
       {
+        "from": "node:usb.moonlight_connect",
+        "to": "file:355f2055592efe90",
+        "relation": "entry"
+      },
+      {
+        "from": "node:usb.moonlight_connect",
+        "to": "file:63c44c91be0fe133",
+        "relation": "support"
+      },
+      {
+        "from": "node:usb.moonlight_connect",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "support"
+      },
+      {
         "from": "node:usb.probe_device",
         "to": "file:eda9e98964b39865",
         "relation": "entry"
@@ -9007,6 +9827,11 @@
         "relation": "entry"
       },
       {
+        "from": "node:usb.stream_verify",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "support"
+      },
+      {
         "from": "node:usb.sunshine_configure",
         "to": "file:600d44922390f17f",
         "relation": "entry"
@@ -9022,6 +9847,46 @@
         "relation": "import",
         "specifier": "usb_tablet_display.nodes.display",
         "line": 12,
+        "type_only": false
+      },
+      {
+        "from": "file:355f2055592efe90",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "import",
+        "specifier": "usb_tablet_display.nodes.stream",
+        "line": 11,
+        "type_only": false
+      },
+      {
+        "from": "file:355f2055592efe90",
+        "to": "file:63c44c91be0fe133",
+        "relation": "import",
+        "specifier": "usb_tablet_display.nodes.stream.moonlight_ui",
+        "line": 12,
+        "type_only": false
+      },
+      {
+        "from": "file:355f2055592efe90",
+        "to": "file:63c44c91be0fe133",
+        "relation": "import",
+        "specifier": "usb_tablet_display.nodes.stream.moonlight_ui",
+        "line": 12,
+        "type_only": false
+      },
+      {
+        "from": "file:355f2055592efe90",
+        "to": "file:63c44c91be0fe133",
+        "relation": "import",
+        "specifier": "usb_tablet_display.nodes.stream.moonlight_ui",
+        "line": 12,
+        "type_only": false
+      },
+      {
+        "from": "file:600d44922390f17f",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "import",
+        "specifier": "usb_tablet_display.nodes.stream",
+        "line": 11,
         "type_only": false
       }
     ]
@@ -9076,6 +9941,12 @@
       "call_path": [
         "io",
         "state"
+      ],
+      "effect_scope": "python_io"
+    },
+    {
+      "call_path": [
+        "moonlight"
       ],
       "effect_scope": "python_io"
     },
@@ -9235,6 +10106,23 @@
         ],
         "source": "static",
         "origin": "usb.sunshine_start",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "pipeline",
+      "type_key": "usb.moonlight_connect",
+      "call_path": [
+        "moonlight"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.moonlight_connect",
         "replaced": []
       }
     },

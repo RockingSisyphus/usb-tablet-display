@@ -1,0 +1,21 @@
+{
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Start internet sync", "description": "Starts the tablet internet workflow."},
+      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads tablet settings."},
+      {"id": "probe", "definition_id": "usb.device_probe", "display_name": "Probe tablet", "description": "Resolves USB presence and ADB transport state."},
+      {"id": "sync", "definition_id": "usb.internet_sync", "display_name": "Sync tablet internet", "description": "Keeps gnirehtet present and probes tablet internet."},
+      {"id": "end", "definition_id": "usb.end", "display_name": "End internet sync", "description": "Ends the tablet internet workflow."}
+    ],
+    "edges": [["start", "io"], ["io", "probe"], ["probe", "sync"], ["io", "sync"], ["sync", "end"]],
+    "outputs": [
+      {"type": "usb.internet_state", "cardinality": "exactly_one", "display_name": "Internet state"}
+    ]
+  },
+  "nodeset_imports": [
+    {"path": "../nodeset_types/state_io.jsonc"},
+    {"path": "../nodeset_types/device_probe.jsonc"}
+  ],
+  "plugins": []
+}

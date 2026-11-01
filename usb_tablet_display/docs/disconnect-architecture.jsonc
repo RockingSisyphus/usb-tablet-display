@@ -1629,7 +1629,7 @@
         "class": "SunshineStop",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 221
+        "line": 210
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -1667,7 +1667,7 @@
         },
         "output_semantics": {
           "stream_state": [
-            "Whether the Sunshine unit is now stopped."
+            "Unit identity and whether it is stopped."
           ]
         }
       },
@@ -1839,7 +1839,17 @@
       },
       {
         "kind": "node",
+        "id": "usb.internet_sync",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.load_settings",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.moonlight_connect",
         "reason": "declaration"
       },
       {
@@ -4571,7 +4581,7 @@
           },
           "output_semantics": {
             "stream_state": [
-              "Whether the Sunshine unit is now stopped."
+              "Unit identity and whether it is stopped."
             ]
           },
           "params_schema": {
@@ -4620,7 +4630,7 @@
             "path": "."
           },
           "path": "nodes/stream/sunshine.py",
-          "line": 206,
+          "line": 195,
           "symbol": "SunshineStop"
         },
         "status": "implemented",
@@ -5441,6 +5451,18 @@
         "path": "nodes/display/__init__.py",
         "owners": [],
         "load_state": "loaded"
+      },
+      "file:5dde3ec466af2223": {
+        "id": "file:5dde3ec466af2223",
+        "path": "nodes/stream/__init__.py",
+        "owners": [],
+        "load_state": "loaded"
+      },
+      "file:4fd3ae8cf3ab83de": {
+        "id": "file:4fd3ae8cf3ab83de",
+        "path": "nodes/stream/session.py",
+        "owners": [],
+        "load_state": "loaded"
       }
     },
     "relations": [
@@ -5500,6 +5522,14 @@
         "relation": "import",
         "specifier": "usb_tablet_display.nodes.display",
         "line": 12,
+        "type_only": false
+      },
+      {
+        "from": "file:600d44922390f17f",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "import",
+        "specifier": "usb_tablet_display.nodes.stream",
+        "line": 11,
         "type_only": false
       }
     ]

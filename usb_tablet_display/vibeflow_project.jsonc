@@ -7,7 +7,8 @@
       {"workflow": "configs/status.jsonc", "document": "docs/status-architecture.jsonc"},
       {"workflow": "configs/connect.jsonc", "document": "docs/connect-architecture.jsonc"},
       {"workflow": "configs/disconnect.jsonc", "document": "docs/disconnect-architecture.jsonc"},
-      {"workflow": "configs/guard-check.jsonc", "document": "docs/guard-check-architecture.jsonc"}
+      {"workflow": "configs/guard-check.jsonc", "document": "docs/guard-check-architecture.jsonc"},
+      {"workflow": "configs/internet.jsonc", "document": "docs/internet-architecture.jsonc"}
     ]
   }
 }

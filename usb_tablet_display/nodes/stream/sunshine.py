@@ -8,6 +8,8 @@ from pathlib import Path
 
 from vibeflow.targets.python.sdk import node
 
+from usb_tablet_display.nodes.stream import session
+
 PORTS = (47984, 47989, 47990, 48010)
 
 
@@ -153,20 +155,23 @@ class SunshineStart:
 @node(
     id="usb.stream_verify", node_type="vibeflow.node",
     display_name="Verify stream",
-    description="Checks Sunshine client events and the Moonlight activity on the tablet.",
+    description="Waits for Sunshine client events and the Moonlight activity before reporting the stream.",
     version="0.1.0", flow_kind="process",
     rulesets=["vibeflow.python_io"],
+    implementation_files=["session.py"],
     contract={
         "requires": [
             {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
             {"type": "usb.stream_state", "cardinality": "exactly_one", "display_name": "Stream state"},
+            {"type": "usb.launch_state", "cardinality": "exactly_one", "display_name": "Launch state"},
         ],
         "provides": [{"key": "stream_check", "type": "usb.stream_check", "display_name": "Stream check"}],
-        "params_schema": {"timeout_ms": {"type": "integer"}},
-        "params_defaults": {"timeout_ms": 5000},
+        "params_schema": {"wait_ms": {"type": "integer"}},
+        "params_defaults": {"wait_ms": 30000},
         "input_semantics": {
             "usb.settings": ["ADB binary, serial and Moonlight package."],
             "usb.stream_state": ["Unit and port readiness from the start step."],
+            "usb.launch_state": ["Launch attempt result from the Moonlight step."],
         },
         "output_semantics": {"stream_check": ["Sunshine server events and Moonlight client activity."]},
     },
@@ -174,33 +179,17 @@ class SunshineStart:
 class StreamVerify:
     def run_pure(self, inputs, params):
         settings = inputs["usb.settings"]["value"]
-        unit = settings["sunshine_unit"]
-        timeout = max(int(params["timeout_ms"]), 500) / 1000.0
-        server = False
-        try:
-            invocation = subprocess.run(["systemctl", "--user", "show", unit, "-P", "InvocationID"],
-                                        capture_output=True, text=True, timeout=5).stdout.strip()
-            if invocation:
-                done = subprocess.run(["journalctl", "--user", f"_SYSTEMD_INVOCATION_ID={invocation}",
-                                       "--grep", "CLIENT (CONNECTED|DISCONNECTED)", "-n", "1",
-                                       "--no-pager", "-o", "cat"],
-                                      capture_output=True, text=True, timeout=5)
-                events = re.findall(r"CLIENT (CONNECTED|DISCONNECTED)", done.stdout)
-                server = bool(events) and events[-1] == "CONNECTED"
-        except (OSError, subprocess.TimeoutExpired):
-            server = False
-        client = False
-        try:
-            done = subprocess.run([settings["adb"], "-s", settings["serial"], "shell", "dumpsys",
-                                   "activity", "activities"], capture_output=True, text=True,
-                                  timeout=timeout)
-            client = bool(re.search(r"(?:topResumedActivity|mResumedActivity)=.*" +
-                                    re.escape(settings["moonlight_package"]) + r"/\.Game\b",
-                                    done.stdout))
-        except (OSError, subprocess.TimeoutExpired):
-            client = False
-        return {"stream_check": {"server_connected": server, "client_connected": client,
-                                 "connected": server and client}}
+        deadline = time.monotonic() + max(int(params["wait_ms"]), 0) / 1000.0
+        while True:
+            server = session.server_connected(settings["sunshine_unit"])
+            client = session.client_connected(settings)
+            if server and client:
+                return {"stream_check": {"server_connected": True, "client_connected": True,
+                                         "connected": True}}
+            if time.monotonic() >= deadline:
+                return {"stream_check": {"server_connected": server, "client_connected": client,
+                                         "connected": False}}
+            time.sleep(1)
 
 
 @node(
@@ -215,16 +204,16 @@ class StreamVerify:
         "params_schema": {"timeout_ms": {"type": "integer"}},
         "params_defaults": {"timeout_ms": 8000},
         "input_semantics": {"usb.settings": ["Configuration carrying the Sunshine unit name."]},
-        "output_semantics": {"stream_state": ["Whether the Sunshine unit is now stopped."]},
+        "output_semantics": {"stream_state": ["Unit identity and whether it is stopped."]},
     },
 )
 class SunshineStop:
     def run_pure(self, inputs, params):
         settings = inputs["usb.settings"]["value"]
         unit = settings["sunshine_unit"]
-        result = _systemctl("stop", unit, max(int(params["timeout_ms"]), 1000) / 1000.0)
         deadline = time.monotonic() + max(int(params["timeout_ms"]), 1000) / 1000.0
+        _systemctl("stop", unit)
         while _active(unit) and time.monotonic() < deadline:
             time.sleep(0.1)
         return {"stream_state": {"unit": unit, "state": "stopped" if not _active(unit) else "active",
-                                 "ok": not _active(unit), "detail": result["detail"]}}
+                                 "ok": not _active(unit)}}
