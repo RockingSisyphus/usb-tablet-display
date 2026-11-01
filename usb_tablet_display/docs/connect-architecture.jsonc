@@ -3464,11 +3464,15 @@
       "config": {
         "defaults": {
           "connect_ms": 55000,
+          "reach_ms": 30000,
           "register_ms": 45000,
           "state_path": "/tmp/usb-tablet-display/state.json"
         },
         "schema": {
           "connect_ms": {
+            "type": "integer"
+          },
+          "reach_ms": {
             "type": "integer"
           },
           "register_ms": {
@@ -3806,7 +3810,7 @@
         "class": "RequireStream",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/moonlight.py",
-        "line": 339
+        "line": 342
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -7047,6 +7051,9 @@
             "connect_ms": {
               "type": "integer"
             },
+            "reach_ms": {
+              "type": "integer"
+            },
             "state_path": {
               "type": "string"
             }
@@ -7054,6 +7061,7 @@
           "params_defaults": {
             "register_ms": 45000,
             "connect_ms": 55000,
+            "reach_ms": 30000,
             "state_path": "/tmp/usb-tablet-display/state.json"
           },
           "examples": []
@@ -9040,7 +9048,7 @@
             "path": "."
           },
           "path": "nodes/stream/moonlight.py",
-          "line": 318,
+          "line": 321,
           "symbol": "RequireStream"
         },
         "status": "implemented",

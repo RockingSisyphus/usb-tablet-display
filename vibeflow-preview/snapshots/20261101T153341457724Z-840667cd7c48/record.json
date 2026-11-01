@@ -1,0 +1,24 @@
+{
+  "version": 5,
+  "id": "20261101T153341457724Z-840667cd7c48",
+  "category": "run",
+  "status": "succeeded",
+  "created_at": "2026-11-01T15:33:41.457718+00:00",
+  "updated_at": "2026-11-01T15:34:41.693988+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-display",
+    "path": "configs/connect.jsonc",
+    "id": "usb-tablet-display:configs/connect.jsonc",
+    "name": "connect",
+    "target": "python"
+  },
+  "views": [
+    "flow",
+    "base_lib",
+    "plugin",
+    "links"
+  ],
+  "revision": 4,
+  "run_id": "20261101T153340Z-ee33ffec",
+  "check_status": "CONCERNS"
+}

@@ -3510,7 +3510,7 @@
       },
       "config": {
         "defaults": {
-          "max_wait_errors": 240,
+          "max_wait_errors": 90,
           "wait_timeout": 1
         },
         "schema": {
@@ -7042,7 +7042,7 @@
           },
           "params_defaults": {
             "wait_timeout": 1,
-            "max_wait_errors": 240
+            "max_wait_errors": 90
           },
           "examples": []
         },

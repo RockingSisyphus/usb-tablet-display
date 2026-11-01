@@ -247,8 +247,8 @@ def _register_address(settings, address, deadline):
         ],
         "provides": [{"key": "launch_state", "type": "usb.launch_state", "display_name": "Launch state"}],
         "params_schema": {"register_ms": {"type": "integer"}, "connect_ms": {"type": "integer"},
-                          "state_path": {"type": "string"}},
-        "params_defaults": {"register_ms": 45000, "connect_ms": 55000,
+                          "reach_ms": {"type": "integer"}, "state_path": {"type": "string"}},
+        "params_defaults": {"register_ms": 45000, "connect_ms": 55000, "reach_ms": 30000,
                             "state_path": "/tmp/usb-tablet-display/state.json"},
         "input_semantics": {
             "usb.settings": ["ADB binary, serial, Moonlight package and configured app."],
@@ -273,6 +273,9 @@ class MoonlightConnect:
         ready, detail = _observe(settings, address)
         if ready:
             return {"launch_state": {"connected": True, "address": address, "stage": "already"}}
+        reach_deadline = time.monotonic() + max(int(params.get("reach_ms", 30000)), 0) / 1000.0
+        while not _reachable(settings, address) and time.monotonic() < reach_deadline:
+            time.sleep(2.0)
         if not _reachable(settings, address):
             _save_failure("reachability", address, None, "tablet cannot reach serverinfo over usb")
             return {"launch_state": {"connected": False, "address": address, "stage": "reachability",

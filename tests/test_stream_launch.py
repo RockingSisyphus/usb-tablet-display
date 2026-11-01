@@ -38,7 +38,7 @@ def run(settings, address, state_path):
         "usb.stream_ready": {"value": {"ok": True}},
         "usb.state": {"value": {}},
     }
-    params = {"register_ms": 2000, "connect_ms": 2000, "state_path": state_path}
+    params = {"register_ms": 2000, "connect_ms": 2000, "reach_ms": 100, "state_path": state_path}
     return MoonlightConnect().run_pure(inputs, params)["launch_state"]
 
 

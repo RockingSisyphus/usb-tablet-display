@@ -84,7 +84,7 @@ class CallDisconnect:
         "requires": [{"type": "usb.state", "cardinality": "exactly_one", "display_name": "运行状态"}],
         "provides": [{"key": "session_result", "type": "usb.session_result", "display_name": "会话结果"}],
         "params_schema": {"wait_timeout": {"type": "integer"}, "max_wait_errors": {"type": "integer"}},
-        "params_defaults": {"wait_timeout": 1, "max_wait_errors": 240},
+        "params_defaults": {"wait_timeout": 1, "max_wait_errors": 90},
         "input_semantics": {"usb.state": ["当前保存的实例编号与动作"]},
         "output_semantics": {"session_result": ["是否仍在进行，以及结束时的结果"]},
     },
