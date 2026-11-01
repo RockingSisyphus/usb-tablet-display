@@ -81,7 +81,7 @@ class DecideAction:
         usable = bool(device.get("present")) and adb.get("state") == "device"
         if usable and auto and not current.get("connected"):
             return {"action": {"action": "connect", "reason": "tablet present and stream idle"}}
-        if current.get("connected") and not usable:
+        if not usable and str(state.get("last_action") or "") == "connect":
             return {"action": {"action": "disconnect", "reason": "tablet removed or adb unavailable"}}
         if current.get("connected") and not auto:
             return {"action": {"action": "disconnect", "reason": "automatic session disabled"}}

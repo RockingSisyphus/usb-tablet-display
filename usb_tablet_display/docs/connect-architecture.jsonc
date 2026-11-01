@@ -23,11 +23,11 @@
     "execution_lock": null,
     "contains_global_state": false,
     "summary": {
-      "nodes": 15,
+      "nodes": 16,
       "nodeset_types": 2,
-      "explicit_edges": 31,
+      "explicit_edges": 33,
       "data_edges": 16,
-      "reported_edges": 31,
+      "reported_edges": 33,
       "contains_global_state": false
     },
     "entry_nodes": [
@@ -39,7 +39,7 @@
     "god_nodes": [
       {
         "node": "io",
-        "degree": 10
+        "degree": 11
       }
     ],
     "nodes": [
@@ -279,6 +279,92 @@
         "operations": []
       },
       {
+        "id": "addr",
+        "definition_id": "usb.wait_usb_address",
+        "source": {
+          "root_id": "usb-tablet-display",
+          "path": "configs/connect.jsonc"
+        },
+        "role": {
+          "display_name": "Wait for USB address",
+          "description": "Waits for the RNDIS IPv4 address after a reconnect.",
+          "description_source": "call"
+        },
+        "flow_kind": "process",
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "selected_rulesets": [
+          "vibeflow.python_io"
+        ],
+        "tags": [],
+        "metadata": {},
+        "presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "effect_scope": "python_io",
+        "execution_lock": null,
+        "effective_execution_lock": null,
+        "contains_global_state": false,
+        "status": "implemented",
+        "planned_behavior": null,
+        "requires": [
+          {
+            "type": "usb.settings",
+            "cardinality": "exactly_one",
+            "display_name": "Tablet settings"
+          },
+          {
+            "type": "usb.device",
+            "cardinality": "exactly_one",
+            "display_name": "USB device"
+          }
+        ],
+        "provides": [
+          {
+            "key": "usb_address",
+            "type": "usb.usb_address",
+            "display_name": "USB host address"
+          }
+        ],
+        "contract_source": "node_definition",
+        "join_policy": "safe_any",
+        "loop": null,
+        "invokes": null,
+        "config": {
+          "call": {
+            "values": {},
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "configs/connect.jsonc"
+            }
+          },
+          "node_configs": {
+            "values": {},
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "configs/connect.jsonc"
+            }
+          },
+          "allow_config_override": false
+        },
+        "operations": []
+      },
+      {
         "id": "ready",
         "definition_id": "usb.require_ready",
         "source": {
@@ -498,9 +584,9 @@
             "display_name": "Tablet settings"
           },
           {
-            "type": "usb.device",
+            "type": "usb.usb_address",
             "cardinality": "exactly_one",
-            "display_name": "USB device"
+            "display_name": "USB host address"
           }
         ],
         "provides": [
@@ -847,9 +933,9 @@
             "display_name": "Tablet settings"
           },
           {
-            "type": "usb.device",
+            "type": "usb.usb_address",
             "cardinality": "exactly_one",
-            "display_name": "USB device"
+            "display_name": "USB host address"
           },
           {
             "type": "usb.stream_ready",
@@ -1386,6 +1472,53 @@
         ]
       },
       {
+        "from": "probe",
+        "to": "addr",
+        "when": "",
+        "roles": [
+          "mainline",
+          "schedule",
+          "transfer"
+        ],
+        "transfers": [
+          {
+            "provider": {
+              "key": "device",
+              "type": "usb.device",
+              "display_name": "USB device"
+            },
+            "requirement": {
+              "type": "usb.device",
+              "cardinality": "exactly_one",
+              "display_name": "USB device"
+            }
+          }
+        ]
+      },
+      {
+        "from": "io",
+        "to": "addr",
+        "when": "",
+        "roles": [
+          "data_bypass",
+          "transfer"
+        ],
+        "transfers": [
+          {
+            "provider": {
+              "key": "settings",
+              "type": "usb.settings",
+              "display_name": "Tablet settings"
+            },
+            "requirement": {
+              "type": "usb.settings",
+              "cardinality": "exactly_one",
+              "display_name": "Tablet settings"
+            }
+          }
+        ]
+      },
+      {
         "from": "io",
         "to": "display",
         "when": "",
@@ -1443,24 +1576,25 @@
         ]
       },
       {
-        "from": "probe",
+        "from": "addr",
         "to": "configure",
         "when": "",
         "roles": [
-          "data_bypass",
+          "mainline",
+          "schedule",
           "transfer"
         ],
         "transfers": [
           {
             "provider": {
-              "key": "device",
-              "type": "usb.device",
-              "display_name": "USB device"
+              "key": "usb_address",
+              "type": "usb.usb_address",
+              "display_name": "USB host address"
             },
             "requirement": {
-              "type": "usb.device",
+              "type": "usb.usb_address",
               "cardinality": "exactly_one",
-              "display_name": "USB device"
+              "display_name": "USB host address"
             }
           }
         ]
@@ -1664,7 +1798,7 @@
         ]
       },
       {
-        "from": "probe",
+        "from": "addr",
         "to": "moonlight",
         "when": "",
         "roles": [
@@ -1674,14 +1808,14 @@
         "transfers": [
           {
             "provider": {
-              "key": "device",
-              "type": "usb.device",
-              "display_name": "USB device"
+              "key": "usb_address",
+              "type": "usb.usb_address",
+              "display_name": "USB host address"
             },
             "requirement": {
-              "type": "usb.device",
+              "type": "usb.usb_address",
               "cardinality": "exactly_one",
-              "display_name": "USB device"
+              "display_name": "USB host address"
             }
           }
         ]
@@ -3265,9 +3399,9 @@
             "display_name": "Tablet settings"
           },
           {
-            "type": "usb.device",
+            "type": "usb.usb_address",
             "cardinality": "exactly_one",
-            "display_name": "USB device"
+            "display_name": "USB host address"
           },
           {
             "type": "usb.stream_ready",
@@ -3283,14 +3417,14 @@
           }
         ],
         "input_semantics": {
-          "usb.device": [
-            "Interface used to resolve the current USB host address."
-          ],
           "usb.settings": [
             "ADB binary, serial, Moonlight package and configured app."
           ],
           "usb.stream_ready": [
             "Sunshine readiness before Moonlight is launched."
+          ],
+          "usb.usb_address": [
+            "Assigned USB host address for registration and launch."
           ]
         },
         "output_semantics": {
@@ -3674,7 +3808,7 @@
         "class": "RequireStream",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/moonlight.py",
-        "line": 322
+        "line": 321
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3923,7 +4057,7 @@
         "class": "StreamVerify",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 179
+        "line": 178
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -4048,9 +4182,9 @@
             "display_name": "Tablet settings"
           },
           {
-            "type": "usb.device",
+            "type": "usb.usb_address",
             "cardinality": "exactly_one",
-            "display_name": "USB device"
+            "display_name": "USB host address"
           }
         ],
         "provides": [
@@ -4061,11 +4195,11 @@
           }
         ],
         "input_semantics": {
-          "usb.device": [
-            "Interface used to resolve the USB host address."
-          ],
           "usb.settings": [
             "Connector, encoder and adapter values."
+          ],
+          "usb.usb_address": [
+            "Assigned USB host address used for bind_address."
           ]
         },
         "output_semantics": {
@@ -4111,7 +4245,7 @@
         "class": "SunshineReady",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 246
+        "line": 245
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -4216,7 +4350,7 @@
         "class": "SunshineStart",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 135
+        "line": 134
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -4293,6 +4427,99 @@
       "config": {
         "defaults": {
           "timeout_ms": 20000
+        },
+        "schema": {
+          "timeout_ms": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "usb.wait_usb_address": {
+      "id": "usb.wait_usb_address",
+      "node_type": "vibeflow.node",
+      "source": {
+        "module": "nodes.stream.address",
+        "class": "WaitUsbAddress",
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/address.py",
+        "line": 34
+      },
+      "declaration": {
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/address.py"
+      },
+      "info": {
+        "display_name": "Wait for USB address",
+        "description": "Polls the RNDIS interface until it receives an IPv4 address after a reconnect.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "author": null,
+        "tags": [],
+        "external": false,
+        "effect_scope": "python_io"
+      },
+      "contract": {
+        "requires": [
+          {
+            "type": "usb.settings",
+            "cardinality": "exactly_one",
+            "display_name": "Tablet settings"
+          },
+          {
+            "type": "usb.device",
+            "cardinality": "exactly_one",
+            "display_name": "USB device"
+          }
+        ],
+        "provides": [
+          {
+            "key": "usb_address",
+            "type": "usb.usb_address",
+            "display_name": "USB host address"
+          }
+        ],
+        "input_semantics": {
+          "usb.device": [
+            "Interface that carries the RNDIS address."
+          ],
+          "usb.settings": [
+            "Configured tablet identity and NetworkManager profile."
+          ]
+        },
+        "output_semantics": {
+          "usb_address": [
+            "Assigned IPv4 host address or an empty string on timeout."
+          ]
+        }
+      },
+      "rulesets": [
+        "vibeflow.python_io"
+      ],
+      "declared_presentation": {},
+      "declared_rulesets": [
+        "vibeflow.python_io"
+      ],
+      "presentation": {
+        "values": {
+          "fill": "#ECECFF",
+          "stroke": "#9370DB",
+          "text": "#333333",
+          "shape": "rect"
+        },
+        "sources": {
+          "fill": "native",
+          "stroke": "native",
+          "text": "native",
+          "shape": "native"
+        },
+        "modifiers": {
+          "planned": false
+        }
+      },
+      "config": {
+        "defaults": {
+          "timeout_ms": 30000
         },
         "schema": {
           "timeout_ms": {
@@ -4448,6 +4675,11 @@
       {
         "kind": "node",
         "id": "usb.tick_merge",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.wait_usb_address",
         "reason": "declaration"
       },
       {
@@ -6755,9 +6987,9 @@
               "display_name": "Tablet settings"
             },
             {
-              "type": "usb.device",
+              "type": "usb.usb_address",
               "cardinality": "exactly_one",
-              "display_name": "USB device"
+              "display_name": "USB host address"
             },
             {
               "type": "usb.stream_ready",
@@ -6776,8 +7008,8 @@
             "usb.settings": [
               "ADB binary, serial, Moonlight package and configured app."
             ],
-            "usb.device": [
-              "Interface used to resolve the current USB host address."
+            "usb.usb_address": [
+              "Assigned USB host address for registration and launch."
             ],
             "usb.stream_ready": [
               "Sunshine readiness before Moonlight is launched."
@@ -8784,7 +9016,7 @@
             "path": "."
           },
           "path": "nodes/stream/moonlight.py",
-          "line": 301,
+          "line": 300,
           "symbol": "RequireStream"
         },
         "status": "implemented",
@@ -9956,7 +10188,7 @@
             "path": "."
           },
           "path": "nodes/stream/sunshine.py",
-          "line": 155,
+          "line": 154,
           "symbol": "StreamVerify"
         },
         "status": "implemented",
@@ -10287,9 +10519,9 @@
               "display_name": "Tablet settings"
             },
             {
-              "type": "usb.device",
+              "type": "usb.usb_address",
               "cardinality": "exactly_one",
-              "display_name": "USB device"
+              "display_name": "USB host address"
             }
           ],
           "provides": [
@@ -10303,8 +10535,8 @@
             "usb.settings": [
               "Connector, encoder and adapter values."
             ],
-            "usb.device": [
-              "Interface used to resolve the USB host address."
+            "usb.usb_address": [
+              "Assigned USB host address used for bind_address."
             ]
           },
           "output_semantics": {
@@ -10764,7 +10996,7 @@
             "path": "."
           },
           "path": "nodes/stream/sunshine.py",
-          "line": 222,
+          "line": 221,
           "symbol": "SunshineReady"
         },
         "status": "implemented",
@@ -11166,7 +11398,7 @@
             "path": "."
           },
           "path": "nodes/stream/sunshine.py",
-          "line": 114,
+          "line": 113,
           "symbol": "SunshineStart"
         },
         "status": "implemented",
@@ -11470,6 +11702,414 @@
             "load_state": "loaded"
           }
         ]
+      },
+      "node:usb.wait_usb_address": {
+        "kind": "node",
+        "node_type": "vibeflow.node",
+        "id": "usb.wait_usb_address",
+        "display_name": "Wait for USB address",
+        "description": "Polls the RNDIS interface until it receives an IPv4 address after a reconnect.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "tags": [],
+        "external": false,
+        "contract": {
+          "requires": [
+            {
+              "type": "usb.settings",
+              "cardinality": "exactly_one",
+              "display_name": "Tablet settings"
+            },
+            {
+              "type": "usb.device",
+              "cardinality": "exactly_one",
+              "display_name": "USB device"
+            }
+          ],
+          "provides": [
+            {
+              "key": "usb_address",
+              "type": "usb.usb_address",
+              "display_name": "USB host address"
+            }
+          ],
+          "input_semantics": {
+            "usb.settings": [
+              "Configured tablet identity and NetworkManager profile."
+            ],
+            "usb.device": [
+              "Interface that carries the RNDIS address."
+            ]
+          },
+          "output_semantics": {
+            "usb_address": [
+              "Assigned IPv4 host address or an empty string on timeout."
+            ]
+          },
+          "params_schema": {
+            "timeout_ms": {
+              "type": "integer"
+            }
+          },
+          "params_defaults": {
+            "timeout_ms": 30000
+          },
+          "examples": []
+        },
+        "implementations": [
+          {
+            "language": "python",
+            "targets": [
+              "python"
+            ],
+            "source": {
+              "kind": "file",
+              "ref": "nodes/stream/address.py",
+              "export": "WaitUsbAddress"
+            },
+            "completion": "immediate",
+            "implementation_files": [
+              {
+                "kind": "file",
+                "ref": "nodes/stream/session.py"
+              }
+            ]
+          }
+        ],
+        "base_libs": [],
+        "workflow_operations": [],
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "presentation": {},
+        "metadata": {},
+        "plugin_id": "",
+        "owner": {
+          "kind": "root",
+          "id": "usb-tablet-display",
+          "root_id": "usb-tablet-display",
+          "path": "."
+        },
+        "origin": {
+          "owner": {
+            "kind": "root",
+            "id": "usb-tablet-display",
+            "root_id": "usb-tablet-display",
+            "path": "."
+          },
+          "path": "nodes/stream/address.py",
+          "line": 12,
+          "symbol": "WaitUsbAddress"
+        },
+        "status": "implemented",
+        "markers": [],
+        "diagnostics": [],
+        "effective_rules": {
+          "import": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "import",
+              "graph_scope": "current_graph",
+              "order": [
+                "imports"
+              ],
+              "calls": [
+                {
+                  "id": "imports",
+                  "rule_id": "vibeflow.import_side_effects",
+                  "original_rule_id": "vibeflow.import_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:imports",
+                    "policy": "default:vibeflow.import_side_effects"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "static": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "static",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "run": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "run",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ]
+        },
+        "effective_presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "sources": [
+          {
+            "id": "file:a5125f5c1847a690",
+            "path": "nodes/stream/address.py",
+            "role": "entry",
+            "symbol": "WaitUsbAddress",
+            "language": "python",
+            "load_state": "loaded"
+          },
+          {
+            "id": "file:4fd3ae8cf3ab83de",
+            "path": "nodes/stream/session.py",
+            "role": "support",
+            "symbol": "",
+            "language": "python",
+            "load_state": "loaded"
+          }
+        ]
       }
     },
     "files": {
@@ -11609,6 +12249,12 @@
             "id": "usb.sunshine_ready",
             "role": "support",
             "symbol": ""
+          },
+          {
+            "kind": "node",
+            "id": "usb.wait_usb_address",
+            "role": "support",
+            "symbol": ""
           }
         ],
         "load_state": "loaded"
@@ -11698,6 +12344,19 @@
             "id": "usb.sunshine_start",
             "role": "entry",
             "symbol": "SunshineStart"
+          }
+        ],
+        "load_state": "loaded"
+      },
+      "file:a5125f5c1847a690": {
+        "id": "file:a5125f5c1847a690",
+        "path": "nodes/stream/address.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.wait_usb_address",
+            "role": "entry",
+            "symbol": "WaitUsbAddress"
           }
         ],
         "load_state": "loaded"
@@ -11844,11 +12503,29 @@
         "relation": "entry"
       },
       {
+        "from": "node:usb.wait_usb_address",
+        "to": "file:a5125f5c1847a690",
+        "relation": "entry"
+      },
+      {
+        "from": "node:usb.wait_usb_address",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "support"
+      },
+      {
         "from": "file:6e704ea5c5e7afa0",
         "to": "file:38ea50e00eecc3b6",
         "relation": "import",
         "specifier": "usb_tablet_display.nodes.display",
         "line": 12,
+        "type_only": false
+      },
+      {
+        "from": "file:a5125f5c1847a690",
+        "to": "file:4fd3ae8cf3ab83de",
+        "relation": "import",
+        "specifier": "usb_tablet_display.nodes.stream",
+        "line": 9,
         "type_only": false
       },
       {
@@ -11902,6 +12579,12 @@
     ]
   },
   "call_effect_scopes": [
+    {
+      "call_path": [
+        "addr"
+      ],
+      "effect_scope": "python_io"
+    },
     {
       "call_path": [
         "check"
@@ -12066,6 +12749,23 @@
         ],
         "source": "static",
         "origin": "usb.start",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "pipeline",
+      "type_key": "usb.wait_usb_address",
+      "call_path": [
+        "addr"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.wait_usb_address",
         "replaced": []
       }
     },

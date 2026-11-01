@@ -1,0 +1,25 @@
+{
+  "version": 5,
+  "id": "20261101T111247397136Z-fd1cb6bdbd3c",
+  "category": "run",
+  "status": "failed",
+  "created_at": "2026-11-01T11:12:47.397126+00:00",
+  "updated_at": "2026-11-01T11:13:18.203541+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-display",
+    "path": "configs/connect.jsonc",
+    "id": "usb-tablet-display:configs/connect.jsonc",
+    "name": "connect",
+    "target": "python"
+  },
+  "views": [
+    "flow",
+    "base_lib",
+    "plugin",
+    "links"
+  ],
+  "revision": 4,
+  "run_id": "20261101T111245Z-4c7a32aa",
+  "check_status": "CONCERNS",
+  "error": "Waiting for RNDIS IPv4 address"
+}

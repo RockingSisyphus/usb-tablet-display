@@ -235,7 +235,7 @@ def _register_address(settings, address, deadline):
     contract={
         "requires": [
             {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
-            {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
+            {"type": "usb.usb_address", "cardinality": "exactly_one", "display_name": "USB host address"},
             {"type": "usb.stream_ready", "cardinality": "exactly_one", "display_name": "Stream readiness"},
         ],
         "provides": [{"key": "launch_state", "type": "usb.launch_state", "display_name": "Launch state"}],
@@ -243,7 +243,7 @@ def _register_address(settings, address, deadline):
         "params_defaults": {"register_ms": 45000, "connect_ms": 55000},
         "input_semantics": {
             "usb.settings": ["ADB binary, serial, Moonlight package and configured app."],
-            "usb.device": ["Interface used to resolve the current USB host address."],
+            "usb.usb_address": ["Assigned USB host address for registration and launch."],
             "usb.stream_ready": ["Sunshine readiness before Moonlight is launched."],
         },
         "output_semantics": {"launch_state": ["Registered address, stage and stream connectivity."]},
@@ -252,9 +252,8 @@ def _register_address(settings, address, deadline):
 class MoonlightConnect:
     def run_pure(self, inputs, params):
         settings = inputs["usb.settings"]["value"]
-        device = inputs["usb.device"]["value"]
         trace = []
-        address = _host_address(device.get("interface", ""))
+        address = str(inputs["usb.usb_address"]["value"].get("address", ""))
         package = settings["moonlight_package"]
         if not address:
             return {"launch_state": {"connected": False, "address": "", "stage": "no-usb-address",

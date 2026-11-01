@@ -74,14 +74,14 @@ def _usb_address(interface: str) -> str:
     contract={
         "requires": [
             {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
-            {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
+            {"type": "usb.usb_address", "cardinality": "exactly_one", "display_name": "USB host address"},
         ],
         "provides": [{"key": "config_result", "type": "usb.config_result", "display_name": "Sunshine config result"}],
         "params_schema": {},
         "params_defaults": {},
         "input_semantics": {
             "usb.settings": ["Connector, encoder and adapter values."],
-            "usb.device": ["Interface used to resolve the USB host address."],
+            "usb.usb_address": ["Assigned USB host address used for bind_address."],
         },
         "output_semantics": {"config_result": ["Whether sunshine.conf changed and the resolved host address."]},
     },
@@ -89,8 +89,7 @@ def _usb_address(interface: str) -> str:
 class SunshineConfigure:
     def run_pure(self, inputs, params):
         settings = inputs["usb.settings"]["value"]
-        device = inputs["usb.device"]["value"]
-        host_ip = _usb_address(device.get("interface", ""))
+        host_ip = str(inputs["usb.usb_address"]["value"].get("address", ""))
         values = {"capture": "portal", "output_name": settings["connector"],
                   "encoder": settings["sunshine_encoder"], "stream_audio": "false"}
         if host_ip:
