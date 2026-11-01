@@ -280,17 +280,17 @@ class MoonlightConnect:
             _save_failure("reachability", address, None, "tablet cannot reach serverinfo over usb")
             return {"launch_state": {"connected": False, "address": address, "stage": "reachability",
                                      "error": "tablet cannot reach http://" + address + ":47989/serverinfo"}}
-        fast_deadline = time.monotonic() + 12
-        fast_launched = _try_launch(settings, address)
+        fast_deadline = time.monotonic() + 8
+        fast_launched = known == address and _try_launch(settings, address)
         while time.monotonic() < fast_deadline and fast_launched:
             ready, _detail = _observe(settings, address)
             if ready:
                 return {"launch_state": {"connected": True, "address": address,
                                          "stage": "already-registered"}}
-            time.sleep(0.5)
+            time.sleep(0.25)
         _adb(settings, ["am", "force-stop", package])
         started = _am_start(settings, package, PCVIEW, ("--activity-clear-top",))
-        _foreground(settings)
+        _foreground(settings, 8.0)
         trace.append({"start_rc": None if started is None else started.returncode,
                       "start_out": "" if started is None else ((started.stdout or "") + (started.stderr or "")).strip()[:200]})
         if known == address:
@@ -311,7 +311,7 @@ class MoonlightConnect:
             if ready:
                 return {"launch_state": {"connected": True, "address": address,
                                          "stage": "shortcut", "registered": registered}}
-            time.sleep(0.5)
+            time.sleep(0.25)
         _save_failure("launch", address, _dump_ui(settings, settings.get("shared_ui_snapshot")), detail)
         return {"launch_state": {"connected": False, "address": address, "stage": "launch",
                                  "registered": registered, "launched": launched, "detail": detail,
