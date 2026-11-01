@@ -1,0 +1,19 @@
+{
+  "version": 5,
+  "id": "20261101T115444072417Z-b8c7228f0280",
+  "category": "run",
+  "status": "failed",
+  "created_at": "2026-11-01T11:54:42.871981+00:00",
+  "updated_at": "2026-11-01T11:54:44.072568+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-display",
+    "path": "configs/disconnect.jsonc",
+    "id": "usb-tablet-display:configs/disconnect.jsonc",
+    "name": "disconnect",
+    "target": "python"
+  },
+  "views": [],
+  "preview_error": "run refused: health status FAIL",
+  "revision": 1,
+  "error": "run refused: health status FAIL"
+}

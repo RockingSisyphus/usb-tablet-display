@@ -32,6 +32,7 @@ def _write_json(path: Path, value) -> None:
             {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
             {"type": "usb.adb_state", "cardinality": "exactly_one", "display_name": "ADB transport state"},
             {"type": "usb.action_result", "cardinality": "exactly_one", "display_name": "Action result"},
+            {"type": "usb.job", "cardinality": "exactly_one", "display_name": "Background job"},
         ],
         "provides": [{"key": "stop", "type": "usb.shutdown", "display_name": "Stop flag"}],
         "params_schema": {
@@ -52,6 +53,7 @@ def _write_json(path: Path, value) -> None:
             "usb.device": ["USB presence and RNDIS interface from this iteration."],
             "usb.adb_state": ["ADB transport state from this iteration."],
             "usb.action_result": ["Session action taken during this iteration."],
+            "usb.job": ["Background job state and exit code."],
         },
         "output_semantics": {"stop": ["True when the daemon should leave its loop."]},
     },
@@ -63,6 +65,7 @@ class TickMerge:
         adb = inputs["usb.adb_state"]["value"]
         settings = inputs["usb.settings"]["value"]
         action_result = inputs["usb.action_result"]["value"]
+        job = inputs["usb.job"]["value"]
         time.sleep(max(int(params["tick_ms"]), 1) / 1000.0)
         state.update({
             "ticks": int(state.get("ticks") or 0) + 1,
@@ -73,6 +76,12 @@ class TickMerge:
             "adb": adb.get("state", "unavailable"),
             "adb_detail": adb.get("detail", ""),
         })
+        state["job_running"] = bool(job.get("running"))
+        if job.get("action") not in (None, "none") and job.get("code") is not None:
+            state["last_action"] = job["action"]
+            state["last_action_code"] = job["code"]
+            state["last_action_at"] = time.time()
+            state["last_action_detail"] = str(job.get("detail") or "")[-200:]
         if action_result.get("auto_enabled") is not None:
             state["auto_enabled"] = bool(action_result["auto_enabled"])
         if action_result.get("action") not in (None, "none"):

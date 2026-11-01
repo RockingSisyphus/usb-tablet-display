@@ -1639,7 +1639,7 @@
         "class": "BuildStatus",
         "root_id": "usb-tablet-display",
         "path": "nodes/report/status.py",
-        "line": 48
+        "line": 101
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2212,6 +2212,11 @@
       {
         "kind": "node",
         "id": "usb.build_status",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.collect_job",
         "reason": "declaration"
       },
       {
@@ -3179,7 +3184,7 @@
             "path": "."
           },
           "path": "nodes/report/status.py",
-          "line": 21,
+          "line": 74,
           "symbol": "BuildStatus"
         },
         "status": "implemented",

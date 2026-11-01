@@ -57,6 +57,7 @@ class SessionStatus:
             {"type": "usb.adb_state", "cardinality": "exactly_one", "display_name": "ADB transport state"},
             {"type": "usb.session_status", "cardinality": "exactly_one", "display_name": "Session status"},
             {"type": "usb.request", "cardinality": "exactly_one", "display_name": "Pending request"},
+            {"type": "usb.job", "cardinality": "exactly_one", "display_name": "Background job"},
         ],
         "provides": [{"key": "action", "type": "usb.action", "display_name": "Session action"}],
         "params_schema": {},
@@ -68,6 +69,7 @@ class SessionStatus:
             "usb.adb_state": ["ADB transport state."],
             "usb.session_status": ["Current Sunshine/Moonlight session state."],
             "usb.request": ["Action requested from the command line interface."],
+            "usb.job": ["Whether a background session job is still running."],
         },
         "output_semantics": {"action": ["connect, disconnect or none with a reason."]},
     },
@@ -80,8 +82,12 @@ class DecideAction:
         adb = _value(inputs, "usb.adb_state")
         current = _value(inputs, "usb.session_status")
         request = _value(inputs, "usb.request")
+        job = _value(inputs, "usb.job")
         auto = bool(state.get("auto_enabled", True))
         usable = bool(device.get("present")) and adb.get("state") == "device"
+        if job.get("running"):
+            return {"action": {"action": "none", "auto_enabled": auto,
+                               "reason": "session job running"}}
         action = str(request.get("action", "none"))
         if action == "set-auto":
             enabled = bool(request.get("value"))

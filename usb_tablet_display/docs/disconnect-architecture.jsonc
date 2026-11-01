@@ -1829,6 +1829,11 @@
       },
       {
         "kind": "node",
+        "id": "usb.collect_job",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.decide_action",
         "reason": "declaration"
       },

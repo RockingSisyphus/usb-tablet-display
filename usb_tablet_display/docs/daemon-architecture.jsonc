@@ -325,11 +325,11 @@
         "execution_lock": null,
         "contains_global_state": false,
         "summary": {
-          "nodes": 9,
+          "nodes": 10,
           "nodeset_types": 3,
-          "explicit_edges": 16,
-          "data_edges": 6,
-          "reported_edges": 15,
+          "explicit_edges": 19,
+          "data_edges": 7,
+          "reported_edges": 18,
           "contains_global_state": false
         },
         "entry_nodes": [
@@ -340,20 +340,16 @@
         ],
         "god_nodes": [
           {
+            "node": "decide",
+            "degree": 6
+          },
+          {
             "node": "io",
             "degree": 6
           },
           {
-            "node": "decide",
-            "degree": 5
-          },
-          {
-            "node": "probe",
-            "degree": 4
-          },
-          {
             "node": "tick",
-            "degree": 4
+            "degree": 5
           }
         ],
         "nodes": [
@@ -571,6 +567,80 @@
               "target": "usb.device_probe",
               "target_status": "implemented"
             },
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
+            "id": "job",
+            "definition_id": "usb.collect_job",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "Collect background job",
+              "description": "Reports whether the session job is still running.",
+              "description_source": "call"
+            },
+            "flow_kind": "process",
+            "rulesets": [
+              "vibeflow.python_io"
+            ],
+            "selected_rulesets": [
+              "vibeflow.python_io"
+            ],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#ECECFF",
+                "stroke": "#9370DB",
+                "text": "#333333",
+                "shape": "rect"
+              },
+              "sources": {
+                "fill": "native",
+                "stroke": "native",
+                "text": "native",
+                "shape": "native"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "python_io",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [],
+            "provides": [
+              {
+                "key": "job",
+                "type": "usb.job",
+                "display_name": "Background job"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
             "config": {
               "call": {
                 "values": {},
@@ -822,6 +892,11 @@
                 "type": "usb.request",
                 "cardinality": "exactly_one",
                 "display_name": "Pending request"
+              },
+              {
+                "type": "usb.job",
+                "cardinality": "exactly_one",
+                "display_name": "Background job"
               }
             ],
             "provides": [
@@ -1007,6 +1082,11 @@
                 "type": "usb.action_result",
                 "cardinality": "exactly_one",
                 "display_name": "Action result"
+              },
+              {
+                "type": "usb.job",
+                "cardinality": "exactly_one",
+                "display_name": "Background job"
               }
             ],
             "provides": [
@@ -1129,6 +1209,64 @@
               "transfer"
             ],
             "transfers": []
+          },
+          {
+            "from": "start",
+            "to": "job",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": []
+          },
+          {
+            "from": "job",
+            "to": "decide",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "job",
+                  "type": "usb.job",
+                  "display_name": "Background job"
+                },
+                "requirement": {
+                  "type": "usb.job",
+                  "cardinality": "exactly_one",
+                  "display_name": "Background job"
+                }
+              }
+            ]
+          },
+          {
+            "from": "job",
+            "to": "tick",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "job",
+                  "type": "usb.job",
+                  "display_name": "Background job"
+                },
+                "requirement": {
+                  "type": "usb.job",
+                  "cardinality": "exactly_one",
+                  "display_name": "Background job"
+                }
+              }
+            ]
           },
           {
             "from": "request",
@@ -2401,7 +2539,7 @@
         "class": "AutoSession",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/runner.py",
-        "line": 34
+        "line": 42
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2409,8 +2547,8 @@
       },
       "info": {
         "display_name": "Run session action",
-        "description": "Invokes the verified connect or disconnect workflow for the decided action.",
-        "version": "0.1.0",
+        "description": "Starts the verified connect or disconnect workflow in the background so the loop keeps ticking.",
+        "version": "0.2.0",
         "flow_kind": "process",
         "author": null,
         "tags": [],
@@ -2442,12 +2580,12 @@
             "connect, disconnect or none."
           ],
           "usb.settings": [
-            "Configuration path used by the invoked workflow."
+            "Configuration used by the started workflow."
           ]
         },
         "output_semantics": {
           "action_result": [
-            "Action taken, exit code and a short diagnostic tail."
+            "Whether a job was started, was already running or was skipped."
           ]
         }
       },
@@ -2486,6 +2624,75 @@
         }
       }
     },
+    "usb.collect_job": {
+      "id": "usb.collect_job",
+      "node_type": "vibeflow.node",
+      "source": {
+        "module": "nodes.stream.jobs",
+        "class": "CollectJob",
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/jobs.py",
+        "line": 65
+      },
+      "declaration": {
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/jobs.py"
+      },
+      "info": {
+        "display_name": "Collect background job",
+        "description": "Reports whether the background session job is running and its exit code once finished.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "author": null,
+        "tags": [],
+        "external": false,
+        "effect_scope": "python_io"
+      },
+      "contract": {
+        "requires": [],
+        "provides": [
+          {
+            "key": "job",
+            "type": "usb.job",
+            "display_name": "Background job"
+          }
+        ],
+        "input_semantics": {},
+        "output_semantics": {
+          "job": [
+            "Action, running flag, exit code and log tail."
+          ]
+        }
+      },
+      "rulesets": [
+        "vibeflow.python_io"
+      ],
+      "declared_presentation": {},
+      "declared_rulesets": [
+        "vibeflow.python_io"
+      ],
+      "presentation": {
+        "values": {
+          "fill": "#ECECFF",
+          "stroke": "#9370DB",
+          "text": "#333333",
+          "shape": "rect"
+        },
+        "sources": {
+          "fill": "native",
+          "stroke": "native",
+          "text": "native",
+          "shape": "native"
+        },
+        "modifiers": {
+          "planned": false
+        }
+      },
+      "config": {
+        "defaults": {},
+        "schema": {}
+      }
+    },
     "usb.decide_action": {
       "id": "usb.decide_action",
       "node_type": "vibeflow.node",
@@ -2494,7 +2701,7 @@
         "class": "DecideAction",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/dispatch.py",
-        "line": 75
+        "line": 77
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2541,6 +2748,11 @@
             "type": "usb.request",
             "cardinality": "exactly_one",
             "display_name": "Pending request"
+          },
+          {
+            "type": "usb.job",
+            "cardinality": "exactly_one",
+            "display_name": "Background job"
           }
         ],
         "provides": [
@@ -2556,6 +2768,9 @@
           ],
           "usb.device": [
             "USB presence resolved from sysfs."
+          ],
+          "usb.job": [
+            "Whether a background session job is still running."
           ],
           "usb.request": [
             "Action requested from the command line interface."
@@ -3122,7 +3337,7 @@
         "class": "TickMerge",
         "root_id": "usb-tablet-display",
         "path": "nodes/state/runtime_state.py",
-        "line": 59
+        "line": 61
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3164,6 +3379,11 @@
             "type": "usb.action_result",
             "cardinality": "exactly_one",
             "display_name": "Action result"
+          },
+          {
+            "type": "usb.job",
+            "cardinality": "exactly_one",
+            "display_name": "Background job"
           }
         ],
         "provides": [
@@ -3182,6 +3402,9 @@
           ],
           "usb.device": [
             "USB presence and RNDIS interface from this iteration."
+          ],
+          "usb.job": [
+            "Background job state and exit code."
           ],
           "usb.settings": [
             "Configuration for the current run."
@@ -3436,6 +3659,11 @@
       {
         "kind": "node",
         "id": "usb.build_status",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.collect_job",
         "reason": "declaration"
       },
       {
@@ -4295,8 +4523,8 @@
         "node_type": "vibeflow.node",
         "id": "usb.auto_session",
         "display_name": "Run session action",
-        "description": "Invokes the verified connect or disconnect workflow for the decided action.",
-        "version": "0.1.0",
+        "description": "Starts the verified connect or disconnect workflow in the background so the loop keeps ticking.",
+        "version": "0.2.0",
         "flow_kind": "process",
         "tags": [],
         "external": false,
@@ -4325,12 +4553,12 @@
               "connect, disconnect or none."
             ],
             "usb.settings": [
-              "Configuration path used by the invoked workflow."
+              "Configuration used by the started workflow."
             ]
           },
           "output_semantics": {
             "action_result": [
-              "Action taken, exit code and a short diagnostic tail."
+              "Whether a job was started, was already running or was skipped."
             ]
           },
           "params_schema": {
@@ -4354,7 +4582,13 @@
               "ref": "nodes/stream/runner.py",
               "export": "AutoSession"
             },
-            "completion": "immediate"
+            "completion": "immediate",
+            "implementation_files": [
+              {
+                "kind": "file",
+                "ref": "nodes/stream/jobs.py"
+              }
+            ]
           }
         ],
         "base_libs": [],
@@ -4379,7 +4613,7 @@
             "path": "."
           },
           "path": "nodes/stream/runner.py",
-          "line": 13,
+          "line": 20,
           "symbol": "AutoSession"
         },
         "status": "implemented",
@@ -4681,6 +4915,384 @@
             "symbol": "AutoSession",
             "language": "python",
             "load_state": "loaded"
+          },
+          {
+            "id": "file:07e54d27bd42e6d6",
+            "path": "nodes/stream/jobs.py",
+            "role": "support",
+            "symbol": "",
+            "language": "python",
+            "load_state": "loaded"
+          }
+        ]
+      },
+      "node:usb.collect_job": {
+        "kind": "node",
+        "node_type": "vibeflow.node",
+        "id": "usb.collect_job",
+        "display_name": "Collect background job",
+        "description": "Reports whether the background session job is running and its exit code once finished.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "tags": [],
+        "external": false,
+        "contract": {
+          "requires": [],
+          "provides": [
+            {
+              "key": "job",
+              "type": "usb.job",
+              "display_name": "Background job"
+            }
+          ],
+          "input_semantics": {},
+          "output_semantics": {
+            "job": [
+              "Action, running flag, exit code and log tail."
+            ]
+          },
+          "params_schema": {},
+          "params_defaults": {},
+          "examples": []
+        },
+        "implementations": [
+          {
+            "language": "python",
+            "targets": [
+              "python"
+            ],
+            "source": {
+              "kind": "file",
+              "ref": "nodes/stream/jobs.py",
+              "export": "CollectJob"
+            },
+            "completion": "immediate"
+          }
+        ],
+        "base_libs": [],
+        "workflow_operations": [],
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "presentation": {},
+        "metadata": {},
+        "plugin_id": "",
+        "owner": {
+          "kind": "root",
+          "id": "usb-tablet-display",
+          "root_id": "usb-tablet-display",
+          "path": "."
+        },
+        "origin": {
+          "owner": {
+            "kind": "root",
+            "id": "usb-tablet-display",
+            "root_id": "usb-tablet-display",
+            "path": "."
+          },
+          "path": "nodes/stream/jobs.py",
+          "line": 50,
+          "symbol": "CollectJob"
+        },
+        "status": "implemented",
+        "markers": [],
+        "diagnostics": [],
+        "effective_rules": {
+          "import": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "import",
+              "graph_scope": "current_graph",
+              "order": [
+                "imports"
+              ],
+              "calls": [
+                {
+                  "id": "imports",
+                  "rule_id": "vibeflow.import_side_effects",
+                  "original_rule_id": "vibeflow.import_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:imports",
+                    "policy": "default:vibeflow.import_side_effects"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "static": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "static",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "run": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "run",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ]
+        },
+        "effective_presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "sources": [
+          {
+            "id": "file:07e54d27bd42e6d6",
+            "path": "nodes/stream/jobs.py",
+            "role": "entry",
+            "symbol": "CollectJob",
+            "language": "python",
+            "load_state": "loaded"
           }
         ]
       },
@@ -4725,6 +5337,11 @@
               "type": "usb.request",
               "cardinality": "exactly_one",
               "display_name": "Pending request"
+            },
+            {
+              "type": "usb.job",
+              "cardinality": "exactly_one",
+              "display_name": "Background job"
             }
           ],
           "provides": [
@@ -4752,6 +5369,9 @@
             ],
             "usb.request": [
               "Action requested from the command line interface."
+            ],
+            "usb.job": [
+              "Whether a background session job is still running."
             ]
           },
           "output_semantics": {
@@ -7770,6 +8390,11 @@
               "type": "usb.action_result",
               "cardinality": "exactly_one",
               "display_name": "Action result"
+            },
+            {
+              "type": "usb.job",
+              "cardinality": "exactly_one",
+              "display_name": "Background job"
             }
           ],
           "provides": [
@@ -7794,6 +8419,9 @@
             ],
             "usb.action_result": [
               "Session action taken during this iteration."
+            ],
+            "usb.job": [
+              "Background job state and exit code."
             ]
           },
           "output_semantics": {
@@ -8192,6 +8820,25 @@
         ],
         "load_state": "loaded"
       },
+      "file:07e54d27bd42e6d6": {
+        "id": "file:07e54d27bd42e6d6",
+        "path": "nodes/stream/jobs.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.auto_session",
+            "role": "support",
+            "symbol": ""
+          },
+          {
+            "kind": "node",
+            "id": "usb.collect_job",
+            "role": "entry",
+            "symbol": "CollectJob"
+          }
+        ],
+        "load_state": "loaded"
+      },
       "file:423432595d552a27": {
         "id": "file:423432595d552a27",
         "path": "nodes/stream/dispatch.py",
@@ -8339,6 +8986,16 @@
         "relation": "entry"
       },
       {
+        "from": "node:usb.auto_session",
+        "to": "file:07e54d27bd42e6d6",
+        "relation": "support"
+      },
+      {
+        "from": "node:usb.collect_job",
+        "to": "file:07e54d27bd42e6d6",
+        "relation": "entry"
+      },
+      {
         "from": "node:usb.decide_action",
         "to": "file:423432595d552a27",
         "relation": "entry"
@@ -8395,6 +9052,14 @@
         "specifier": "usb_tablet_display.nodes.stream",
         "line": 8,
         "type_only": false
+      },
+      {
+        "from": "file:7008e28b7a1edb05",
+        "to": "file:07e54d27bd42e6d6",
+        "relation": "import",
+        "specifier": "usb_tablet_display.nodes.stream",
+        "line": 11,
+        "type_only": false
       }
     ]
   },
@@ -8448,6 +9113,13 @@
         "loop",
         "io",
         "state"
+      ],
+      "effect_scope": "python_io"
+    },
+    {
+      "call_path": [
+        "loop",
+        "job"
       ],
       "effect_scope": "python_io"
     },
@@ -8605,6 +9277,24 @@
         ],
         "source": "static",
         "origin": "usb.start",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "nodeset:usb.daemon_tick",
+      "type_key": "usb.collect_job",
+      "call_path": [
+        "loop",
+        "job"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.collect_job",
         "replaced": []
       }
     },
