@@ -941,6 +941,11 @@
             "type": "usb.stream_ready",
             "cardinality": "exactly_one",
             "display_name": "Stream readiness"
+          },
+          {
+            "type": "usb.state",
+            "cardinality": "exactly_one",
+            "display_name": "Runtime state"
           }
         ],
         "provides": [
@@ -1793,6 +1798,18 @@
               "type": "usb.settings",
               "cardinality": "exactly_one",
               "display_name": "Tablet settings"
+            }
+          },
+          {
+            "provider": {
+              "key": "loaded_state",
+              "type": "usb.state",
+              "display_name": "Runtime state"
+            },
+            "requirement": {
+              "type": "usb.state",
+              "cardinality": "exactly_one",
+              "display_name": "Runtime state"
             }
           }
         ]
@@ -3375,7 +3392,7 @@
         "class": "MoonlightConnect",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/moonlight.py",
-        "line": 253
+        "line": 301
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3407,6 +3424,11 @@
             "type": "usb.stream_ready",
             "cardinality": "exactly_one",
             "display_name": "Stream readiness"
+          },
+          {
+            "type": "usb.state",
+            "cardinality": "exactly_one",
+            "display_name": "Runtime state"
           }
         ],
         "provides": [
@@ -3419,6 +3441,9 @@
         "input_semantics": {
           "usb.settings": [
             "ADB binary, serial, Moonlight package and configured app."
+          ],
+          "usb.state": [
+            "Persisted state carrying the last registered USB address."
           ],
           "usb.stream_ready": [
             "Sunshine readiness before Moonlight is launched."
@@ -3460,7 +3485,8 @@
       "config": {
         "defaults": {
           "connect_ms": 55000,
-          "register_ms": 45000
+          "register_ms": 45000,
+          "state_path": "/tmp/usb-tablet-display/state.json"
         },
         "schema": {
           "connect_ms": {
@@ -3468,6 +3494,9 @@
           },
           "register_ms": {
             "type": "integer"
+          },
+          "state_path": {
+            "type": "string"
           }
         }
       }
@@ -3808,7 +3837,7 @@
         "class": "RequireStream",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/moonlight.py",
-        "line": 322
+        "line": 378
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -7000,6 +7029,11 @@
               "type": "usb.stream_ready",
               "cardinality": "exactly_one",
               "display_name": "Stream readiness"
+            },
+            {
+              "type": "usb.state",
+              "cardinality": "exactly_one",
+              "display_name": "Runtime state"
             }
           ],
           "provides": [
@@ -7018,6 +7052,9 @@
             ],
             "usb.stream_ready": [
               "Sunshine readiness before Moonlight is launched."
+            ],
+            "usb.state": [
+              "Persisted state carrying the last registered USB address."
             ]
           },
           "output_semantics": {
@@ -7031,11 +7068,15 @@
             },
             "connect_ms": {
               "type": "integer"
+            },
+            "state_path": {
+              "type": "string"
             }
           },
           "params_defaults": {
             "register_ms": 45000,
-            "connect_ms": 55000
+            "connect_ms": 55000,
+            "state_path": "/tmp/usb-tablet-display/state.json"
           },
           "examples": []
         },
@@ -7085,7 +7126,7 @@
             "path": "."
           },
           "path": "nodes/stream/moonlight.py",
-          "line": 229,
+          "line": 273,
           "symbol": "MoonlightConnect"
         },
         "status": "implemented",
@@ -9021,7 +9062,7 @@
             "path": "."
           },
           "path": "nodes/stream/moonlight.py",
-          "line": 301,
+          "line": 357,
           "symbol": "RequireStream"
         },
         "status": "implemented",

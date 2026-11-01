@@ -31,7 +31,7 @@ def _host_address(interface):
     return session.usb_address(interface)
 
 
-def _dump_ui(settings, shared_snapshot):
+def _dump_ui_once(settings, shared_snapshot):
     if shared_snapshot:
         result = _adb(settings, ["stat", "-c", "%Y", shared_snapshot, "&&", "date", "+%s",
                                  "&&", "cat", shared_snapshot])
@@ -42,6 +42,50 @@ def _dump_ui(settings, shared_snapshot):
     if dumped is None:
         return None
     return (_adb(settings, ["cat", UI_PATH]) or subprocess.CompletedProcess([], 1, "", "")).stdout
+
+
+def _dump_ui(settings, shared_snapshot):
+    for _attempt in range(3):
+        xml = _dump_ui_once(settings, shared_snapshot)
+        if xml:
+            return xml
+        time.sleep(0.4)
+    return None
+
+
+def _foreground(settings, timeout=15.0):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        xml = _dump_ui(settings, settings.get("shared_ui_snapshot"))
+        if xml:
+            try:
+                root = ET.fromstring(xml)
+            except ET.ParseError:
+                root = None
+            if root is not None:
+                packages = {n.get("package") for n in root.iter() if n.get("package")}
+                if settings["moonlight_package"] in packages:
+                    return True
+        time.sleep(0.6)
+    return False
+
+
+def _read_state(path):
+    try:
+        import json as _json
+        return _json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def _write_registered(path, address):
+    data = _read_state(path)
+    data["registered_address"] = address
+    try:
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except OSError:
+        pass
 
 
 def _tap(settings, point):
@@ -238,14 +282,18 @@ def _register_address(settings, address, deadline):
             {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
             {"type": "usb.usb_address", "cardinality": "exactly_one", "display_name": "USB host address"},
             {"type": "usb.stream_ready", "cardinality": "exactly_one", "display_name": "Stream readiness"},
+            {"type": "usb.state", "cardinality": "exactly_one", "display_name": "Runtime state"},
         ],
         "provides": [{"key": "launch_state", "type": "usb.launch_state", "display_name": "Launch state"}],
-        "params_schema": {"register_ms": {"type": "integer"}, "connect_ms": {"type": "integer"}},
-        "params_defaults": {"register_ms": 45000, "connect_ms": 55000},
+        "params_schema": {"register_ms": {"type": "integer"}, "connect_ms": {"type": "integer"},
+                          "state_path": {"type": "string"}},
+        "params_defaults": {"register_ms": 45000, "connect_ms": 55000,
+                            "state_path": "/tmp/usb-tablet-display/state.json"},
         "input_semantics": {
             "usb.settings": ["ADB binary, serial, Moonlight package and configured app."],
             "usb.usb_address": ["Assigned USB host address for registration and launch."],
             "usb.stream_ready": ["Sunshine readiness before Moonlight is launched."],
+            "usb.state": ["Persisted state carrying the last registered USB address."],
         },
         "output_semantics": {"launch_state": ["Registered address, stage and stream connectivity."]},
     },
@@ -255,6 +303,8 @@ class MoonlightConnect:
         settings = inputs["usb.settings"]["value"]
         trace = []
         address = str(inputs["usb.usb_address"]["value"].get("address", ""))
+        state_path = params["state_path"]
+        known = str(inputs["usb.state"]["value"].get("registered_address") or "")
         package = settings["moonlight_package"]
         if not address:
             return {"launch_state": {"connected": False, "address": "", "stage": "no-usb-address",
@@ -276,9 +326,15 @@ class MoonlightConnect:
             time.sleep(0.5)
         _adb(settings, ["am", "force-stop", package])
         started = _am_start(settings, package, PCVIEW, ("--activity-clear-top",))
+        _foreground(settings)
         trace.append({"start_rc": None if started is None else started.returncode,
                       "start_out": "" if started is None else ((started.stdout or "") + (started.stderr or "")).strip()[:200]})
-        registered, error = _register_address(settings, address, time.monotonic() + max(int(params["register_ms"]), 5000) / 1000.0)
+        if known == address:
+            registered, error = True, ""
+        else:
+            registered, error = _register_address(settings, address, time.monotonic() + max(int(params["register_ms"]), 5000) / 1000.0)
+        if registered and known != address:
+            _write_registered(state_path, address)
         if error:
             _save_failure("register", address, _dump_ui(settings, settings.get("shared_ui_snapshot")), error)
             _append_trace(trace)

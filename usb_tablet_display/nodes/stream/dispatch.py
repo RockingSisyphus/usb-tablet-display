@@ -81,6 +81,7 @@ class DecideAction:
         current = _value(inputs, "usb.session_status")
         request = _value(inputs, "usb.request")
         auto = bool(state.get("auto_enabled", True))
+        usable = bool(device.get("present")) and adb.get("state") == "device"
         action = str(request.get("action", "none"))
         if action == "set-auto":
             enabled = bool(request.get("value"))
@@ -90,17 +91,21 @@ class DecideAction:
             return {"action": {"action": "disconnect", "auto_enabled": False,
                                "reason": "requested disable"}}
         if action == "enable":
-            return {"action": {"action": "connect", "auto_enabled": True,
-                               "reason": "requested enable"}} if usable else \
-                   {"action": {"action": "none", "reason": "requested enable but tablet unavailable"}}
+            if usable:
+                return {"action": {"action": "connect", "auto_enabled": True,
+                                   "reason": "requested enable"}}
+            return {"action": {"action": "none", "auto_enabled": True,
+                               "reason": "requested enable but tablet unavailable"}}
         if action == "reconnect" and current.get("connected"):
             return {"action": {"action": "disconnect", "auto_enabled": True,
                                "reason": "requested reconnect"}}
-        usable = bool(device.get("present")) and adb.get("state") == "device"
         if usable and auto and not current.get("connected"):
-            return {"action": {"action": "connect", "reason": "tablet present and stream idle"}}
+            return {"action": {"action": "connect", "auto_enabled": auto,
+                               "reason": "tablet present and stream idle"}}
         if not usable and str(state.get("last_action") or "") == "connect":
-            return {"action": {"action": "disconnect", "reason": "tablet removed or adb unavailable"}}
+            return {"action": {"action": "disconnect", "auto_enabled": auto,
+                               "reason": "tablet removed or adb unavailable"}}
         if current.get("connected") and not auto:
-            return {"action": {"action": "disconnect", "reason": "automatic session disabled"}}
-        return {"action": {"action": "none", "reason": "no change"}}
+            return {"action": {"action": "disconnect", "auto_enabled": False,
+                               "reason": "automatic session disabled"}}
+        return {"action": {"action": "none", "auto_enabled": auto, "reason": "no change"}}
