@@ -32,10 +32,7 @@ def _write_json(path: Path, value) -> None:
             {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
             {"type": "usb.adb_state", "cardinality": "exactly_one", "display_name": "ADB transport state"},
         ],
-        "provides": [
-            {"key": "state", "type": "usb.state", "display_name": "Updated runtime state"},
-            {"key": "stop", "type": "usb.shutdown", "display_name": "Stop flag"},
-        ],
+        "provides": [{"key": "stop", "type": "usb.shutdown", "display_name": "Stop flag"}],
         "params_schema": {
             "state_path": {"type": "string"},
             "shutdown_path": {"type": "string"},
@@ -54,10 +51,7 @@ def _write_json(path: Path, value) -> None:
             "usb.device": ["USB presence and RNDIS interface from this iteration."],
             "usb.adb_state": ["ADB transport state from this iteration."],
         },
-        "output_semantics": {
-            "state": ["Merged and persisted runtime state."],
-            "stop": ["True when the daemon should leave its loop."],
-        },
+        "output_semantics": {"stop": ["True when the daemon should leave its loop."]},
     },
 )
 class TickMerge:
@@ -79,4 +73,4 @@ class TickMerge:
         _write_json(Path(params["state_path"]), state)
         limit = int(params["max_ticks"] or 0)
         stop = Path(params["shutdown_path"]).exists() or (limit > 0 and state["ticks"] >= limit)
-        return {"state": state, "stop": bool(stop)}
+        return {"stop": bool(stop)}

@@ -640,11 +640,6 @@
             ],
             "provides": [
               {
-                "key": "state",
-                "type": "usb.state",
-                "display_name": "Updated runtime state"
-              },
-              {
                 "key": "stop",
                 "type": "usb.shutdown",
                 "display_name": "Stop flag"
@@ -2136,7 +2131,7 @@
         "class": "TickMerge",
         "root_id": "usb-tablet-display",
         "path": "nodes/state/runtime_state.py",
-        "line": 63
+        "line": 57
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2177,11 +2172,6 @@
         ],
         "provides": [
           {
-            "key": "state",
-            "type": "usb.state",
-            "display_name": "Updated runtime state"
-          },
-          {
             "key": "stop",
             "type": "usb.shutdown",
             "display_name": "Stop flag"
@@ -2202,9 +2192,6 @@
           ]
         },
         "output_semantics": {
-          "state": [
-            "Merged and persisted runtime state."
-          ],
           "stop": [
             "True when the daemon should leave its loop."
           ]
@@ -5101,11 +5088,6 @@
           ],
           "provides": [
             {
-              "key": "state",
-              "type": "usb.state",
-              "display_name": "Updated runtime state"
-            },
-            {
               "key": "stop",
               "type": "usb.shutdown",
               "display_name": "Stop flag"
@@ -5126,9 +5108,6 @@
             ]
           },
           "output_semantics": {
-            "state": [
-              "Merged and persisted runtime state."
-            ],
             "stop": [
               "True when the daemon should leave its loop."
             ]
