@@ -2193,7 +2193,7 @@
     "base_lib": [],
     "plugins": []
   },
-  "call_policies": {},
+  "workflow_operations": {},
   "resource_use": {
     "workflow": "usb-tablet-display:configs/status.jsonc",
     "resources": [
@@ -2295,16 +2295,6 @@
       {
         "kind": "rule",
         "id": "vibeflow.async_lifecycle",
-        "reason": "builtin"
-      },
-      {
-        "kind": "rule",
-        "id": "vibeflow.capability.allow",
-        "reason": "builtin"
-      },
-      {
-        "kind": "rule",
-        "id": "vibeflow.capability.restrict",
         "reason": "builtin"
       },
       {
@@ -2698,7 +2688,7 @@
           }
         ],
         "base_libs": [],
-        "capabilities": [],
+        "workflow_operations": [],
         "rulesets": [
           "vibeflow.python_io"
         ],
@@ -3116,7 +3106,7 @@
           }
         ],
         "base_libs": [],
-        "capabilities": [],
+        "workflow_operations": [],
         "rulesets": [
           "vibeflow.python_io"
         ],
@@ -3508,7 +3498,7 @@
           }
         ],
         "base_libs": [],
-        "capabilities": [],
+        "workflow_operations": [],
         "rulesets": [
           "vibeflow.python_io"
         ],
@@ -3876,7 +3866,7 @@
           }
         ],
         "base_libs": [],
-        "capabilities": [],
+        "workflow_operations": [],
         "rulesets": [
           "vibeflow.process"
         ],
@@ -4252,7 +4242,7 @@
           }
         ],
         "base_libs": [],
-        "capabilities": [],
+        "workflow_operations": [],
         "rulesets": [
           "vibeflow.python_io"
         ],
@@ -4632,7 +4622,7 @@
           }
         ],
         "base_libs": [],
-        "capabilities": [],
+        "workflow_operations": [],
         "rulesets": [
           "vibeflow.python_io"
         ],
@@ -5008,7 +4998,7 @@
           }
         ],
         "base_libs": [],
-        "capabilities": [],
+        "workflow_operations": [],
         "rulesets": [
           "vibeflow.python_io"
         ],
@@ -5368,7 +5358,7 @@
           }
         ],
         "base_libs": [],
-        "capabilities": [],
+        "workflow_operations": [],
         "rulesets": [
           "vibeflow.process"
         ],

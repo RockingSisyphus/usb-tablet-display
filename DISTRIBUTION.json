@@ -1,34 +1,5 @@
 {
-  "agent_automation": {
-    "build": true,
-    "quality": true,
-    "refresh_architecture": true,
-    "validate": true,
-    "workflow_execution_probe": true
-  },
-  "agent_protocol": {
-    "change_inventory": "required",
-    "human_approval_gate": true,
-    "planned_review": true,
-    "required_review_artifact": "html_preview"
-  },
   "development_profile": "collaborative",
-  "kernel": {
-    "archive": "kernel/vibeflow-kernel.zip",
-    "sha256": "8ec463e9760adb3ad3116c9c01e91bf15033720b45ee18d700aea6d1697b09b4"
-  },
-  "roots": [
-    {
-      "id": "python-project",
-      "path": "python_project",
-      "project_target": "python"
-    },
-    {
-      "id": "javascript-project",
-      "path": "javascript_project",
-      "project_target": "javascript"
-    }
-  ],
-  "schema": "vibeflow.distribution.v2",
-  "version": "1.4.5"
+  "schema": "vibeflow.distribution.v3",
+  "version": "1.5.1"
 }

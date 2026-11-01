@@ -104,24 +104,11 @@ python python_project/build/aot/run.py run --input python_project/probe_input.js
 
 Node、插件及支撑代码按原包路径保留，包内资源随包收集。根目录数据、动态导入所需文件可用重复的 `--include assets --include extra_module.py` 添加，路径相对 workflow 所属 root。外部数据和 checkpoint 由调用者提供。框架拥有的定位会重定位；业务配置中的普通路径字符串不改写，相对路径继续以调用者工作目录为准。
 
-```python
-from vibeflow.tooling.application.python import PythonBuildRequest, build_python_aot, load_bundle
 
-build_python_aot(PythonBuildRequest(
-    workspace="vibeflow_config.jsonc", config="python_project/configs/main.jsonc",
-    out_dir="candidate-bundle", include=("assets",)))
-bundle = load_bundle("candidate-bundle")
-runtime = bundle.create_runtime(
-    run_dir="runs/embedded", runtime_options={"execution": "compiled", "trace": "boundary"},
-    global_config={"model": model}, capabilities={"device": device})
-result = runtime.run(initial)
-# 高层运行自动创建独立 run 目录，返回现有 CheckedRunResult：
-checked = bundle.run(initial, run_root="runs", runtime_options={"execution": "plan"})
-```
 
 搬迁后也可从 bundle 自带的框架导入 API：将 `<bundle>/_framework` 加入 Python 模块搜索路径，再调用 `load_bundle()`。构建返回的 `PythonBuildResult.health` 保留静态审查的 PASS/CONCERNS；运行沿用 CheckedRunResult/CheckedRunError 和执行报告。
 
-同一 bundle 可创建独立 runtime；节点实例、线程、取消与锁属于运行期。`create_runtime()` 准备结构，在首次 `run()` 中先创建运行时插件，再绑定 Node；复用这个 runtime 会保留 Node 实例，每次执行重新创建和释放运行时插件。输入、全局值和宿主能力保留对象引用，普通 Node 配置按现有规则生成独立容器。编译插件在构建时运行；runtime 插件按每次执行创建并在任务收尾后释放。`plan`、`block`、`compiled` 与 Hook/trace 选项沿用源码 runtime。
+同一 bundle 可创建独立 runtime；节点实例、线程、取消与锁属于运行期。`create_runtime()` 准备结构，在首次 `run()` 中先创建运行时插件，再绑定 Node；复用这个 runtime 会保留 Node 实例，每次执行重新创建和释放运行时插件。普通运行输入和运行时全局值保留对象引用，普通 Node 配置按现有规则生成独立容器。编译插件在构建时运行；runtime 插件按每次执行创建并在任务收尾后释放。`plan`、`block`、`compiled` 与 Hook/trace 选项沿用源码 runtime。
 
 声明 delegated CLI 合同的图可运行：
 
