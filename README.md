@@ -1,5 +1,15 @@
-# VibeFlow 1.4.5 人机协同开发包
+# USB 平板副屏（VibeFlow）
 
-本发行包包含相同内核下的最小 Python Runtime 与 JavaScript AOT 项目。先阅读 `AGENTS.md` 和 `kernel/docs/README.md`。
+在 Ubuntu GNOME/Wayland 上把 Android 平板作为 USB 副屏。业务实现为 VibeFlow 工作流，
+位于 `usb_tablet_display/`。
 
-双击 `vibeflow-preview.html` 可离线打开浏览工具；初始历史为空。执行 `python run.py review --config <workflow>` 后，在页面刷新历史或打开返回的快照定位链接。`vibeflow-preview.config.js` 配置数据位置，页面资源和历史在 `vibeflow-preview/`。
+- 入口工作流：`daemon`（常驻）、`control`（CLI 契约）、`install`（部署/修复）。
+- 双击 `vibeflow-preview.html` 打开离线预览；`python run.py review --config <workflow>` 生成审阅快照。
+- 内核与使用者文档见 `kernel/docs/README.md`，开发入口见 `AGENTS.md`。
+
+```bash
+python run.py validate --config usb_tablet_display/configs/daemon.jsonc
+python run.py run --config usb_tablet_display/configs/daemon.jsonc --input usb_tablet_display/probes/daemon.json
+```
+
+本发行包已移除 VibeFlow 自带的最小示例流程与 JavaScript 示例 root，仅保留实际业务 root。

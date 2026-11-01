@@ -7,8 +7,8 @@
           "purpose": "Bundled VibeFlow runtime and user documentation"
         },
         {
-          "path": "tools",
-          "purpose": "Offline workflow viewer"
+          "path": "vibeflow-preview",
+          "purpose": "Offline workflow viewer assets and history"
         }
       ]
     }
