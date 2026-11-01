@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=USB 平板副屏
+Name[zh_CN]=USB 平板副屏
+Comment=Control the Android tablet USB secondary display
+Comment[zh_CN]=控制平板副屏、串流与 USB 网络
+Exec=/usr/bin/python3 @ROOT@/gui/app.py
+Icon=video-display
+Terminal=false
+Categories=Utility;
+Keywords=副屏;平板;Moonlight;Sunshine;USB;控制面板;
+StartupNotify=true

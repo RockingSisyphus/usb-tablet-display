@@ -41,6 +41,13 @@
       "root_ids": []
     },
     {
+      "path": "desktop",
+      "purpose": "桌面入口模板",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
       "path": "docs",
       "purpose": "Documentation",
       "declared": true,
@@ -50,6 +57,13 @@
     {
       "path": "gnome-shell-ext",
       "purpose": "GNOME Shell extension source installed with the stack",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
+      "path": "gui",
+      "purpose": "GTK 控制面板源码",
       "declared": true,
       "role": "directory",
       "root_ids": []

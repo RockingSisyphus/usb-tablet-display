@@ -15,6 +15,7 @@
 - **全自动授权**：自动登记 Sunshine 的录屏授权、自动确认 GNOME 的显示器变更弹窗
 - **自动联网**：平板通过 USB 反向共享电脑网络（gnirehtet），断线后由常驻程序自动拉起
 - **命令行与状态**：`usb-tablet` 提供状态查询、开关副屏、重连、安装/回滚等操作
+- **控制面板**：应用列表中的「USB 平板副屏」提供图形界面，可查看状态、开关副屏、重连与看日志
 - **可回滚**：安装前自动备份用户单元与配置，可一键还原
 
 ## 目录结构
@@ -32,6 +33,8 @@ usb_tablet_maintenance/      维护 root
 services/                    三个 systemd 用户单元模板（含 @ROOT@ 占位符）
 cli/                         usb-tablet 命令行入口与联网运行器
 gnome-shell-ext/             自动确认显示器变更的 GNOME 扩展
+gui/                         GTK4 控制面板源码
+desktop/                     桌面入口模板（安装时写入应用列表）
 install/                     tablet.toml 模板
 vendor/gnirehtet/            随项目分发的反向联网程序
 docs/                        架构文档、部署清单、迁移与验收记录
@@ -95,6 +98,7 @@ usb-tablet reconnect           # 重建一次会话
 usb-tablet set-auto off        # 关闭自动模式（插拔不再自动动作）
 usb-tablet auto                # 恢复自动模式
 usb-tablet logs                # 查看常驻程序日志
+usb-tablet gui                 # 打开图形控制面板（应用列表里也有入口）
 ```
 
 服务（systemd 用户单元）：

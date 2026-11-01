@@ -61,6 +61,14 @@
         {
           "path": "archive",
           "purpose": "旧项目归档压缩包"
+        },
+        {
+          "path": "gui",
+          "purpose": "GTK 控制面板源码"
+        },
+        {
+          "path": "desktop",
+          "purpose": "桌面入口模板"
         }
       ]
     }

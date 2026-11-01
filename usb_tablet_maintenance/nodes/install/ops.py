@@ -31,6 +31,7 @@ def user_files(home: Path):
     units = home / ".config/systemd/user"
     return [units / NEW_UNIT, units / NEW_INTERNET_UNIT, units / NEW_COORDINATOR_UNIT,
             home / ".local/bin/usb-tablet",
+            home / ".local/share/applications/usb-tablet-display.desktop",
             home / ".config/usb-tablet-display/tablet.toml",
             home / ".config/sunshine/sunshine.conf"]
 
@@ -86,6 +87,15 @@ def install(home: Path, runner=run):
     wrapper = bin_home / "usb-tablet"
     wrapper.write_text(f'#!/bin/sh\nexec python3 "{ROOT_PATH}/cli/main.py" "$@"\n', encoding="utf-8")
     wrapper.chmod(0o755)
+    applications = home / ".local/share/applications"
+    applications.mkdir(parents=True, exist_ok=True)
+    desktop_source = Path(ROOT_PATH) / "desktop" / "usb-tablet-display.desktop"
+    desktop_text = desktop_source.read_text(encoding="utf-8")
+    if "@ROOT@" not in desktop_text:
+        raise RuntimeError("desktop entry lost its @ROOT@ placeholder")
+    (applications / "usb-tablet-display.desktop").write_text(
+        desktop_text.replace("@ROOT@", ROOT_PATH), encoding="utf-8")
+    (applications / "android-usb-secondary-display.desktop").unlink(missing_ok=True)
     config = home / ".config/usb-tablet-display/tablet.toml"
     if not config.is_file():
         template = Path(ROOT_PATH) / "install" / "tablet.toml.default"
@@ -94,7 +104,8 @@ def install(home: Path, runner=run):
     autofill = autofill_config(home)
     runner(["systemctl", "--user", "daemon-reload"])
     enabled = runner(["systemctl", "--user", "enable", "--now", NEW_UNIT])
-    return {"action": "install", "autofill": autofill, "unit": str(target), "internet_unit": str(units / NEW_INTERNET_UNIT),
+    return {"action": "install", "autofill": autofill,
+            "desktop": str(applications / "usb-tablet-display.desktop"), "unit": str(target), "internet_unit": str(units / NEW_INTERNET_UNIT),
             "extension": str(extension_target), "cli": str(wrapper),
             "enabled": enabled["code"] == 0, "detail": enabled["err"] or enabled["out"]}
 
@@ -140,6 +151,15 @@ def _action_output(argv, timeout=10):
 
 
 def _tablet_serial(home: Path):
+    applications = home / ".local/share/applications"
+    applications.mkdir(parents=True, exist_ok=True)
+    desktop_source = Path(ROOT_PATH) / "desktop" / "usb-tablet-display.desktop"
+    desktop_text = desktop_source.read_text(encoding="utf-8")
+    if "@ROOT@" not in desktop_text:
+        raise RuntimeError("desktop entry lost its @ROOT@ placeholder")
+    (applications / "usb-tablet-display.desktop").write_text(
+        desktop_text.replace("@ROOT@", ROOT_PATH), encoding="utf-8")
+    (applications / "android-usb-secondary-display.desktop").unlink(missing_ok=True)
     config = home / ".config/usb-tablet-display/tablet.toml"
     if not config.is_file():
         return ""
@@ -164,6 +184,15 @@ def _set_toml_value(text, key, value):
 
 
 def autofill_config(home: Path):
+    applications = home / ".local/share/applications"
+    applications.mkdir(parents=True, exist_ok=True)
+    desktop_source = Path(ROOT_PATH) / "desktop" / "usb-tablet-display.desktop"
+    desktop_text = desktop_source.read_text(encoding="utf-8")
+    if "@ROOT@" not in desktop_text:
+        raise RuntimeError("desktop entry lost its @ROOT@ placeholder")
+    (applications / "usb-tablet-display.desktop").write_text(
+        desktop_text.replace("@ROOT@", ROOT_PATH), encoding="utf-8")
+    (applications / "android-usb-secondary-display.desktop").unlink(missing_ok=True)
     config = home / ".config/usb-tablet-display/tablet.toml"
     if not config.is_file():
         return {"filled": False, "reason": "配置不存在"}
@@ -232,6 +261,7 @@ def verify(home: Path, runner=run):
         "coordinator_unit": (home / ".config/systemd/user" / NEW_COORDINATOR_UNIT).is_file(),
         "internet_unit": (home / ".config/systemd/user" / NEW_INTERNET_UNIT).is_file(),
         "cli_wrapper": cli.is_file() and bool(cli.stat().st_mode & 0o111),
+        "desktop_entry": (home / ".local/share/applications/usb-tablet-display.desktop").is_file(),
         "extension_installed": extension.is_dir(),
         "extension_active": _extension_state(EXTENSION) == 1.0,
         "unit_enabled": runner(["systemctl", "--user", "is-enabled", NEW_UNIT])["out"] == "enabled",

@@ -86,8 +86,11 @@ def main():
     if args.action == "logs":
         return subprocess.call(["journalctl", "--user", "-u", UNIT, "-n", "150", "--no-pager"])
     if args.action == "gui":
-        print("图形界面尚未迁移到新实现。")
-        return 1
+        app = ROOT / "gui" / "app.py"
+        if not app.is_file():
+            print("缺少 gui/app.py")
+            return 1
+        return subprocess.call([sys.executable, str(app)])
     return 1
 
 
