@@ -4,13 +4,14 @@
     "nodes": [
       {"id": "start", "definition_id": "usb.start", "display_name": "Start teardown", "description": "Starts the teardown session."},
       {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads tablet settings."},
-      {"id": "display", "definition_id": "usb.display_apply", "display_name": "Disable virtual output", "description": "Applies the disable layout when needed."},
-      {"id": "check", "definition_id": "usb.display_matches", "display_name": "Verify teardown", "description": "Verifies the disable layout."},
+      {"id": "stream", "definition_id": "usb.sunshine_stop", "display_name": "Stop Sunshine stream", "description": "Stops the screen cast before the virtual output is removed."},
+      {"id": "display", "definition_id": "usb.display_apply", "display_name": "Disable virtual output", "description": "Applies the disable layout only after the stream is stopped.", "config": {"target": "disable", "allow_disable": true}},
+      {"id": "check", "definition_id": "usb.display_matches", "display_name": "Verify teardown", "description": "Verifies the disable layout.", "config": {"target": "disable"}},
       {"id": "summary", "definition_id": "usb.teardown_summary", "display_name": "Summarize teardown", "description": "Reports the teardown outcome."},
       {"id": "end", "definition_id": "usb.end", "display_name": "End teardown", "description": "Ends the teardown session."}
     ],
-    "edges": [["start", "io"], ["io", "display"], ["io", "check"], ["display", "summary"], ["check", "summary"], ["summary", "end"]],
-    "node_configs": {"display": {"params": {"target": "disable"}}, "check": {"params": {"target": "disable"}}},
+    "edges": [["start", "io"], ["io", "stream"], ["stream", "display"], ["io", "display"],
+              ["io", "check"], ["display", "summary"], ["check", "summary"], ["summary", "end"]],
     "outputs": [
       {"type": "usb.session_result", "cardinality": "exactly_one", "display_name": "Session result"}
     ]

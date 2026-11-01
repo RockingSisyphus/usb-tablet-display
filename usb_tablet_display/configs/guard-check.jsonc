@@ -1,0 +1,17 @@
+{
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Start guard check", "description": "Starts the disable guard check."},
+      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads tablet settings."},
+      {"id": "display", "definition_id": "usb.display_apply", "display_name": "Attempt unconfirmed disable", "description": "Requests a disable without confirmation and must be skipped.", "config": {"target": "disable"}},
+      {"id": "end", "definition_id": "usb.end", "display_name": "End guard check", "description": "Ends the disable guard check."}
+    ],
+    "edges": [["start", "io"], ["io", "display"], ["display", "end"]],
+    "outputs": [
+      {"type": "usb.display_result", "cardinality": "exactly_one", "display_name": "Display result"}
+    ]
+  },
+  "nodeset_imports": [{"path": "../nodeset_types/state_io.jsonc"}],
+  "plugins": []
+}

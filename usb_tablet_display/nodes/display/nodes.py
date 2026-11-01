@@ -1,6 +1,9 @@
 """GNOME monitor layout nodes backed by Mutter's DisplayConfig interface."""
 from __future__ import annotations
 
+import subprocess
+import time
+
 from gi.repository import Gio, GLib
 
 from vibeflow.targets.python.sdk import node
@@ -19,6 +22,15 @@ def _state(connection: Gio.DBusConnection) -> tuple:
     reply = connection.call_sync(layout.BUS_NAME, layout.OBJECT_PATH, layout.INTERFACE,
                                 "GetCurrentState", None, None, Gio.DBusCallFlags.NONE, 5000, None)
     return reply.unpack()
+
+
+def _service_active(unit: str) -> bool:
+    try:
+        done = subprocess.run(["systemctl", "--user", "is-active", unit],
+                              capture_output=True, text=True, timeout=5)
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return done.stdout.strip() == "active"
 
 
 def _apply(connection: Gio.DBusConnection, state: tuple, config: list, method: int, layout_mode: int) -> None:
@@ -63,8 +75,11 @@ class DisplayMatches:
     contract={
         "requires": [{"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"}],
         "provides": [{"key": "display_result", "type": "usb.display_result", "display_name": "Display result"}],
-        "params_schema": {"target": {"type": "string"}, "method": {"type": "integer"}, "layout_mode": {"type": "integer"}},
-        "params_defaults": {"target": "enable", "method": 2, "layout_mode": 1},
+        "params_schema": {"target": {"type": "string"}, "method": {"type": "integer"},
+                          "layout_mode": {"type": "integer"}, "allow_disable": {"type": "boolean"},
+                          "settle_ms": {"type": "integer"}},
+        "params_defaults": {"target": "enable", "method": 2, "layout_mode": 1,
+                            "allow_disable": False, "settle_ms": 400},
         "input_semantics": {"usb.settings": ["Connector, modes and scale to apply."]},
         "output_semantics": {"display_result": ["Applied state, whether a change was needed and verification result."]},
     },
@@ -73,14 +88,30 @@ class DisplayApply:
     def run_pure(self, inputs, params):
         settings = inputs["usb.settings"]["value"]
         target = params["target"]
+        if target == "disable" and not params["allow_disable"]:
+            return {"display_result": {"target": target, "changed": False, "verified": False,
+                                       "skipped": True,
+                                       "reason": "removing a monitor requires explicit confirmation"}}
+        if target == "disable" and _service_active(settings["sunshine_unit"]):
+            return {"display_result": {"target": target, "changed": False, "verified": False,
+                                       "skipped": True,
+                                       "reason": "sunshine is still casting a monitor; stop the stream first"}}
         connection = _bus()
         state = _state(connection)
         if layout.config_matches(state, target, settings["connector"],
                                  settings["virtual_mode"], settings["builtin_mode"], settings["scale"]):
             return {"display_result": {"target": target, "changed": False, "verified": True}}
+        previous = [tuple(item) for item in state[2]]
         config = layout.build_logical_config(state, target, settings["connector"],
                                              settings["virtual_mode"], settings["builtin_mode"], settings["scale"])
         _apply(connection, state, config, int(params["method"]), int(params["layout_mode"]))
+        time.sleep(max(int(params["settle_ms"]), 0) / 1000.0)
         verified = layout.config_matches(_state(connection), target, settings["connector"],
                                          settings["virtual_mode"], settings["builtin_mode"], settings["scale"])
-        return {"display_result": {"target": target, "changed": True, "verified": bool(verified)}}
+        rolled_back = False
+        if not verified:
+            _apply(connection, state, previous, int(params["method"]), int(params["layout_mode"]))
+            time.sleep(max(int(params["settle_ms"]), 0) / 1000.0)
+            rolled_back = True
+        return {"display_result": {"target": target, "changed": True, "verified": bool(verified),
+                                   "rolled_back": rolled_back}}

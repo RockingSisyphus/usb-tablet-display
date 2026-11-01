@@ -2486,6 +2486,16 @@
       },
       {
         "kind": "node",
+        "id": "usb.sunshine_start",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.sunshine_stop",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.teardown_summary",
         "reason": "declaration"
       },

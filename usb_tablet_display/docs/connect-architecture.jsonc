@@ -432,7 +432,9 @@
         "invokes": null,
         "config": {
           "call": {
-            "values": {},
+            "values": {
+              "target": "enable"
+            },
             "source": {
               "root_id": "usb-tablet-display",
               "path": "configs/connect.jsonc"
@@ -513,7 +515,9 @@
         "invokes": null,
         "config": {
           "call": {
-            "values": {},
+            "values": {
+              "target": "enable"
+            },
             "source": {
               "root_id": "usb-tablet-display",
               "path": "configs/connect.jsonc"
@@ -1831,7 +1835,7 @@
         "class": "DisplayApply",
         "root_id": "usb-tablet-display",
         "path": "nodes/display/nodes.py",
-        "line": 72
+        "line": 87
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -1899,15 +1903,23 @@
       },
       "config": {
         "defaults": {
+          "allow_disable": false,
           "layout_mode": 1,
           "method": 2,
+          "settle_ms": 400,
           "target": "enable"
         },
         "schema": {
+          "allow_disable": {
+            "type": "boolean"
+          },
           "layout_mode": {
             "type": "integer"
           },
           "method": {
+            "type": "integer"
+          },
+          "settle_ms": {
             "type": "integer"
           },
           "target": {
@@ -1924,7 +1936,7 @@
         "class": "DisplayMatches",
         "root_id": "usb-tablet-display",
         "path": "nodes/display/nodes.py",
-        "line": 47
+        "line": 59
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2607,6 +2619,16 @@
       {
         "kind": "node",
         "id": "usb.start",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.sunshine_start",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.sunshine_stop",
         "reason": "declaration"
       },
       {
@@ -3400,12 +3422,20 @@
             },
             "layout_mode": {
               "type": "integer"
+            },
+            "allow_disable": {
+              "type": "boolean"
+            },
+            "settle_ms": {
+              "type": "integer"
             }
           },
           "params_defaults": {
             "target": "enable",
             "method": 2,
-            "layout_mode": 1
+            "layout_mode": 1,
+            "allow_disable": false,
+            "settle_ms": 400
           },
           "examples": []
         },
@@ -3451,7 +3481,7 @@
             "path": "."
           },
           "path": "nodes/display/nodes.py",
-          "line": 56,
+          "line": 68,
           "symbol": "DisplayApply"
         },
         "status": "implemented",
@@ -3851,7 +3881,7 @@
             "path": "."
           },
           "path": "nodes/display/nodes.py",
-          "line": 31,
+          "line": 43,
           "symbol": "DisplayMatches"
         },
         "status": "implemented",
@@ -7015,7 +7045,7 @@
         "to": "file:38ea50e00eecc3b6",
         "relation": "import",
         "specifier": "usb_tablet_display.nodes.display",
-        "line": 8,
+        "line": 11,
         "type_only": false
       }
     ]

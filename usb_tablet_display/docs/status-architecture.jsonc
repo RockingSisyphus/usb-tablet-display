@@ -1754,7 +1754,7 @@
         "class": "DisplayMatches",
         "root_id": "usb-tablet-display",
         "path": "nodes/display/nodes.py",
-        "line": 47
+        "line": 59
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2255,6 +2255,16 @@
       {
         "kind": "node",
         "id": "usb.start",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.sunshine_start",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.sunshine_stop",
         "reason": "declaration"
       },
       {
@@ -3509,7 +3519,7 @@
             "path": "."
           },
           "path": "nodes/display/nodes.py",
-          "line": 31,
+          "line": 43,
           "symbol": "DisplayMatches"
         },
         "status": "implemented",
@@ -5856,7 +5866,7 @@
         "to": "file:38ea50e00eecc3b6",
         "relation": "import",
         "specifier": "usb_tablet_display.nodes.display",
-        "line": 8,
+        "line": 11,
         "type_only": false
       }
     ]
