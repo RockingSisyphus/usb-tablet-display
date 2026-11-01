@@ -20,6 +20,13 @@
       "root_ids": []
     },
     {
+      "path": "archive",
+      "purpose": "旧项目归档压缩包",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
       "path": "bin",
       "purpose": "Launch wrappers",
       "declared": true,

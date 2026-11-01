@@ -1,0 +1,24 @@
+{
+  "version": 5,
+  "id": "20261101T154716268711Z-f93cb16d6def",
+  "category": "run",
+  "status": "succeeded",
+  "created_at": "2026-11-01T15:47:16.268706+00:00",
+  "updated_at": "2026-11-01T15:47:22.835237+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-maintenance",
+    "path": "configs/status.jsonc",
+    "id": "usb-tablet-maintenance:configs/status.jsonc",
+    "name": "status",
+    "target": "python"
+  },
+  "views": [
+    "flow",
+    "base_lib",
+    "plugin",
+    "links"
+  ],
+  "revision": 4,
+  "run_id": "20261101T154715Z-c3b76ca6",
+  "check_status": "CONCERNS"
+}

@@ -57,6 +57,10 @@
         {
           "path": "usb_tablet_maintenance",
           "purpose": "维护类 root（只读检查与安装）"
+        },
+        {
+          "path": "archive",
+          "purpose": "旧项目归档压缩包"
         }
       ]
     }
