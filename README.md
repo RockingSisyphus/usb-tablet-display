@@ -6,7 +6,7 @@
 整个工具由 **VibeFlow 工作流**驱动：常驻程序负责判断与调度，连接/断开等动作由独立的
 工作流完成，所有流程都能单独校验、单独执行、单独审阅。
 
-面向 Ubuntu（GNOME/Mutter）的完整自动化方案：插上平板即自动建虚拟副屏、启动 Sunshine 串流、
+面向 Ubuntu（GNOME/Mutter）的完整自动化方案：安装时创建虚拟副屏（重启生效），插上平板即自动建屏、启动 Sunshine 串流、
 处理系统授权与"保留更改"弹窗、转发鼠标键盘，并让平板反向共享电脑网络。
 
 串流方案基于 **Sunshine**（电脑端串流服务）与 **Moonlight**（平板端播放器）：电脑把扩展桌面
@@ -16,7 +16,7 @@
 
 ## 功能
 
-- **插上即用**：平板插上电脑后自动建立副屏与串流；拔掉后自动撤销虚拟显示器
+- **插上即用**：虚拟副屏由安装流程一次性创建；平板插上后自动启用与串流，拔掉后自动撤销
 - **命令行与状态**：`usb-tablet` 提供状态查询、开关副屏、重连、安装/回滚等操作
 - **控制面板**：应用列表中的「USB 平板副屏」提供图形界面，可查看状态、开关副屏、重连与看日志
 - **可回滚**：安装前自动备份用户单元与配置，可一键还原
@@ -27,6 +27,64 @@
 节点、数据流与历史快照，无需启动任何服务。逐工作流的详细文档在
 `usb_tablet_display/docs/*-architecture.jsonc` 与 `usb_tablet_maintenance/docs/*-architecture.jsonc`；
 文字版总览见 [docs/工作流说明.md](docs/工作流说明.md)。
+
+## 目录结构
+
+```
+nodes/                       两个 root 共用的业务节点（设置、状态、设备探测、副屏判断）
+plugins/                     （可选）项目级治理插件
+usb_tablet_display/          日常运行 root
+  configs/                   daemon / connect / disconnect / internet
+  nodes/                     串流、会话、决策、请求等私有节点
+  nodeset_types/             常驻循环的可复用子图
+usb_tablet_maintenance/      维护 root
+  configs/                   status / display-check / guard-check / install
+  nodes/                     汇总状态、安装操作等私有节点
+services/                    三个 systemd 用户单元模板（含 @ROOT@ 占位符）
+cli/                         usb-tablet 命令行入口与联网运行器
+gnome-shell-ext/             自动确认显示器变更的 GNOME 扩展
+gui/                         GTK4 控制面板源码
+desktop/                     桌面入口模板（安装时写入应用列表）
+install/                     tablet.toml 模板
+vendor/gnirehtet/            随项目分发的反向联网程序
+docs/                        架构文档、部署清单、迁移与验收记录
+tools/verify.sh              一键门禁
+tests/                       行为级测试
+```
+
+## 依赖
+
+**需要用户自己安装（安装器不代劳）**
+
+| 依赖 | 用途 |
+|---|---|
+| Python ≥ 3.11 | 运行 VibeFlow 与工具（需要 `tomllib`） |
+| PyGObject（`python3-gi`） | 与 GNOME 的 D-Bus 交互 |
+| adb（platform-tools）+ udev 规则 | 访问平板；没有 udev 规则时需要 sudo |
+| Sunshine | 串流服务端，需先运行过一次以生成 portal token |
+| GNOME Shell / Mutter | 副屏布局与录屏授权 |
+| NetworkManager | 需要名为 `android-usb-direct` 的连接 |
+| 平板侧 Moonlight | 投屏客户端 |
+| 平板 USB 调试 | 在开发者选项里打开并授权本机 |
+| Sunshine 至少运行过一次 | 生成录屏授权（portal token），并让系统出现可用的虚拟副屏 |
+
+**随项目分发（无需额外安装）**：VibeFlow 内核、gnirehtet、GNOME 扩展、`usb-tablet` 命令行与控制面板。
+
+### 虚拟副屏的前置条件与自动创建
+
+虚拟副屏**不是 Sunshine 创建的**（Sunshine/Moonlight 只负责编码与播放），而是系统级的
+**EDID 覆盖**：给一个实际未连接的 DP 接口喂入自造的 EDID，并强制其保持连接。
+
+`install` 会自动检测并创建：
+
+1. 检测：内核参数里已有 `drm.edid_firmware`，或 `/sys/class/drm/*-DP-*/status` 为 `connected`
+2. 未就绪时写入 `install/edid/virtual-display.bin` 到 `/lib/firmware/edid/`
+3. 在 `/etc/default/grub` 的 `GRUB_CMDLINE_LINUX_DEFAULT` 中补齐：
+   `drm.edid_firmware=DP-1:edid/virtual-display.bin video=DP-1:e`
+4. 执行 `sudo update-grub`
+
+**需要 sudo 权限，且重启后才生效。** 自检（`usb-tablet install verify`）会报告
+`virtual_display` 与 `sunshine_portal_token` 两项，缺失时给出明确提示。
 
 ## 目录结构
 

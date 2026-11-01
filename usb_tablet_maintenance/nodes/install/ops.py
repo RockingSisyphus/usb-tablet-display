@@ -102,9 +102,17 @@ def install(home: Path, runner=run):
         config.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(template, config)
     autofill = autofill_config(home)
+    connector = "DP-1"
+    config_file = home / ".config/usb-tablet-display/tablet.toml"
+    if config_file.is_file():
+        for line in config_file.read_text(encoding="utf-8").splitlines():
+            if line.strip().startswith("connector"):
+                connector = line.split("=", 1)[1].strip().strip('"') or connector
+                break
+    display = ensure_virtual_display(connector)
     runner(["systemctl", "--user", "daemon-reload"])
     enabled = runner(["systemctl", "--user", "enable", "--now", NEW_UNIT])
-    return {"action": "install", "autofill": autofill,
+    return {"action": "install", "autofill": autofill, "virtual_display": display,
             "desktop": str(applications / "usb-tablet-display.desktop"), "unit": str(target), "internet_unit": str(units / NEW_INTERNET_UNIT),
             "extension": str(extension_target), "cli": str(wrapper),
             "enabled": enabled["code"] == 0, "detail": enabled["err"] or enabled["out"]}
@@ -220,6 +228,73 @@ def _extension_state(uuid):
     return float(match.group(1)) if match else None
 
 
+def _virtual_display_ready():
+    try:
+        cmdline = Path("/proc/cmdline").read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        cmdline = ""
+    if "edid_firmware" in cmdline:
+        return True
+    try:
+        for status in Path("/sys/class/drm").glob("*-DP-*/status"):
+            if status.read_text(encoding="utf-8").strip() == "connected":
+                return True
+    except OSError:
+        pass
+    return False
+
+
+EDID_TARGET = "/lib/firmware/edid/virtual-display.bin"
+GRUB_PATH = "/etc/default/grub"
+
+
+def merge_cmdline(text, connector):
+    """在 GRUB_CMDLINE_LINUX_DEFAULT 中补齐 EDID 覆盖与强制连接参数。"""
+    edid = f"drm.edid_firmware={connector}:edid/virtual-display.bin"
+    video = f"video={connector}:e"
+    lines = text.splitlines()
+    changed = False
+    for index, line in enumerate(lines):
+        if not line.startswith("GRUB_CMDLINE_LINUX_DEFAULT="):
+            continue
+        value = line.split("=", 1)[1].strip().strip('"')
+        parts = value.split()
+        for extra in (edid, video):
+            if extra not in parts:
+                parts.append(extra)
+                changed = True
+        lines[index] = 'GRUB_CMDLINE_LINUX_DEFAULT="' + " ".join(parts) + '"'
+        break
+    return "\n".join(lines) + "\n", changed
+
+
+def ensure_virtual_display(connector="DP-1", runner=run):
+    """缺少虚拟副屏时，安装 EDID 固件并补齐内核参数；需要重启后生效。"""
+    if _virtual_display_ready():
+        return {"ready": True, "changed": False, "reboot_required": False}
+    steps = []
+    source = Path(ROOT_PATH) / "install" / "edid" / "virtual-display.bin"
+    target = Path(EDID_TARGET)
+    need_copy = not target.is_file() or target.stat().st_size != source.stat().st_size
+    if need_copy:
+        steps.append(runner(["sudo", "-n", "install", "-D", "-m", "644", str(source), EDID_TARGET]))
+    grub = Path(GRUB_PATH)
+    try:
+        text = grub.read_text(encoding="utf-8")
+    except OSError:
+        return {"ready": False, "changed": bool(steps), "error": "无法读取 /etc/default/grub"}
+    merged, changed = merge_cmdline(text, connector)
+    if changed:
+        temp = Path("/tmp/usb-tablet-grub")
+        temp.write_text(merged, encoding="utf-8")
+        steps.append(runner(["sudo", "-n", "install", "-m", "644", str(temp), GRUB_PATH]))
+        temp.unlink(missing_ok=True)
+        steps.append(runner(["sudo", "-n", "update-grub"]))
+    failed = [step for step in steps if step.get("code") not in (0, None)]
+    return {"ready": False, "changed": bool(steps), "reboot_required": True,
+            "error": "" if not failed else failed[-1].get("err", "命令失败")}
+
+
 def _device_apps():
     if not _which("adb"):
         return {"installed": False, "reason": "adb 不可用"}
@@ -270,6 +345,7 @@ def verify(home: Path, runner=run):
         "sunshine_installed": "app-dev.lizardbyte.app.Sunshine.service" in _action_output(
             ["systemctl", "--user", "list-unit-files", "--no-legend"]),
         "sunshine_portal_token": (home / ".config/sunshine/portal_token").is_file(),
+        "virtual_display": _virtual_display_ready(),
         "network_profile": _network_hint()["present"],
         "tablet_serial": bool(_tablet_serial(home)),
         "state_present": (Path(STATE_PATH) / "state.json").is_file(),
@@ -280,7 +356,9 @@ def verify(home: Path, runner=run):
     if not checks["sunshine_installed"]:
         hints.append("未安装 Sunshine，串流无法启动")
     if checks["sunshine_installed"] and not checks["sunshine_portal_token"]:
-        hints.append("Sunshine 尚未生成录屏授权：先手动启动一次 Sunshine（systemctl --user start app-dev.lizardbyte.app.Sunshine.service）再运行安装自检")
+        hints.append("Sunshine 尚未生成录屏授权：先手动启动一次 Sunshine（systemctl --user start app-dev.lizardbyte.app.Sunshine.service）")
+    if not checks["virtual_display"]:
+        hints.append("未检测到可用的虚拟副屏：需要用 EDID 覆盖创建（见 README「虚拟副屏的前置条件」）")
     if checks["extension_installed"] and not checks["extension_active"]:
         hints.append("GNOME 扩展未加载：重新登录桌面，或执行 gnome-extensions disable/enable " + EXTENSION)
     if not checks["tablet_serial"]:

@@ -52,6 +52,17 @@ def test_install_writes_unit_cli_and_template(home):
     assert (home / ".config/usb-tablet-display/tablet.toml").read_text().strip().startswith("serial")
 
 
+def test_merge_cmdline_adds_edid_parameters_once():
+    text = 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"\n'
+    merged, changed = ops.merge_cmdline(text, "DP-1")
+    assert changed is True
+    assert "drm.edid_firmware=DP-1:edid/virtual-display.bin" in merged
+    assert "video=DP-1:e" in merged
+    again, changed_again = ops.merge_cmdline(merged, "DP-1")
+    assert changed_again is False
+    assert again == merged
+
+
 def test_autofill_uses_single_adb_device_and_hostname(home, monkeypatch):
     calls = []
     monkeypatch.setattr(ops, "_action_output", lambda argv, timeout=10: (
