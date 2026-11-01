@@ -1,0 +1,16 @@
+{
+  "rule_params": {
+    "vibeflow.project.layout": {
+      "directories": [
+        {
+          "path": "kernel",
+          "purpose": "Bundled VibeFlow runtime and user documentation"
+        },
+        {
+          "path": "tools",
+          "purpose": "Offline workflow viewer"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,151 @@
+# Python 资源与插件 SDK
+
+使用 `vibeflow.targets.python.sdk` 在 `nodes/` 中声明业务 Node，将契约与实现放在一起。类型、Schema 和规则由 workflow 显式选择的 Plugin 提供。
+
+## 业务 Node
+
+`nodes/text.py`：
+
+```python
+from vibeflow.targets.python.sdk import node
+
+@node(
+    id="example.normalize_text", node_type="vibeflow.node",
+    display_name="Normalize text",
+    description="Normalizes whitespace in supplied text.",
+    rulesets=["vibeflow.process"],
+    contract={
+        "requires": [{"type": "text.raw", "cardinality": "exactly_one", "display_name": "Raw text"}],
+        "provides": [{"key": "normalized_text", "type": "text.normalized", "display_name": "Normalized text"}],
+        "input_semantics": {"text.raw": ["Text before normalization."]},
+        "output_semantics": {"normalized_text": ["Normalized whitespace."]},
+    },
+)
+class NormalizeText:
+    def run_pure(self, inputs, params):
+        normalized_text = " ".join(inputs["text.raw"]["value"].split())
+        return {"normalized_text": normalized_text}
+```
+
+Schema 由独立的 `plugins/schemas/plugin.py` 提供：
+
+```python
+from vibeflow.targets.python.sdk import Plugin, data_schema
+
+raw = data_schema(type_key="text.raw", schema={"type": "string"})
+normalized = data_schema(type_key="text.normalized", schema={"type": "string"})
+plugin = Plugin(id="example.text", resources=[raw, normalized],
+                declaration_rulesets=["vibeflow.plugin_declaration"])
+```
+
+workflow 保留 JSONC 和原生连边，下面是插件选择与 Node 调用片段：
+
+```jsonc
+{
+  "plugins": [{"source": {"kind": "file", "ref": "plugins/schemas/plugin.py"}}],
+  "pipeline": {
+    "nodes": [{"id": "normalize", "definition_id": "example.normalize_text",
+      "display_name": "Normalize", "description": "Normalize the input"}],
+    "edges": []
+  }
+}
+```
+
+返回对象的 key 与 `provides[].key` 一致；调用点 `params` 使用声明的参数 schema/defaults。参数项可设置 `required: true` 并省略其默认值，调用配置必须提供该键；其他参数继续要求默认值。`@node` 保存契约、规则选择、默认展示以及实现类的源码位置。
+
+直接装饰类或检查函数时，该对象决定实际实现和源码位置。通常让 SDK 自动定位即可；显式提供同语言 `source/implementations` 时，它们必须指向同一对象。同文件的导出别名、file/module 的同源定位可以使用。指向其他实际实现对象时，加载返回 `RESOURCE.IMPLEMENTATION.CONFLICT`，并提供声明与实际位置。需要绑定尚未导入的独立实现时，使用下文的延迟源码声明。
+
+默认值支持 JSON 数组、对象及其嵌套组合。SDK 保存只读声明；`run_pure` 每次调用收到原生 `list/dict` 参数副本。默认值和调用点覆盖分别复制，修改本次参数不会影响保存的默认值、调用者的容器或后续运行。
+
+`run_pure` 可以由源码范围内的父类提供。默认规则按 Python 的方法解析顺序检查实际生效的方法，包括其签名和副作用；诊断指向方法所在文件。跨文件父类需按资源归属要求显式登记。Decision 的路由输出可使用 `flow.*` 字段，例如 `flow.backend`，并在原生连边的 `when` 中引用。
+
+纯路径运算可以使用 `from pathlib import PurePath`、`PurePosixPath` 或 `PureWindowsPath`，支持导入别名。默认副作用规则继续检查 Path 的实际 IO 和网络调用；已取得源码的项目 helper 根据函数体检查，reset/close 等名称本身不授予或取消权限。
+
+框架配置、Python AOT 的 JSON 元数据和绑定文件、启动声明及 CLI 的 JSON 输入统一使用 UTF-8。业务代码仍可使用 Python 原生文件接口，并按文件的实际格式显式选择编码；二进制文件使用 bytes 读写。项目不修改全局默认编码，也不要求通过专属文件读写包装器操作业务文件。
+
+`contextlib.ExitStack` 可以组织清理操作。默认规则根据源码确认接收对象后检查 `close()`，并按当前资源选择的副作用范围检查可解析的 `callback/push` 回调及其 helper 函数体。空栈清理可用于 Process Node；登记 `print/open` 仍需要相应规则允许，状态恢复需要状态规则允许。BaseLib 按自己的 Ruleset 检查，不继承调用 Node 的更宽权限；文件或连接的 `close()` 继续接受 IO 检查。
+
+## 延迟源码与加载时机
+
+需要独立模块在检查后才导入时，使用相同接口的显式源码引用：
+
+```python
+from vibeflow.targets.python.sdk import node, SourceLocator
+
+late_node = node(
+    id="example.late", node_type="vibeflow.node", contract={}, rulesets=["vibeflow.process"],
+    source=SourceLocator(kind="file", ref="nodes/late.py", export="LateNode"),
+)
+```
+
+插件入口先加载固定定义，其直接导入按 Python 的模块机制初始化。显式延迟实现接受所选 import 规则后再绑定；检查失败时，尚未加载的实现及闭包保持未加载。完整流程见[插件加载与检查](plugins-and-integrations.md#原生加载与生命周期)。
+
+```bash
+python run.py validate --config python_project/configs/main.jsonc
+python run.py quality --path python_project
+python run.py review-rules --config python_project/configs/main.jsonc --json
+python run.py inspect-resources --config python_project/configs/main.jsonc --json
+```
+
+资源查询和规则预览加载固定定义，框架不调用检查函数、业务执行入口或生命周期工厂。
+
+## AOT 目录部署
+
+开发时运行 `run` 会执行当前源码的静态审查和编译。部署时先构建一次：
+
+```bash
+python run.py build --config python_project/configs/main.jsonc --out-dir python_project/build/aot
+# 直接使用安装的工具时，显式提供 workspace：
+python -m vibeflow build --workspace vibeflow_config.jsonc --config python_project/configs/main.jsonc --out-dir python_project/build/aot
+python python_project/build/aot/run.py run --input python_project/probe_input.json --runtime-profile train
+```
+
+所属项目选择 Python target，默认 profile 为 `python-package`。输出目录包含匹配的 VibeFlow 框架、共同计划、Python 绑定、预生成块代码和项目实现。整目录可移到另一台机器；目标环境提供 Python 3.11+ 及业务依赖，例如 PyTorch、CUDA。运行使用产物中已准备的计划与实现，无需原 workspace。不适合块执行的图继续使用已准备结构动态调度。
+
+Node、插件及支撑代码按原包路径保留，包内资源随包收集。根目录数据、动态导入所需文件可用重复的 `--include assets --include extra_module.py` 添加，路径相对 workflow 所属 root。外部数据和 checkpoint 由调用者提供。框架拥有的定位会重定位；业务配置中的普通路径字符串不改写，相对路径继续以调用者工作目录为准。
+
+```python
+from vibeflow.tooling.application.python import PythonBuildRequest, build_python_aot, load_bundle
+
+build_python_aot(PythonBuildRequest(
+    workspace="vibeflow_config.jsonc", config="python_project/configs/main.jsonc",
+    out_dir="candidate-bundle", include=("assets",)))
+bundle = load_bundle("candidate-bundle")
+runtime = bundle.create_runtime(
+    run_dir="runs/embedded", runtime_options={"execution": "compiled", "trace": "boundary"},
+    global_config={"model": model}, capabilities={"device": device})
+result = runtime.run(initial)
+# 高层运行自动创建独立 run 目录，返回现有 CheckedRunResult：
+checked = bundle.run(initial, run_root="runs", runtime_options={"execution": "plan"})
+```
+
+搬迁后也可从 bundle 自带的框架导入 API：将 `<bundle>/_framework` 加入 Python 模块搜索路径，再调用 `load_bundle()`。构建返回的 `PythonBuildResult.health` 保留静态审查的 PASS/CONCERNS；运行沿用 CheckedRunResult/CheckedRunError 和执行报告。
+
+同一 bundle 可创建独立 runtime；节点实例、线程、取消与锁属于运行期。`create_runtime()` 准备结构，在首次 `run()` 中先创建运行时插件，再绑定 Node；复用这个 runtime 会保留 Node 实例，每次执行重新创建和释放运行时插件。输入、全局值和宿主能力保留对象引用，普通 Node 配置按现有规则生成独立容器。编译插件在构建时运行；runtime 插件按每次执行创建并在任务收尾后释放。`plan`、`block`、`compiled` 与 Hook/trace 选项沿用源码 runtime。
+
+声明 delegated CLI 合同的图可运行：
+
+```bash
+python candidate-bundle/run.py delegate-cli -- --help
+```
+
+业务标准流与退出码使用 delegated CLI 协议，框架诊断写入 run 日志。构建保留静态审查的 CONCERNS 和 planned stub 开发标记。`--replace` 仅替换仍归本工具所有的完整构建目录。
+
+构建元数据的共同头保存工作流、ABI、入口和文件，`target_metadata` 保存该语言的 profile、工具链与绑定定位。
+
+## 原生异步入口与生命周期
+
+`pipeline.entry_mode: "async"` 使用 `PipelineRuntime.run_async()`、`PythonBundle.run_async()`、`run_checked_async()` 或 `run_workspace_checked_async()`；后两者也从 `vibeflow.tooling.application.python` 导出。同步入口保留 `run()`，传错模式会报 `VF_ENTRY_MODE_MISMATCH`。仅顶层 CLI 创建事件循环，应用直接 await SDK 入口。
+
+SDK `@node` 根据实际 `run_pure` 是否为 async def 声明 completion；延迟实现使用显式 completion，源码检查核对其一致性。异步图的协程节点在宿主循环执行，普通节点在框架拥有的线程执行；取消仍等待实际 finally、操作清理和线程退出。
+
+运行期异步 Hook/dispose 用独立生命周期资源显式声明：`@lifecycle(id="project.runtime", type="runtime", completion="suspend")`，工厂仍是普通同步函数，返回的实例可定义 async Hook 和 async dispose，再将该资源加入 `Plugin(resources=[...])`。编译期扩展保持同步。未声明 suspend 的方法误返回协程时明确拒绝；部分工厂失败也等待已创建实例释放。
+
+节点直接使用宿主循环；不在节点内创建事件循环。自行创建的 asyncio 任务应由 async TaskGroup 管理，或在 finally 中取消并 await 实际退出。官方协作实例的独立生命周期与这些节点内部任务不同，见[Workflow 协作](workflow-coordination.md)。
+
+## 相关文档
+
+- [Rule 与 Node](rules-and-nodes.md)：规则选择与自定义检查。
+- [多文件资源](multifile-resources.md)：支撑文件、库依赖和样式。
+- [运行观测](runtime-observation.md)：业务进度更新与日志。
+- [Workflow 协同](workflow-coordination.md)：实例身份与跨工作流调用。
