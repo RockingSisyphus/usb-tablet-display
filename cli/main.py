@@ -3,14 +3,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-STATE = Path("/tmp/usb-tablet-display/status.json")
-REQUESTS = Path("/tmp/usb-tablet-display/requests")
+STATE_ROOT = Path(os.environ.get("USB_TABLET_STATE_DIR", "/tmp/usb-tablet-display"))
+STATE = STATE_ROOT / "status.json"
+REQUESTS = STATE_ROOT / "requests"
 UNIT = "usb-tablet-daemon.service"
 
 
