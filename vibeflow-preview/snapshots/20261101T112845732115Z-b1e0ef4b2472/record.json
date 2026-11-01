@@ -1,0 +1,19 @@
+{
+  "version": 5,
+  "id": "20261101T112845732115Z-b1e0ef4b2472",
+  "category": "run",
+  "status": "failed",
+  "created_at": "2026-11-01T11:28:44.227862+00:00",
+  "updated_at": "2026-11-01T11:28:45.732231+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-display",
+    "path": "configs/connect.jsonc",
+    "id": "usb-tablet-display:configs/connect.jsonc",
+    "name": "connect",
+    "target": "python"
+  },
+  "views": [],
+  "preview_error": "run refused: health status FAIL",
+  "revision": 1,
+  "error": "run refused: health status FAIL"
+}

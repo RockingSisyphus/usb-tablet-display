@@ -36,7 +36,8 @@ class AutoSession:
         action = inputs["usb.action"]["value"].get("action", "none")
         configs = _configs()
         if action not in configs:
-            return {"action_result": {"action": "none", "code": 0, "detail": ""}}
+            return {"action_result": {"action": "none", "code": 0, "detail": "",
+                                      "auto_enabled": inputs["usb.action"]["value"].get("auto_enabled")}}
         config = f"usb_tablet_display/configs/{configs[action]}"
         try:
             done = subprocess.run(
@@ -47,4 +48,5 @@ class AutoSession:
         except (OSError, subprocess.TimeoutExpired) as error:
             return {"action_result": {"action": action, "code": None, "detail": str(error)[:300]}}
         tail = ((done.stderr or "") + (done.stdout or "")).strip()[-400:]
-        return {"action_result": {"action": action, "code": done.returncode, "detail": tail}}
+        return {"action_result": {"action": action, "code": done.returncode, "detail": tail,
+                                  "auto_enabled": inputs["usb.action"]["value"].get("auto_enabled")}}

@@ -19,8 +19,9 @@ TRAMPOLINE = ".ShortcutTrampoline"
 
 
 def _adb(settings, args, timeout=10):
+    command = [settings["adb"], "-s", settings["serial"], "shell", *[str(a) for a in args]]
     try:
-        return subprocess.run([settings["adb"], "-s", settings["serial"], "shell", *args],
+        return subprocess.run(command,
                               capture_output=True, text=True, timeout=timeout)
     except (OSError, subprocess.TimeoutExpired):
         return None

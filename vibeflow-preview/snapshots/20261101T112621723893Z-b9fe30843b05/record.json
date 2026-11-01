@@ -1,0 +1,19 @@
+{
+  "version": 5,
+  "id": "20261101T112621723893Z-b9fe30843b05",
+  "category": "run",
+  "status": "failed",
+  "created_at": "2026-11-01T11:26:21.109294+00:00",
+  "updated_at": "2026-11-01T11:26:21.723990+00:00",
+  "workflow": {
+    "root_id": "usb-tablet-display",
+    "path": "configs/daemon.jsonc",
+    "id": "usb-tablet-display:configs/daemon.jsonc",
+    "name": "daemon",
+    "target": "python"
+  },
+  "views": [],
+  "preview_error": "run refused: health status FAIL",
+  "revision": 1,
+  "error": "run refused: health status FAIL"
+}

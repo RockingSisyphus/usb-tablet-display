@@ -1315,6 +1315,11 @@
       },
       {
         "kind": "node",
+        "id": "usb.take_request",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.teardown_summary",
         "reason": "declaration"
       },

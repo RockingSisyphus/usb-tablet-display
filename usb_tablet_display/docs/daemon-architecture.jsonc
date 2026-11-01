@@ -325,11 +325,11 @@
         "execution_lock": null,
         "contains_global_state": false,
         "summary": {
-          "nodes": 8,
+          "nodes": 9,
           "nodeset_types": 3,
-          "explicit_edges": 13,
+          "explicit_edges": 16,
           "data_edges": 6,
-          "reported_edges": 13,
+          "reported_edges": 15,
           "contains_global_state": false
         },
         "entry_nodes": [
@@ -345,7 +345,7 @@
           },
           {
             "node": "decide",
-            "degree": 4
+            "degree": 5
           },
           {
             "node": "probe",
@@ -590,6 +590,80 @@
             }
           },
           {
+            "id": "request",
+            "definition_id": "usb.take_request",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "Take CLI request",
+              "description": "Claims one pending CLI request.",
+              "description_source": "call"
+            },
+            "flow_kind": "process",
+            "rulesets": [
+              "vibeflow.python_io"
+            ],
+            "selected_rulesets": [
+              "vibeflow.python_io"
+            ],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#ECECFF",
+                "stroke": "#9370DB",
+                "text": "#333333",
+                "shape": "rect"
+              },
+              "sources": {
+                "fill": "native",
+                "stroke": "native",
+                "text": "native",
+                "shape": "native"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "python_io",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [],
+            "provides": [
+              {
+                "key": "request",
+                "type": "usb.request",
+                "display_name": "Pending request"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
             "id": "sstatus",
             "definition_id": "usb.session_status",
             "source": {
@@ -743,6 +817,11 @@
                 "type": "usb.session_status",
                 "cardinality": "exactly_one",
                 "display_name": "Session status"
+              },
+              {
+                "type": "usb.request",
+                "cardinality": "exactly_one",
+                "display_name": "Pending request"
               }
             ],
             "provides": [
@@ -1039,6 +1118,41 @@
               "transfer"
             ],
             "transfers": []
+          },
+          {
+            "from": "start",
+            "to": "request",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": []
+          },
+          {
+            "from": "request",
+            "to": "decide",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "request",
+                  "type": "usb.request",
+                  "display_name": "Pending request"
+                },
+                "requirement": {
+                  "type": "usb.request",
+                  "cardinality": "exactly_one",
+                  "display_name": "Pending request"
+                }
+              }
+            ]
           },
           {
             "from": "io",
@@ -2380,7 +2494,7 @@
         "class": "DecideAction",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/dispatch.py",
-        "line": 73
+        "line": 75
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2422,6 +2536,11 @@
             "type": "usb.session_status",
             "cardinality": "exactly_one",
             "display_name": "Session status"
+          },
+          {
+            "type": "usb.request",
+            "cardinality": "exactly_one",
+            "display_name": "Pending request"
           }
         ],
         "provides": [
@@ -2437,6 +2556,9 @@
           ],
           "usb.device": [
             "USB presence resolved from sysfs."
+          ],
+          "usb.request": [
+            "Action requested from the command line interface."
           ],
           "usb.session_status": [
             "Current Sunshine/Moonlight session state."
@@ -2917,6 +3039,81 @@
         "schema": {}
       }
     },
+    "usb.take_request": {
+      "id": "usb.take_request",
+      "node_type": "vibeflow.node",
+      "source": {
+        "module": "nodes.stream.requests",
+        "class": "TakeRequest",
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/requests.py",
+        "line": 27
+      },
+      "declaration": {
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/requests.py"
+      },
+      "info": {
+        "display_name": "Take CLI request",
+        "description": "Claims the oldest pending request file written by the command line interface.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "author": null,
+        "tags": [],
+        "external": false,
+        "effect_scope": "python_io"
+      },
+      "contract": {
+        "requires": [],
+        "provides": [
+          {
+            "key": "request",
+            "type": "usb.request",
+            "display_name": "Pending request"
+          }
+        ],
+        "input_semantics": {},
+        "output_semantics": {
+          "request": [
+            "Claimed action and value, or none when the queue is empty."
+          ]
+        }
+      },
+      "rulesets": [
+        "vibeflow.python_io"
+      ],
+      "declared_presentation": {},
+      "declared_rulesets": [
+        "vibeflow.python_io"
+      ],
+      "presentation": {
+        "values": {
+          "fill": "#ECECFF",
+          "stroke": "#9370DB",
+          "text": "#333333",
+          "shape": "rect"
+        },
+        "sources": {
+          "fill": "native",
+          "stroke": "native",
+          "text": "native",
+          "shape": "native"
+        },
+        "modifiers": {
+          "planned": false
+        }
+      },
+      "config": {
+        "defaults": {
+          "requests_path": "/tmp/usb-tablet-display/requests"
+        },
+        "schema": {
+          "requests_path": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "usb.tick_merge": {
       "id": "usb.tick_merge",
       "node_type": "vibeflow.node",
@@ -3344,6 +3541,11 @@
       {
         "kind": "node",
         "id": "usb.sunshine_stop",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.take_request",
         "reason": "declaration"
       },
       {
@@ -4518,6 +4720,11 @@
               "type": "usb.session_status",
               "cardinality": "exactly_one",
               "display_name": "Session status"
+            },
+            {
+              "type": "usb.request",
+              "cardinality": "exactly_one",
+              "display_name": "Pending request"
             }
           ],
           "provides": [
@@ -4542,6 +4749,9 @@
             ],
             "usb.session_status": [
               "Current Sunshine/Moonlight session state."
+            ],
+            "usb.request": [
+              "Action requested from the command line interface."
             ]
           },
           "output_semantics": {
@@ -7148,6 +7358,382 @@
           }
         ]
       },
+      "node:usb.take_request": {
+        "kind": "node",
+        "node_type": "vibeflow.node",
+        "id": "usb.take_request",
+        "display_name": "Take CLI request",
+        "description": "Claims the oldest pending request file written by the command line interface.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "tags": [],
+        "external": false,
+        "contract": {
+          "requires": [],
+          "provides": [
+            {
+              "key": "request",
+              "type": "usb.request",
+              "display_name": "Pending request"
+            }
+          ],
+          "input_semantics": {},
+          "output_semantics": {
+            "request": [
+              "Claimed action and value, or none when the queue is empty."
+            ]
+          },
+          "params_schema": {
+            "requests_path": {
+              "type": "string"
+            }
+          },
+          "params_defaults": {
+            "requests_path": "/tmp/usb-tablet-display/requests"
+          },
+          "examples": []
+        },
+        "implementations": [
+          {
+            "language": "python",
+            "targets": [
+              "python"
+            ],
+            "source": {
+              "kind": "file",
+              "ref": "nodes/stream/requests.py",
+              "export": "TakeRequest"
+            },
+            "completion": "immediate"
+          }
+        ],
+        "base_libs": [],
+        "workflow_operations": [],
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "presentation": {},
+        "metadata": {},
+        "plugin_id": "",
+        "owner": {
+          "kind": "root",
+          "id": "usb-tablet-display",
+          "root_id": "usb-tablet-display",
+          "path": "."
+        },
+        "origin": {
+          "owner": {
+            "kind": "root",
+            "id": "usb-tablet-display",
+            "root_id": "usb-tablet-display",
+            "path": "."
+          },
+          "path": "nodes/stream/requests.py",
+          "line": 12,
+          "symbol": "TakeRequest"
+        },
+        "status": "implemented",
+        "markers": [],
+        "diagnostics": [],
+        "effective_rules": {
+          "import": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "import",
+              "graph_scope": "current_graph",
+              "order": [
+                "imports"
+              ],
+              "calls": [
+                {
+                  "id": "imports",
+                  "rule_id": "vibeflow.import_side_effects",
+                  "original_rule_id": "vibeflow.import_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:imports",
+                    "policy": "default:vibeflow.import_side_effects"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "static": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "static",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "run": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "run",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ]
+        },
+        "effective_presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "sources": [
+          {
+            "id": "file:f043e21fa272872e",
+            "path": "nodes/stream/requests.py",
+            "role": "entry",
+            "symbol": "TakeRequest",
+            "language": "python",
+            "load_state": "loaded"
+          }
+        ]
+      },
       "node:usb.tick_merge": {
         "kind": "node",
         "node_type": "vibeflow.node",
@@ -7696,6 +8282,19 @@
         ],
         "load_state": "loaded"
       },
+      "file:f043e21fa272872e": {
+        "id": "file:f043e21fa272872e",
+        "path": "nodes/stream/requests.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.take_request",
+            "role": "entry",
+            "symbol": "TakeRequest"
+          }
+        ],
+        "load_state": "loaded"
+      },
       "file:2aaeaf192f09d6d0": {
         "id": "file:2aaeaf192f09d6d0",
         "path": "nodes/state/runtime_state.py",
@@ -7777,6 +8376,11 @@
       {
         "from": "node:usb.start",
         "to": "file:149802a0f899dd06",
+        "relation": "entry"
+      },
+      {
+        "from": "node:usb.take_request",
+        "to": "file:f043e21fa272872e",
         "relation": "entry"
       },
       {
@@ -7878,6 +8482,13 @@
         "start"
       ],
       "effect_scope": "none"
+    },
+    {
+      "call_path": [
+        "loop",
+        "request"
+      ],
+      "effect_scope": "python_io"
     },
     {
       "call_path": [
@@ -7994,6 +8605,24 @@
         ],
         "source": "static",
         "origin": "usb.start",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "nodeset:usb.daemon_tick",
+      "type_key": "usb.take_request",
+      "call_path": [
+        "loop",
+        "request"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.take_request",
         "replaced": []
       }
     },

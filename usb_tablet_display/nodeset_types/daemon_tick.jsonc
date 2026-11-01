@@ -10,14 +10,15 @@
       {"id": "start", "definition_id": "usb.start", "display_name": "Begin tick", "description": "Begins one controller iteration."},
       {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads settings and persisted state."},
       {"id": "probe", "definition_id": "usb.device_probe", "display_name": "Probe tablet", "description": "Resolves USB presence and ADB transport state."},
+      {"id": "request", "definition_id": "usb.take_request", "display_name": "Take CLI request", "description": "Claims one pending CLI request."},
       {"id": "sstatus", "definition_id": "usb.session_status", "display_name": "Read session status", "description": "Reads Sunshine/Moonlight session state."},
       {"id": "decide", "definition_id": "usb.decide_action", "display_name": "Decide session action", "description": "Chooses connect, disconnect or none."},
       {"id": "runner", "definition_id": "usb.auto_session", "display_name": "Run session action", "description": "Invokes the verified connect/disconnect workflow when needed."},
       {"id": "tick", "definition_id": "usb.tick_merge", "display_name": "Advance tick", "description": "Merges probe and action results, persists state and reports whether to stop."},
       {"id": "end", "definition_id": "usb.end", "display_name": "Finish tick", "description": "Finishes one controller iteration."}
     ],
-    "edges": [["start", "io"], ["io", "probe"], ["io", "sstatus"], ["probe", "sstatus"],
-              ["io", "decide"], ["probe", "decide"], ["sstatus", "decide"],
+    "edges": [["start", "io"], ["start", "request"], ["request", "decide"], ["io", "probe"], ["io", "sstatus"], ["probe", "sstatus"],
+              ["io", "decide"], ["probe", "decide"], ["sstatus", "decide"], ["request", "decide"],
               ["decide", "runner"], ["io", "runner"],
               ["io", "tick"], ["probe", "tick"], ["runner", "tick"], ["tick", "end"]],
     "outputs": [

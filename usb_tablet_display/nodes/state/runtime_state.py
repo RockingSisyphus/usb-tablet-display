@@ -73,6 +73,8 @@ class TickMerge:
             "adb": adb.get("state", "unavailable"),
             "adb_detail": adb.get("detail", ""),
         })
+        if action_result.get("auto_enabled") is not None:
+            state["auto_enabled"] = bool(action_result["auto_enabled"])
         if action_result.get("action") not in (None, "none"):
             state["last_action"] = action_result.get("action")
             state["last_action_code"] = action_result.get("code")

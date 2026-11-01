@@ -56,6 +56,7 @@ class SessionStatus:
             {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
             {"type": "usb.adb_state", "cardinality": "exactly_one", "display_name": "ADB transport state"},
             {"type": "usb.session_status", "cardinality": "exactly_one", "display_name": "Session status"},
+            {"type": "usb.request", "cardinality": "exactly_one", "display_name": "Pending request"},
         ],
         "provides": [{"key": "action", "type": "usb.action", "display_name": "Session action"}],
         "params_schema": {},
@@ -66,6 +67,7 @@ class SessionStatus:
             "usb.device": ["USB presence resolved from sysfs."],
             "usb.adb_state": ["ADB transport state."],
             "usb.session_status": ["Current Sunshine/Moonlight session state."],
+            "usb.request": ["Action requested from the command line interface."],
         },
         "output_semantics": {"action": ["connect, disconnect or none with a reason."]},
     },
@@ -77,7 +79,23 @@ class DecideAction:
         device = _value(inputs, "usb.device")
         adb = _value(inputs, "usb.adb_state")
         current = _value(inputs, "usb.session_status")
+        request = _value(inputs, "usb.request")
         auto = bool(state.get("auto_enabled", True))
+        action = str(request.get("action", "none"))
+        if action == "set-auto":
+            enabled = bool(request.get("value"))
+            return {"action": {"action": "policy", "auto_enabled": enabled,
+                               "reason": "automatic session " + ("enabled" if enabled else "disabled")}}
+        if action == "disable":
+            return {"action": {"action": "disconnect", "auto_enabled": False,
+                               "reason": "requested disable"}}
+        if action == "enable":
+            return {"action": {"action": "connect", "auto_enabled": True,
+                               "reason": "requested enable"}} if usable else \
+                   {"action": {"action": "none", "reason": "requested enable but tablet unavailable"}}
+        if action == "reconnect" and current.get("connected"):
+            return {"action": {"action": "disconnect", "auto_enabled": True,
+                               "reason": "requested reconnect"}}
         usable = bool(device.get("present")) and adb.get("state") == "device"
         if usable and auto and not current.get("connected"):
             return {"action": {"action": "connect", "reason": "tablet present and stream idle"}}

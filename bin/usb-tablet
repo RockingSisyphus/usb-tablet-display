@@ -1,0 +1,2 @@
+#!/bin/sh
+exec python3 /home/rockingsisyphus/projects/体验优化小项目/平板usb副屏/cli/main.py "$@"

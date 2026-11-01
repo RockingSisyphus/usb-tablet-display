@@ -6,7 +6,7 @@
       {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads settings and persisted state."},
       {"id": "probe", "definition_id": "usb.device_probe", "display_name": "Probe tablet", "description": "Resolves USB presence and ADB transport state."},
       {"id": "display", "definition_id": "usb.display_matches", "display_name": "Match display layout", "description": "Compares the current Mutter layout with the enable target."},
-      {"id": "status", "definition_id": "usb.build_status", "display_name": "Build status", "description": "Composes the published status document."},
+      {"id": "status", "definition_id": "usb.build_status", "display_name": "Build status", "description": "Composes the published status document.", "config": {"state_path": "/tmp/usb-tablet-display/status.json"}},
       {"id": "end", "definition_id": "usb.end", "display_name": "End status", "description": "Ends the status snapshot workflow."}
     ],
     "edges": [["start", "io"], ["io", "probe"], ["io", "display"], ["io", "status"], ["probe", "status"], ["display", "status"], ["status", "end"]],

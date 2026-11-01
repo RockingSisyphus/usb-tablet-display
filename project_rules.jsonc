@@ -7,6 +7,18 @@
           "purpose": "Bundled VibeFlow runtime and user documentation"
         },
         {
+          "path": "cli",
+          "purpose": "Command line entry point"
+        },
+        {
+          "path": "bin",
+          "purpose": "Launch wrappers"
+        },
+        {
+          "path": "services",
+          "purpose": "Systemd unit definitions"
+        },
+        {
           "path": "vibeflow-preview",
           "purpose": "Offline workflow viewer assets and history"
         },

@@ -1,0 +1,17 @@
+[Unit]
+Description=USB tablet secondary display daemon (VibeFlow)
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/rockingsisyphus/projects/体验优化小项目/平板usb副屏
+ExecStartPre=/bin/rm -f /tmp/usb-tablet-display/shutdown
+ExecStart=/usr/bin/python3 run.py run --config usb_tablet_display/configs/daemon.jsonc --input usb_tablet_display/probes/daemon.json
+ExecStop=/bin/sh -c 'mkdir -p /tmp/usb-tablet-display && touch /tmp/usb-tablet-display/shutdown && sleep 3'
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=graphical-session.target

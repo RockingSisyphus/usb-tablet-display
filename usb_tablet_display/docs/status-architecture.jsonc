@@ -447,7 +447,9 @@
         "invokes": null,
         "config": {
           "call": {
-            "values": {},
+            "values": {
+              "state_path": "/tmp/usb-tablet-display/status.json"
+            },
             "source": {
               "root_id": "usb-tablet-display",
               "path": "configs/status.jsonc"
@@ -2315,6 +2317,11 @@
       {
         "kind": "node",
         "id": "usb.sunshine_stop",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.take_request",
         "reason": "declaration"
       },
       {
