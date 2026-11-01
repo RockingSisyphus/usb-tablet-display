@@ -1835,7 +1835,7 @@
         "class": "DisplayApply",
         "root_id": "usb-tablet-display",
         "path": "nodes/display/nodes.py",
-        "line": 87
+        "line": 126
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -1904,6 +1904,8 @@
       "config": {
         "defaults": {
           "allow_disable": false,
+          "confirm_timeout_ms": 6000,
+          "extension_uuid": "android-tablet-auto-keep-display@rockingsisyphus.local",
           "layout_mode": 1,
           "method": 2,
           "settle_ms": 400,
@@ -1912,6 +1914,12 @@
         "schema": {
           "allow_disable": {
             "type": "boolean"
+          },
+          "confirm_timeout_ms": {
+            "type": "integer"
+          },
+          "extension_uuid": {
+            "type": "string"
           },
           "layout_mode": {
             "type": "integer"
@@ -1936,7 +1944,7 @@
         "class": "DisplayMatches",
         "root_id": "usb-tablet-display",
         "path": "nodes/display/nodes.py",
-        "line": 59
+        "line": 95
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3428,6 +3436,12 @@
             },
             "settle_ms": {
               "type": "integer"
+            },
+            "extension_uuid": {
+              "type": "string"
+            },
+            "confirm_timeout_ms": {
+              "type": "integer"
             }
           },
           "params_defaults": {
@@ -3435,7 +3449,9 @@
             "method": 2,
             "layout_mode": 1,
             "allow_disable": false,
-            "settle_ms": 400
+            "settle_ms": 400,
+            "extension_uuid": "android-tablet-auto-keep-display@rockingsisyphus.local",
+            "confirm_timeout_ms": 6000
           },
           "examples": []
         },
@@ -3481,7 +3497,7 @@
             "path": "."
           },
           "path": "nodes/display/nodes.py",
-          "line": 68,
+          "line": 104,
           "symbol": "DisplayApply"
         },
         "status": "implemented",
@@ -3881,7 +3897,7 @@
             "path": "."
           },
           "path": "nodes/display/nodes.py",
-          "line": 43,
+          "line": 79,
           "symbol": "DisplayMatches"
         },
         "status": "implemented",
@@ -7045,7 +7061,7 @@
         "to": "file:38ea50e00eecc3b6",
         "relation": "import",
         "specifier": "usb_tablet_display.nodes.display",
-        "line": 11,
+        "line": 12,
         "type_only": false
       }
     ]

@@ -803,7 +803,7 @@
         "class": "DisplayMatches",
         "root_id": "usb-tablet-display",
         "path": "nodes/display/nodes.py",
-        "line": 59
+        "line": 95
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -1685,7 +1685,7 @@
             "path": "."
           },
           "path": "nodes/display/nodes.py",
-          "line": 43,
+          "line": 79,
           "symbol": "DisplayMatches"
         },
         "status": "implemented",
@@ -3598,7 +3598,7 @@
         "to": "file:38ea50e00eecc3b6",
         "relation": "import",
         "specifier": "usb_tablet_display.nodes.display",
-        "line": 11,
+        "line": 12,
         "type_only": false
       }
     ]
