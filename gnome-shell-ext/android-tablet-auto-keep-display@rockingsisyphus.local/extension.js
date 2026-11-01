@@ -37,6 +37,7 @@ export default class AndroidTabletAutoKeepDisplay extends Extension {
         });
     }
 
+
     _acceptDisplayChange() {
         try {
             const top = Main.modalActorFocusStack.at(-1)?.actor;
