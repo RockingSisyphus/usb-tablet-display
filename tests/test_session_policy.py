@@ -9,8 +9,9 @@ from pathlib import Path
 import pytest
 
 from usb_tablet_display.nodes.stream.dispatch import DecideAction
-from usb_tablet_display.nodes.stream.jobs import CollectJob, JOB_PATH, EXIT_PATH
+from usb_tablet_display.nodes.stream.coordination import CallConnect, CallDisconnect, PollSession
 from usb_tablet_display.nodes.stream.requests import TakeRequest
+import asyncio
 
 
 def inputs(*, settings, device=True, adb="device", connected=False, auto=True,
@@ -25,7 +26,7 @@ def inputs(*, settings, device=True, adb="device", connected=False, auto=True,
         "usb.adb_state": {"value": {"state": adb, "detail": ""}},
         "usb.session_status": {"value": {"connected": connected}},
         "usb.request": {"value": {"action": request[0], "value": request[1]}},
-        "usb.job": {"value": {"action": "none", "code": None, "running": job_running}},
+        "usb.session_result": {"value": {"action": "none", "code": None, "running": job_running}},
     }
 
 
@@ -67,25 +68,34 @@ def test_take_request_claims_oldest_and_leaves_queue_empty(tmp_path):
     assert TakeRequest().run_pure({}, {"requests_path": str(tmp_path)})["request"]["action"] == "none"
 
 
-def test_collect_job_reports_running_then_exit(tmp_path, monkeypatch):
-    monkeypatch.setattr("usb_tablet_display.nodes.stream.jobs.JOB_PATH", str(tmp_path / "job.json"))
-    monkeypatch.setattr("usb_tablet_display.nodes.stream.jobs.EXIT_PATH", str(tmp_path / "job.exit"))
-    job = tmp_path / "job.json"
-    job.write_text(json.dumps({"action": "connect", "pid": os.getpid(),
-                               "started_at": time.time()}))
-    running = CollectJob().run_pure({}, {})["job"]
-    assert running == {"action": "connect", "code": None, "running": True, "detail": ""}
-    (tmp_path / "job.exit").write_text("0")
-    done = CollectJob().run_pure({}, {})["job"]
-    assert done["action"] == "connect" and done["code"] == 0 and done["running"] is False
-    assert not job.exists()
 
 
-def test_collect_job_cleans_up_dead_job_without_exit_code(tmp_path, monkeypatch):
-    monkeypatch.setattr("usb_tablet_display.nodes.stream.jobs.JOB_PATH", str(tmp_path / "job.json"))
-    monkeypatch.setattr("usb_tablet_display.nodes.stream.jobs.EXIT_PATH", str(tmp_path / "job.exit"))
-    (tmp_path / "job.json").write_text(json.dumps({"action": "disconnect", "pid": 999999,
-                                                   "started_at": time.time()}))
-    job = CollectJob().run_pure({}, {})["job"]
-    assert job["running"] is False and job["code"] == -1
-    assert not (tmp_path / "job.json").exists()
+class _NoContext:
+    class workflow:
+        @staticmethod
+        async def call(_payload):
+            raise AssertionError("call should not happen")
+
+        @staticmethod
+        async def wait(_payload):
+            raise AssertionError("wait should not happen")
+
+
+def test_connect_is_ignored_for_other_actions(settings):
+    inputs = {"usb.action": {"value": {"action": "disconnect"}},
+              "usb.state": {"value": {}}}
+    result = asyncio.run(CallConnect().run_pure(inputs, {}, _NoContext()))
+    assert result["start_connect"] == {"started": False, "action": "connect"}
+
+
+def test_disconnect_is_ignored_while_session_running(settings):
+    inputs = {"usb.action": {"value": {"action": "disconnect"}},
+              "usb.state": {"value": {"session_instance": "abc"}}}
+    result = asyncio.run(CallDisconnect().run_pure(inputs, {}, _NoContext()))
+    assert result["start_disconnect"] == {"started": False, "action": "disconnect"}
+
+
+def test_poll_without_instance_reports_idle(settings):
+    result = asyncio.run(PollSession().run_pure(
+        {"usb.state": {"value": {}}}, {"wait_timeout": 1}, _NoContext()))
+    assert result["session_result"] == {"running": False, "action": "none"}

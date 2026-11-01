@@ -46,7 +46,8 @@
         "end"
       ]
     ],
-    "outputs": []
+    "outputs": [],
+    "entry_mode": "async"
   },
   "nodeset_imports": [
     {

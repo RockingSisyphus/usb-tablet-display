@@ -13,7 +13,7 @@
     "inputs": [],
     "outputs": [],
     "max_steps": 1000,
-    "entry_mode": "sync",
+    "entry_mode": "async",
     "execution_lock": null,
     "contains_global_state": false,
     "summary": {
@@ -321,15 +321,15 @@
           }
         ],
         "max_steps": 1000,
-        "entry_mode": "sync",
+        "entry_mode": "async",
         "execution_lock": null,
         "contains_global_state": false,
         "summary": {
-          "nodes": 11,
+          "nodes": 12,
           "nodeset_types": 3,
-          "explicit_edges": 21,
-          "data_edges": 7,
-          "reported_edges": 20,
+          "explicit_edges": 24,
+          "data_edges": 9,
+          "reported_edges": 24,
           "contains_global_state": false
         },
         "entry_nodes": [
@@ -341,15 +341,15 @@
         "god_nodes": [
           {
             "node": "io",
-            "degree": 7
+            "degree": 9
           },
           {
             "node": "decide",
-            "degree": 6
+            "degree": 8
           },
           {
             "node": "tick",
-            "degree": 6
+            "degree": 8
           }
         ],
         "nodes": [
@@ -430,7 +430,7 @@
             },
             "role": {
               "display_name": "读取设置与状态",
-              "description": "一次性读取用户设置和上次保存的运行状态，供后续步骤共同使用。",
+              "description": "一次性读取设置和上次保存的运行状态。",
               "description_source": "call"
             },
             "flow_kind": "predefined",
@@ -509,7 +509,7 @@
             },
             "role": {
               "display_name": "检查平板状态",
-              "description": "确认平板是否插着、调试连接是否正常，并找到它对应的网络接口。",
+              "description": "确认平板与调试连接是否可用。",
               "description_source": "call"
             },
             "flow_kind": "predefined",
@@ -586,239 +586,6 @@
             }
           },
           {
-            "id": "inet",
-            "definition_id": "usb.internet_tick",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/daemon_tick.jsonc"
-            },
-            "role": {
-              "display_name": "定期检查网络",
-              "description": "每隔一段时间检查一次平板网络；一切正常时不做多余操作。",
-              "description_source": "call"
-            },
-            "flow_kind": "process",
-            "rulesets": [
-              "vibeflow.python_io"
-            ],
-            "selected_rulesets": [
-              "vibeflow.python_io"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "rect"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "python_io",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [
-              {
-                "type": "usb.settings",
-                "cardinality": "exactly_one",
-                "display_name": "Tablet settings"
-              },
-              {
-                "type": "usb.state",
-                "cardinality": "exactly_one",
-                "display_name": "Runtime state"
-              }
-            ],
-            "provides": [
-              {
-                "key": "internet_state",
-                "type": "usb.internet_state",
-                "display_name": "Internet state"
-              }
-            ],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/daemon_tick.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/daemon_tick.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          },
-          {
-            "id": "job",
-            "definition_id": "usb.collect_job",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/daemon_tick.jsonc"
-            },
-            "role": {
-              "display_name": "查看后台任务",
-              "description": "查看之前启动的连接或断开任务是否还在进行，以及它最终是成功还是失败。",
-              "description_source": "call"
-            },
-            "flow_kind": "process",
-            "rulesets": [
-              "vibeflow.python_io"
-            ],
-            "selected_rulesets": [
-              "vibeflow.python_io"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "rect"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "python_io",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [],
-            "provides": [
-              {
-                "key": "job",
-                "type": "usb.job",
-                "display_name": "Background job"
-              }
-            ],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/daemon_tick.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/daemon_tick.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          },
-          {
-            "id": "request",
-            "definition_id": "usb.take_request",
-            "source": {
-              "root_id": "usb-tablet-display",
-              "path": "nodeset_types/daemon_tick.jsonc"
-            },
-            "role": {
-              "display_name": "处理用户命令",
-              "description": "检查用户在电脑上执行过什么命令（例如开关副屏），每次只取一条来处理。",
-              "description_source": "call"
-            },
-            "flow_kind": "process",
-            "rulesets": [
-              "vibeflow.python_io"
-            ],
-            "selected_rulesets": [
-              "vibeflow.python_io"
-            ],
-            "tags": [],
-            "metadata": {},
-            "presentation": {
-              "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "rect"
-              },
-              "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
-              },
-              "modifiers": {
-                "planned": false
-              }
-            },
-            "effect_scope": "python_io",
-            "execution_lock": null,
-            "effective_execution_lock": null,
-            "contains_global_state": false,
-            "status": "implemented",
-            "planned_behavior": null,
-            "requires": [],
-            "provides": [
-              {
-                "key": "request",
-                "type": "usb.request",
-                "display_name": "Pending request"
-              }
-            ],
-            "contract_source": "node_definition",
-            "join_policy": "safe_any",
-            "loop": null,
-            "invokes": null,
-            "config": {
-              "call": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/daemon_tick.jsonc"
-                }
-              },
-              "node_configs": {
-                "values": {},
-                "source": {
-                  "root_id": "usb-tablet-display",
-                  "path": "nodeset_types/daemon_tick.jsonc"
-                }
-              },
-              "allow_config_override": false
-            }
-          },
-          {
             "id": "sstatus",
             "definition_id": "usb.session_status",
             "source": {
@@ -827,7 +594,7 @@
             },
             "role": {
               "display_name": "检查是否正在投屏",
-              "description": "综合串流程序、投屏程序与端口状态，判断平板现在是否真的在显示电脑画面。",
+              "description": "判断平板是否真的在显示电脑画面。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -904,6 +671,241 @@
             }
           },
           {
+            "id": "poll",
+            "definition_id": "usb.poll_session",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "查看会话结果",
+              "description": "查看后台连接或断开是否已经结束。",
+              "description_source": "call"
+            },
+            "flow_kind": "workflow-io",
+            "rulesets": [],
+            "selected_rulesets": [],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#e2e8f0",
+                "stroke": "#475569",
+                "text": "#1e293b",
+                "shape": "notch-rect"
+              },
+              "sources": {
+                "fill": "workflow 操作 · wait",
+                "stroke": "workflow 操作 · wait",
+                "text": "workflow 操作 · wait",
+                "shape": "workflow 操作 · wait"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "unconstrained",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [
+              {
+                "type": "usb.state",
+                "cardinality": "exactly_one",
+                "display_name": "运行状态"
+              }
+            ],
+            "provides": [
+              {
+                "key": "session_result",
+                "type": "usb.session_result",
+                "display_name": "会话结果"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
+            "id": "inet",
+            "definition_id": "usb.internet_tick",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "定期检查网络",
+              "description": "按间隔检查平板网络。",
+              "description_source": "call"
+            },
+            "flow_kind": "process",
+            "rulesets": [
+              "vibeflow.python_io"
+            ],
+            "selected_rulesets": [
+              "vibeflow.python_io"
+            ],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#ECECFF",
+                "stroke": "#9370DB",
+                "text": "#333333",
+                "shape": "rect"
+              },
+              "sources": {
+                "fill": "native",
+                "stroke": "native",
+                "text": "native",
+                "shape": "native"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "python_io",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [
+              {
+                "type": "usb.settings",
+                "cardinality": "exactly_one",
+                "display_name": "Tablet settings"
+              },
+              {
+                "type": "usb.state",
+                "cardinality": "exactly_one",
+                "display_name": "Runtime state"
+              }
+            ],
+            "provides": [
+              {
+                "key": "internet_state",
+                "type": "usb.internet_state",
+                "display_name": "Internet state"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
+            "id": "request",
+            "definition_id": "usb.take_request",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "处理用户命令",
+              "description": "领取一条用户命令。",
+              "description_source": "call"
+            },
+            "flow_kind": "process",
+            "rulesets": [
+              "vibeflow.python_io"
+            ],
+            "selected_rulesets": [
+              "vibeflow.python_io"
+            ],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#ECECFF",
+                "stroke": "#9370DB",
+                "text": "#333333",
+                "shape": "rect"
+              },
+              "sources": {
+                "fill": "native",
+                "stroke": "native",
+                "text": "native",
+                "shape": "native"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "python_io",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [],
+            "provides": [
+              {
+                "key": "request",
+                "type": "usb.request",
+                "display_name": "Pending request"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
             "id": "decide",
             "definition_id": "usb.decide_action",
             "source": {
@@ -912,7 +914,7 @@
             },
             "role": {
               "display_name": "决定要做什么",
-              "description": "根据平板是否插着、调试连接是否可用、是否开启自动模式以及当前投屏状态，决定连接、断开还是什么都不做。",
+              "description": "决定连接、断开或什么都不做。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -929,7 +931,7 @@
                 "fill": "#ECECFF",
                 "stroke": "#9370DB",
                 "text": "#333333",
-                "shape": "rect"
+                "shape": "dbl-circ"
               },
               "sources": {
                 "fill": "native",
@@ -979,9 +981,9 @@
                 "display_name": "Pending request"
               },
               {
-                "type": "usb.job",
+                "type": "usb.session_result",
                 "cardinality": "exactly_one",
-                "display_name": "Background job"
+                "display_name": "Session result"
               }
             ],
             "provides": [
@@ -1014,44 +1016,40 @@
             }
           },
           {
-            "id": "runner",
-            "definition_id": "usb.auto_session",
+            "id": "connect",
+            "definition_id": "usb.call_connect",
             "source": {
               "root_id": "usb-tablet-display",
               "path": "nodeset_types/daemon_tick.jsonc"
             },
             "role": {
-              "display_name": "执行连接或断开",
-              "description": "按照上一步的决定，在后台启动已经验证过的连接或断开流程，不阻塞常驻程序的其它工作。",
+              "display_name": "发起连接",
+              "description": "需要连接时在后台启动连接工作流。",
               "description_source": "call"
             },
-            "flow_kind": "process",
-            "rulesets": [
-              "vibeflow.python_io"
-            ],
-            "selected_rulesets": [
-              "vibeflow.python_io"
-            ],
+            "flow_kind": "workflow-io",
+            "rulesets": [],
+            "selected_rulesets": [],
             "tags": [],
             "metadata": {},
             "presentation": {
               "values": {
-                "fill": "#ECECFF",
-                "stroke": "#9370DB",
-                "text": "#333333",
-                "shape": "rect"
+                "fill": "#fef3c7",
+                "stroke": "#b7791f",
+                "text": "#713f12",
+                "shape": "notch-rect"
               },
               "sources": {
-                "fill": "native",
-                "stroke": "native",
-                "text": "native",
-                "shape": "native"
+                "fill": "workflow 操作 · call",
+                "stroke": "workflow 操作 · call",
+                "text": "workflow 操作 · call",
+                "shape": "workflow 操作 · call"
               },
               "modifiers": {
                 "planned": false
               }
             },
-            "effect_scope": "python_io",
+            "effect_scope": "unconstrained",
             "execution_lock": null,
             "effective_execution_lock": null,
             "contains_global_state": false,
@@ -1061,19 +1059,100 @@
               {
                 "type": "usb.action",
                 "cardinality": "exactly_one",
-                "display_name": "Session action"
+                "display_name": "决定"
               },
               {
-                "type": "usb.settings",
+                "type": "usb.state",
                 "cardinality": "exactly_one",
-                "display_name": "Tablet settings"
+                "display_name": "运行状态"
               }
             ],
             "provides": [
               {
-                "key": "action_result",
-                "type": "usb.action_result",
-                "display_name": "Action result"
+                "key": "start_connect",
+                "type": "usb.session_start_connect",
+                "display_name": "连接启动"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
+            "id": "disconnect",
+            "definition_id": "usb.call_disconnect",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "发起断开",
+              "description": "需要断开时在后台启动断开工作流。",
+              "description_source": "call"
+            },
+            "flow_kind": "workflow-io",
+            "rulesets": [],
+            "selected_rulesets": [],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#fef3c7",
+                "stroke": "#b7791f",
+                "text": "#713f12",
+                "shape": "notch-rect"
+              },
+              "sources": {
+                "fill": "workflow 操作 · call",
+                "stroke": "workflow 操作 · call",
+                "text": "workflow 操作 · call",
+                "shape": "workflow 操作 · call"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "unconstrained",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [
+              {
+                "type": "usb.action",
+                "cardinality": "exactly_one",
+                "display_name": "决定"
+              },
+              {
+                "type": "usb.state",
+                "cardinality": "exactly_one",
+                "display_name": "运行状态"
+              }
+            ],
+            "provides": [
+              {
+                "key": "start_disconnect",
+                "type": "usb.session_start_disconnect",
+                "display_name": "断开启动"
               }
             ],
             "contract_source": "node_definition",
@@ -1107,7 +1186,7 @@
             },
             "role": {
               "display_name": "推进一轮循环",
-              "description": "等待一个很短的间隔，把本轮看到的信息写进运行状态，并判断是否需要停止常驻程序。",
+              "description": "写入本轮状态并判断是否停止。",
               "description_source": "call"
             },
             "flow_kind": "process",
@@ -1164,14 +1243,24 @@
                 "display_name": "ADB transport state"
               },
               {
-                "type": "usb.action_result",
+                "type": "usb.action",
                 "cardinality": "exactly_one",
-                "display_name": "Action result"
+                "display_name": "Session action"
               },
               {
-                "type": "usb.job",
+                "type": "usb.session_start_connect",
                 "cardinality": "exactly_one",
-                "display_name": "Background job"
+                "display_name": "Connect start"
+              },
+              {
+                "type": "usb.session_start_disconnect",
+                "cardinality": "exactly_one",
+                "display_name": "Disconnect start"
+              },
+              {
+                "type": "usb.session_result",
+                "cardinality": "exactly_one",
+                "display_name": "Session result"
               },
               {
                 "type": "usb.internet_state",
@@ -1301,148 +1390,6 @@
             "transfers": []
           },
           {
-            "from": "start",
-            "to": "job",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": []
-          },
-          {
-            "from": "io",
-            "to": "inet",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": [
-              {
-                "provider": {
-                  "key": "settings",
-                  "type": "usb.settings",
-                  "display_name": "Tablet settings"
-                },
-                "requirement": {
-                  "type": "usb.settings",
-                  "cardinality": "exactly_one",
-                  "display_name": "Tablet settings"
-                }
-              },
-              {
-                "provider": {
-                  "key": "loaded_state",
-                  "type": "usb.state",
-                  "display_name": "Runtime state"
-                },
-                "requirement": {
-                  "type": "usb.state",
-                  "cardinality": "exactly_one",
-                  "display_name": "Runtime state"
-                }
-              }
-            ]
-          },
-          {
-            "from": "inet",
-            "to": "tick",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": [
-              {
-                "provider": {
-                  "key": "internet_state",
-                  "type": "usb.internet_state",
-                  "display_name": "Internet state"
-                },
-                "requirement": {
-                  "type": "usb.internet_state",
-                  "cardinality": "exactly_one",
-                  "display_name": "Internet state"
-                }
-              }
-            ]
-          },
-          {
-            "from": "job",
-            "to": "decide",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": [
-              {
-                "provider": {
-                  "key": "job",
-                  "type": "usb.job",
-                  "display_name": "Background job"
-                },
-                "requirement": {
-                  "type": "usb.job",
-                  "cardinality": "exactly_one",
-                  "display_name": "Background job"
-                }
-              }
-            ]
-          },
-          {
-            "from": "job",
-            "to": "tick",
-            "when": "",
-            "roles": [
-              "data_bypass",
-              "transfer"
-            ],
-            "transfers": [
-              {
-                "provider": {
-                  "key": "job",
-                  "type": "usb.job",
-                  "display_name": "Background job"
-                },
-                "requirement": {
-                  "type": "usb.job",
-                  "cardinality": "exactly_one",
-                  "display_name": "Background job"
-                }
-              }
-            ]
-          },
-          {
-            "from": "request",
-            "to": "decide",
-            "when": "",
-            "roles": [
-              "mainline",
-              "schedule",
-              "transfer"
-            ],
-            "transfers": [
-              {
-                "provider": {
-                  "key": "request",
-                  "type": "usb.request",
-                  "display_name": "Pending request"
-                },
-                "requirement": {
-                  "type": "usb.request",
-                  "cardinality": "exactly_one",
-                  "display_name": "Pending request"
-                }
-              }
-            ]
-          },
-          {
             "from": "io",
             "to": "probe",
             "when": "",
@@ -1490,8 +1437,8 @@
             ]
           },
           {
-            "from": "probe",
-            "to": "sstatus",
+            "from": "io",
+            "to": "poll",
             "when": "",
             "roles": [
               "mainline",
@@ -1501,14 +1448,50 @@
             "transfers": [
               {
                 "provider": {
-                  "key": "device",
-                  "type": "usb.device",
-                  "display_name": "USB device"
+                  "key": "loaded_state",
+                  "type": "usb.state",
+                  "display_name": "Runtime state"
                 },
                 "requirement": {
-                  "type": "usb.device",
+                  "type": "usb.state",
                   "cardinality": "exactly_one",
-                  "display_name": "USB device"
+                  "display_name": "运行状态"
+                }
+              }
+            ]
+          },
+          {
+            "from": "io",
+            "to": "inet",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "settings",
+                  "type": "usb.settings",
+                  "display_name": "Tablet settings"
+                },
+                "requirement": {
+                  "type": "usb.settings",
+                  "cardinality": "exactly_one",
+                  "display_name": "Tablet settings"
+                }
+              },
+              {
+                "provider": {
+                  "key": "loaded_state",
+                  "type": "usb.state",
+                  "display_name": "Runtime state"
+                },
+                "requirement": {
+                  "type": "usb.state",
+                  "cardinality": "exactly_one",
+                  "display_name": "Runtime state"
                 }
               }
             ]
@@ -1549,8 +1532,148 @@
             ]
           },
           {
+            "from": "io",
+            "to": "connect",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "loaded_state",
+                  "type": "usb.state",
+                  "display_name": "Runtime state"
+                },
+                "requirement": {
+                  "type": "usb.state",
+                  "cardinality": "exactly_one",
+                  "display_name": "运行状态"
+                }
+              }
+            ]
+          },
+          {
+            "from": "io",
+            "to": "disconnect",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "loaded_state",
+                  "type": "usb.state",
+                  "display_name": "Runtime state"
+                },
+                "requirement": {
+                  "type": "usb.state",
+                  "cardinality": "exactly_one",
+                  "display_name": "运行状态"
+                }
+              }
+            ]
+          },
+          {
+            "from": "io",
+            "to": "tick",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "settings",
+                  "type": "usb.settings",
+                  "display_name": "Tablet settings"
+                },
+                "requirement": {
+                  "type": "usb.settings",
+                  "cardinality": "exactly_one",
+                  "display_name": "Tablet settings"
+                }
+              },
+              {
+                "provider": {
+                  "key": "loaded_state",
+                  "type": "usb.state",
+                  "display_name": "Runtime state"
+                },
+                "requirement": {
+                  "type": "usb.state",
+                  "cardinality": "exactly_one",
+                  "display_name": "Runtime state"
+                }
+              }
+            ]
+          },
+          {
+            "from": "probe",
+            "to": "sstatus",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "device",
+                  "type": "usb.device",
+                  "display_name": "USB device"
+                },
+                "requirement": {
+                  "type": "usb.device",
+                  "cardinality": "exactly_one",
+                  "display_name": "USB device"
+                }
+              }
+            ]
+          },
+          {
             "from": "probe",
             "to": "decide",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "device",
+                  "type": "usb.device",
+                  "display_name": "USB device"
+                },
+                "requirement": {
+                  "type": "usb.device",
+                  "cardinality": "exactly_one",
+                  "display_name": "USB device"
+                }
+              },
+              {
+                "provider": {
+                  "key": "adb_state",
+                  "type": "usb.adb_state",
+                  "display_name": "ADB transport state"
+                },
+                "requirement": {
+                  "type": "usb.adb_state",
+                  "cardinality": "exactly_one",
+                  "display_name": "ADB transport state"
+                }
+              }
+            ]
+          },
+          {
+            "from": "probe",
+            "to": "tick",
             "when": "",
             "roles": [
               "data_bypass",
@@ -1608,12 +1731,130 @@
             ]
           },
           {
-            "from": "decide",
-            "to": "runner",
+            "from": "poll",
+            "to": "decide",
             "when": "",
             "roles": [
               "mainline",
               "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "session_result",
+                  "type": "usb.session_result",
+                  "display_name": "会话结果"
+                },
+                "requirement": {
+                  "type": "usb.session_result",
+                  "cardinality": "exactly_one",
+                  "display_name": "Session result"
+                }
+              }
+            ]
+          },
+          {
+            "from": "poll",
+            "to": "tick",
+            "when": "",
+            "roles": [
+              "data_bypass",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "session_result",
+                  "type": "usb.session_result",
+                  "display_name": "会话结果"
+                },
+                "requirement": {
+                  "type": "usb.session_result",
+                  "cardinality": "exactly_one",
+                  "display_name": "Session result"
+                }
+              }
+            ]
+          },
+          {
+            "from": "request",
+            "to": "decide",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "request",
+                  "type": "usb.request",
+                  "display_name": "Pending request"
+                },
+                "requirement": {
+                  "type": "usb.request",
+                  "cardinality": "exactly_one",
+                  "display_name": "Pending request"
+                }
+              }
+            ]
+          },
+          {
+            "from": "decide",
+            "to": "connect",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "action",
+                  "type": "usb.action",
+                  "display_name": "Session action"
+                },
+                "requirement": {
+                  "type": "usb.action",
+                  "cardinality": "exactly_one",
+                  "display_name": "决定"
+                }
+              }
+            ]
+          },
+          {
+            "from": "decide",
+            "to": "disconnect",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "action",
+                  "type": "usb.action",
+                  "display_name": "Session action"
+                },
+                "requirement": {
+                  "type": "usb.action",
+                  "cardinality": "exactly_one",
+                  "display_name": "决定"
+                }
+              }
+            ]
+          },
+          {
+            "from": "decide",
+            "to": "tick",
+            "when": "",
+            "roles": [
+              "data_bypass",
               "transfer"
             ],
             "transfers": [
@@ -1632,100 +1873,7 @@
             ]
           },
           {
-            "from": "io",
-            "to": "runner",
-            "when": "",
-            "roles": [
-              "data_bypass",
-              "transfer"
-            ],
-            "transfers": [
-              {
-                "provider": {
-                  "key": "settings",
-                  "type": "usb.settings",
-                  "display_name": "Tablet settings"
-                },
-                "requirement": {
-                  "type": "usb.settings",
-                  "cardinality": "exactly_one",
-                  "display_name": "Tablet settings"
-                }
-              }
-            ]
-          },
-          {
-            "from": "io",
-            "to": "tick",
-            "when": "",
-            "roles": [
-              "data_bypass",
-              "transfer"
-            ],
-            "transfers": [
-              {
-                "provider": {
-                  "key": "settings",
-                  "type": "usb.settings",
-                  "display_name": "Tablet settings"
-                },
-                "requirement": {
-                  "type": "usb.settings",
-                  "cardinality": "exactly_one",
-                  "display_name": "Tablet settings"
-                }
-              },
-              {
-                "provider": {
-                  "key": "loaded_state",
-                  "type": "usb.state",
-                  "display_name": "Runtime state"
-                },
-                "requirement": {
-                  "type": "usb.state",
-                  "cardinality": "exactly_one",
-                  "display_name": "Runtime state"
-                }
-              }
-            ]
-          },
-          {
-            "from": "probe",
-            "to": "tick",
-            "when": "",
-            "roles": [
-              "data_bypass",
-              "transfer"
-            ],
-            "transfers": [
-              {
-                "provider": {
-                  "key": "device",
-                  "type": "usb.device",
-                  "display_name": "USB device"
-                },
-                "requirement": {
-                  "type": "usb.device",
-                  "cardinality": "exactly_one",
-                  "display_name": "USB device"
-                }
-              },
-              {
-                "provider": {
-                  "key": "adb_state",
-                  "type": "usb.adb_state",
-                  "display_name": "ADB transport state"
-                },
-                "requirement": {
-                  "type": "usb.adb_state",
-                  "cardinality": "exactly_one",
-                  "display_name": "ADB transport state"
-                }
-              }
-            ]
-          },
-          {
-            "from": "runner",
+            "from": "connect",
             "to": "tick",
             "when": "",
             "roles": [
@@ -1736,14 +1884,62 @@
             "transfers": [
               {
                 "provider": {
-                  "key": "action_result",
-                  "type": "usb.action_result",
-                  "display_name": "Action result"
+                  "key": "start_connect",
+                  "type": "usb.session_start_connect",
+                  "display_name": "连接启动"
                 },
                 "requirement": {
-                  "type": "usb.action_result",
+                  "type": "usb.session_start_connect",
                   "cardinality": "exactly_one",
-                  "display_name": "Action result"
+                  "display_name": "Connect start"
+                }
+              }
+            ]
+          },
+          {
+            "from": "disconnect",
+            "to": "tick",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "start_disconnect",
+                  "type": "usb.session_start_disconnect",
+                  "display_name": "断开启动"
+                },
+                "requirement": {
+                  "type": "usb.session_start_disconnect",
+                  "cardinality": "exactly_one",
+                  "display_name": "Disconnect start"
+                }
+              }
+            ]
+          },
+          {
+            "from": "inet",
+            "to": "tick",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "internet_state",
+                  "type": "usb.internet_state",
+                  "display_name": "Internet state"
+                },
+                "requirement": {
+                  "type": "usb.internet_state",
+                  "cardinality": "exactly_one",
+                  "display_name": "Internet state"
                 }
               }
             ]
@@ -2676,83 +2872,79 @@
         }
       }
     },
-    "usb.auto_session": {
-      "id": "usb.auto_session",
+    "usb.call_connect": {
+      "id": "usb.call_connect",
       "node_type": "vibeflow.node",
       "source": {
-        "module": "nodes.stream.runner",
-        "class": "AutoSession",
+        "module": "nodes.stream.coordination",
+        "class": "CallConnect",
         "root_id": "usb-tablet-display",
-        "path": "nodes/stream/runner.py",
-        "line": 42
+        "path": "nodes/stream/coordination.py",
+        "line": 43
       },
       "declaration": {
         "root_id": "usb-tablet-display",
-        "path": "nodes/stream/runner.py"
+        "path": "nodes/stream/coordination.py"
       },
       "info": {
-        "display_name": "执行连接或断开",
-        "description": "按照上一步的决定，在后台启动已经验证过的连接或断开流程，不阻塞常驻程序的其它工作。",
-        "version": "0.2.0",
-        "flow_kind": "process",
+        "display_name": "发起连接",
+        "description": "需要连接时，通过协调服务在后台启动连接工作流，并记下它的实例编号。",
+        "version": "0.1.0",
+        "flow_kind": "workflow-io",
         "author": null,
         "tags": [],
         "external": false,
-        "effect_scope": "python_io"
+        "effect_scope": "unconstrained"
       },
       "contract": {
         "requires": [
           {
             "type": "usb.action",
             "cardinality": "exactly_one",
-            "display_name": "Session action"
+            "display_name": "决定"
           },
           {
-            "type": "usb.settings",
+            "type": "usb.state",
             "cardinality": "exactly_one",
-            "display_name": "Tablet settings"
+            "display_name": "运行状态"
           }
         ],
         "provides": [
           {
-            "key": "action_result",
-            "type": "usb.action_result",
-            "display_name": "Action result"
+            "key": "start_connect",
+            "type": "usb.session_start_connect",
+            "display_name": "连接启动"
           }
         ],
         "input_semantics": {
           "usb.action": [
-            "connect, disconnect or none."
+            "本轮决定"
           ],
-          "usb.settings": [
-            "Configuration used by the started workflow."
+          "usb.state": [
+            "是否已有实例在跑"
           ]
         },
         "output_semantics": {
-          "action_result": [
-            "Whether a job was started, was already running or was skipped."
+          "start_connect": [
+            "是否启动以及实例编号"
           ]
         }
       },
-      "rulesets": [
-        "vibeflow.python_io"
-      ],
+      "rulesets": [],
       "declared_presentation": {},
-      "declared_rulesets": [
-        "vibeflow.python_io"
-      ],
+      "declared_rulesets": null,
       "presentation": {
         "values": {
-          "fill": "#ECECFF",
-          "stroke": "#9370DB",
-          "text": "#333333",
-          "shape": "rect"
+          "fill": "#fef3c7",
+          "stroke": "#b7791f",
+          "text": "#713f12",
+          "shape": "notch-rect"
         },
         "sources": {
-          "fill": "native",
-          "stroke": "native",
-          "text": "native",
-          "shape": "native"
+          "fill": "workflow 操作 · call",
+          "stroke": "workflow 操作 · call",
+          "text": "workflow 操作 · call",
+          "shape": "workflow 操作 · call"
         },
         "modifiers": {
           "planned": false
@@ -2760,82 +2952,142 @@
       },
       "config": {
         "defaults": {
-          "timeout_ms": 240000
+          "launch": {
+            "command": [
+              "python3",
+              "run.py",
+              "coordination",
+              "run-python",
+              "--workspace",
+              "vibeflow_config.jsonc",
+              "--config",
+              "usb_tablet_display/configs/connect.jsonc"
+            ],
+            "cwd": "..",
+            "kind": "process"
+          },
+          "workflow": {
+            "path": "configs/connect.jsonc",
+            "root": "usb-tablet-display"
+          }
         },
         "schema": {
-          "timeout_ms": {
-            "type": "integer"
+          "launch": {
+            "type": "object"
+          },
+          "workflow": {
+            "type": "object"
           }
         }
       }
     },
-    "usb.collect_job": {
-      "id": "usb.collect_job",
+    "usb.call_disconnect": {
+      "id": "usb.call_disconnect",
       "node_type": "vibeflow.node",
       "source": {
-        "module": "nodes.stream.jobs",
-        "class": "CollectJob",
+        "module": "nodes.stream.coordination",
+        "class": "CallDisconnect",
         "root_id": "usb-tablet-display",
-        "path": "nodes/stream/jobs.py",
-        "line": 75
+        "path": "nodes/stream/coordination.py",
+        "line": 69
       },
       "declaration": {
         "root_id": "usb-tablet-display",
-        "path": "nodes/stream/jobs.py"
+        "path": "nodes/stream/coordination.py"
       },
       "info": {
-        "display_name": "查看后台任务",
-        "description": "查看之前启动的连接或断开任务是否还在进行，以及它最终是成功还是失败。",
-        "version": "0.2.0",
-        "flow_kind": "process",
+        "display_name": "发起断开",
+        "description": "需要断开时，通过协调服务在后台启动断开工作流，并记下它的实例编号。",
+        "version": "0.1.0",
+        "flow_kind": "workflow-io",
         "author": null,
         "tags": [],
         "external": false,
-        "effect_scope": "python_io"
+        "effect_scope": "unconstrained"
       },
       "contract": {
-        "requires": [],
-        "provides": [
+        "requires": [
           {
-            "key": "job",
-            "type": "usb.job",
-            "display_name": "Background job"
+            "type": "usb.action",
+            "cardinality": "exactly_one",
+            "display_name": "决定"
+          },
+          {
+            "type": "usb.state",
+            "cardinality": "exactly_one",
+            "display_name": "运行状态"
           }
         ],
-        "input_semantics": {},
+        "provides": [
+          {
+            "key": "start_disconnect",
+            "type": "usb.session_start_disconnect",
+            "display_name": "断开启动"
+          }
+        ],
+        "input_semantics": {
+          "usb.action": [
+            "本轮决定"
+          ],
+          "usb.state": [
+            "是否已有实例在跑"
+          ]
+        },
         "output_semantics": {
-          "job": [
-            "Action, running flag, exit code and log tail."
+          "start_disconnect": [
+            "是否启动以及实例编号"
           ]
         }
       },
-      "rulesets": [
-        "vibeflow.python_io"
-      ],
+      "rulesets": [],
       "declared_presentation": {},
-      "declared_rulesets": [
-        "vibeflow.python_io"
-      ],
+      "declared_rulesets": null,
       "presentation": {
         "values": {
-          "fill": "#ECECFF",
-          "stroke": "#9370DB",
-          "text": "#333333",
-          "shape": "rect"
+          "fill": "#fef3c7",
+          "stroke": "#b7791f",
+          "text": "#713f12",
+          "shape": "notch-rect"
         },
         "sources": {
-          "fill": "native",
-          "stroke": "native",
-          "text": "native",
-          "shape": "native"
+          "fill": "workflow 操作 · call",
+          "stroke": "workflow 操作 · call",
+          "text": "workflow 操作 · call",
+          "shape": "workflow 操作 · call"
         },
         "modifiers": {
           "planned": false
         }
       },
       "config": {
-        "defaults": {},
-        "schema": {}
+        "defaults": {
+          "launch": {
+            "command": [
+              "python3",
+              "run.py",
+              "coordination",
+              "run-python",
+              "--workspace",
+              "vibeflow_config.jsonc",
+              "--config",
+              "usb_tablet_display/configs/disconnect.jsonc"
+            ],
+            "cwd": "..",
+            "kind": "process"
+          },
+          "workflow": {
+            "path": "configs/disconnect.jsonc",
+            "root": "usb-tablet-display"
+          }
+        },
+        "schema": {
+          "launch": {
+            "type": "object"
+          },
+          "workflow": {
+            "type": "object"
+          }
+        }
       }
     },
     "usb.decide_action": {
@@ -2846,7 +3098,7 @@
         "class": "DecideAction",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/dispatch.py",
-        "line": 77
+        "line": 42
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -2895,9 +3147,9 @@
             "display_name": "Pending request"
           },
           {
-            "type": "usb.job",
+            "type": "usb.session_result",
             "cardinality": "exactly_one",
-            "display_name": "Background job"
+            "display_name": "Session result"
           }
         ],
         "provides": [
@@ -2914,11 +3166,11 @@
           "usb.device": [
             "USB presence resolved from sysfs."
           ],
-          "usb.job": [
-            "Whether a background session job is still running."
-          ],
           "usb.request": [
             "Action requested from the command line interface."
+          ],
+          "usb.session_result": [
+            "Whether a background session is still running."
           ],
           "usb.session_status": [
             "Current Sunshine/Moonlight session state."
@@ -3186,6 +3438,91 @@
         }
       }
     },
+    "usb.poll_session": {
+      "id": "usb.poll_session",
+      "node_type": "vibeflow.node",
+      "source": {
+        "module": "nodes.stream.coordination",
+        "class": "PollSession",
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/coordination.py",
+        "line": 92
+      },
+      "declaration": {
+        "root_id": "usb-tablet-display",
+        "path": "nodes/stream/coordination.py"
+      },
+      "info": {
+        "display_name": "查看会话结果",
+        "description": "如果有一个连接或断开正在后台进行，就查看它是否已经结束以及结果如何。",
+        "version": "0.1.0",
+        "flow_kind": "workflow-io",
+        "author": null,
+        "tags": [],
+        "external": false,
+        "effect_scope": "unconstrained"
+      },
+      "contract": {
+        "requires": [
+          {
+            "type": "usb.state",
+            "cardinality": "exactly_one",
+            "display_name": "运行状态"
+          }
+        ],
+        "provides": [
+          {
+            "key": "session_result",
+            "type": "usb.session_result",
+            "display_name": "会话结果"
+          }
+        ],
+        "input_semantics": {
+          "usb.state": [
+            "当前保存的实例编号与动作"
+          ]
+        },
+        "output_semantics": {
+          "session_result": [
+            "是否仍在进行，以及结束时的结果"
+          ]
+        }
+      },
+      "rulesets": [],
+      "declared_presentation": {},
+      "declared_rulesets": null,
+      "presentation": {
+        "values": {
+          "fill": "#e2e8f0",
+          "stroke": "#475569",
+          "text": "#1e293b",
+          "shape": "notch-rect"
+        },
+        "sources": {
+          "fill": "workflow 操作 · wait",
+          "stroke": "workflow 操作 · wait",
+          "text": "workflow 操作 · wait",
+          "shape": "workflow 操作 · wait"
+        },
+        "modifiers": {
+          "planned": false
+        }
+      },
+      "config": {
+        "defaults": {
+          "max_wait_errors": 240,
+          "wait_timeout": 1
+        },
+        "schema": {
+          "max_wait_errors": {
+            "type": "integer"
+          },
+          "wait_timeout": {
+            "type": "integer"
+          }
+        }
+      }
+    },
     "usb.probe_device": {
       "id": "usb.probe_device",
       "node_type": "vibeflow.node",
@@ -3334,15 +3671,15 @@
       "id": "usb.session_status",
       "node_type": "vibeflow.node",
       "source": {
-        "module": "nodes.stream.dispatch",
+        "module": "nodes.stream.session_status",
         "class": "SessionStatus",
         "root_id": "usb-tablet-display",
-        "path": "nodes/stream/dispatch.py",
-        "line": 39
+        "path": "nodes/stream/session_status.py",
+        "line": 34
       },
       "declaration": {
         "root_id": "usb-tablet-display",
-        "path": "nodes/stream/dispatch.py"
+        "path": "nodes/stream/session_status.py"
       },
       "info": {
         "display_name": "检查是否正在投屏",
@@ -3554,7 +3891,7 @@
         "class": "TickMerge",
         "root_id": "usb-tablet-display",
         "path": "nodes/state/runtime_state.py",
-        "line": 63
+        "line": 67
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3593,14 +3930,24 @@
             "display_name": "ADB transport state"
           },
           {
-            "type": "usb.action_result",
+            "type": "usb.action",
             "cardinality": "exactly_one",
-            "display_name": "Action result"
+            "display_name": "Session action"
           },
           {
-            "type": "usb.job",
+            "type": "usb.session_start_connect",
             "cardinality": "exactly_one",
-            "display_name": "Background job"
+            "display_name": "Connect start"
+          },
+          {
+            "type": "usb.session_start_disconnect",
+            "cardinality": "exactly_one",
+            "display_name": "Disconnect start"
+          },
+          {
+            "type": "usb.session_result",
+            "cardinality": "exactly_one",
+            "display_name": "Session result"
           },
           {
             "type": "usb.internet_state",
@@ -3616,8 +3963,8 @@
           }
         ],
         "input_semantics": {
-          "usb.action_result": [
-            "Session action taken during this iteration."
+          "usb.action": [
+            "Decision for this iteration."
           ],
           "usb.adb_state": [
             "ADB transport state from this iteration."
@@ -3628,8 +3975,14 @@
           "usb.internet_state": [
             "Internet supervision result for this tick."
           ],
-          "usb.job": [
-            "Background job state and exit code."
+          "usb.session_result": [
+            "Result of the background session, if any."
+          ],
+          "usb.session_start_connect": [
+            "Whether a connect instance was started."
+          ],
+          "usb.session_start_disconnect": [
+            "Whether a disconnect instance was started."
           ],
           "usb.settings": [
             "Configuration for the current run."
@@ -3867,7 +4220,39 @@
     "base_lib": [],
     "plugins": []
   },
-  "workflow_operations": {},
+  "workflow_operations": {
+    "[\"loop\",\"poll\"]": {
+      "actions": [
+        {
+          "operation": "wait"
+        }
+      ]
+    },
+    "[\"loop\",\"connect\"]": {
+      "actions": [
+        {
+          "operation": "call",
+          "wait": false,
+          "workflow": {
+            "root": "usb-tablet-display",
+            "path": "configs/connect.jsonc"
+          }
+        }
+      ]
+    },
+    "[\"loop\",\"disconnect\"]": {
+      "actions": [
+        {
+          "operation": "call",
+          "wait": false,
+          "workflow": {
+            "root": "usb-tablet-display",
+            "path": "configs/disconnect.jsonc"
+          }
+        }
+      ]
+    }
+  },
   "resource_use": {
     "workflow": "usb-tablet-display:configs/daemon.jsonc",
     "resources": [
@@ -3878,12 +4263,12 @@
       },
       {
         "kind": "node",
-        "id": "usb.auto_session",
+        "id": "usb.call_connect",
         "reason": "declaration"
       },
       {
         "kind": "node",
-        "id": "usb.collect_job",
+        "id": "usb.call_disconnect",
         "reason": "declaration"
       },
       {
@@ -3924,6 +4309,11 @@
       {
         "kind": "node",
         "id": "usb.moonlight_connect",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.poll_session",
         "reason": "declaration"
       },
       {
@@ -4743,14 +5133,14 @@
           }
         ]
       },
-      "node:usb.auto_session": {
+      "node:usb.call_connect": {
         "kind": "node",
         "node_type": "vibeflow.node",
-        "id": "usb.auto_session",
-        "display_name": "执行连接或断开",
-        "description": "按照上一步的决定，在后台启动已经验证过的连接或断开流程，不阻塞常驻程序的其它工作。",
-        "version": "0.2.0",
-        "flow_kind": "process",
+        "id": "usb.call_connect",
+        "display_name": "发起连接",
+        "description": "需要连接时，通过协调服务在后台启动连接工作流，并记下它的实例编号。",
+        "version": "0.1.0",
+        "flow_kind": "workflow-io",
         "tags": [],
         "external": false,
         "contract": {
@@ -4758,41 +5148,61 @@
             {
               "type": "usb.action",
               "cardinality": "exactly_one",
-              "display_name": "Session action"
+              "display_name": "决定"
             },
             {
-              "type": "usb.settings",
+              "type": "usb.state",
               "cardinality": "exactly_one",
-              "display_name": "Tablet settings"
+              "display_name": "运行状态"
             }
           ],
           "provides": [
             {
-              "key": "action_result",
-              "type": "usb.action_result",
-              "display_name": "Action result"
+              "key": "start_connect",
+              "type": "usb.session_start_connect",
+              "display_name": "连接启动"
             }
           ],
           "input_semantics": {
             "usb.action": [
-              "connect, disconnect or none."
+              "本轮决定"
             ],
-            "usb.settings": [
-              "Configuration used by the started workflow."
+            "usb.state": [
+              "是否已有实例在跑"
             ]
           },
           "output_semantics": {
-            "action_result": [
-              "Whether a job was started, was already running or was skipped."
+            "start_connect": [
+              "是否启动以及实例编号"
             ]
           },
           "params_schema": {
-            "timeout_ms": {
-              "type": "integer"
+            "workflow": {
+              "type": "object"
+            },
+            "launch": {
+              "type": "object"
             }
           },
           "params_defaults": {
-            "timeout_ms": 240000
+            "workflow": {
+              "path": "configs/connect.jsonc",
+              "root": "usb-tablet-display"
+            },
+            "launch": {
+              "command": [
+                "python3",
+                "run.py",
+                "coordination",
+                "run-python",
+                "--workspace",
+                "vibeflow_config.jsonc",
+                "--config",
+                "usb_tablet_display/configs/connect.jsonc"
+              ],
+              "cwd": "..",
+              "kind": "process"
+            }
           },
           "examples": []
         },
@@ -4804,23 +5214,20 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/stream/runner.py",
-              "export": "AutoSession"
+              "ref": "nodes/stream/coordination.py",
+              "export": "CallConnect"
             },
-            "completion": "immediate",
-            "implementation_files": [
-              {
-                "kind": "file",
-                "ref": "nodes/stream/jobs.py"
-              }
-            ]
+            "completion": "suspend"
           }
         ],
         "base_libs": [],
-        "workflow_operations": [],
-        "rulesets": [
-          "vibeflow.python_io"
+        "workflow_operations": [
+          {
+            "operation": "call",
+            "wait": false
+          }
         ],
+        "rulesets": [],
         "presentation": {},
         "metadata": {},
         "plugin_id": "",
@@ -4837,296 +5244,30 @@
             "root_id": "usb-tablet-display",
             "path": "."
           },
-          "path": "nodes/stream/runner.py",
-          "line": 20,
-          "symbol": "AutoSession"
+          "path": "nodes/stream/coordination.py",
+          "line": 26,
+          "symbol": "CallConnect"
         },
         "status": "implemented",
         "markers": [],
         "diagnostics": [],
         "effective_rules": {
-          "import": [
-            {
-              "ruleset_id": "vibeflow.python_io",
-              "entrypoint": "import",
-              "graph_scope": "current_graph",
-              "order": [
-                "imports"
-              ],
-              "calls": [
-                {
-                  "id": "imports",
-                  "rule_id": "vibeflow.import_side_effects",
-                  "original_rule_id": "vibeflow.import_side_effects",
-                  "params": {
-                    "effect_scope": "python_io",
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "effect_scope": "call:imports",
-                    "policy": "default:vibeflow.import_side_effects"
-                  }
-                }
-              ],
-              "relations": []
-            }
-          ],
-          "static": [
-            {
-              "ruleset_id": "vibeflow.python_io",
-              "entrypoint": "static",
-              "graph_scope": "current_graph",
-              "order": [
-                "architecture",
-                "async",
-                "effects",
-                "inputs",
-                "interface",
-                "maintainability"
-              ],
-              "calls": [
-                {
-                  "id": "architecture",
-                  "rule_id": "vibeflow.node_architecture",
-                  "original_rule_id": "vibeflow.node_architecture",
-                  "params": {},
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {}
-                },
-                {
-                  "id": "async",
-                  "rule_id": "vibeflow.async_lifecycle",
-                  "original_rule_id": "vibeflow.async_lifecycle",
-                  "params": {},
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {}
-                },
-                {
-                  "id": "effects",
-                  "rule_id": "vibeflow.no_side_effects",
-                  "original_rule_id": "vibeflow.no_side_effects",
-                  "params": {
-                    "effect_scope": "python_io",
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "effect_scope": "call:effects",
-                    "policy": "default:vibeflow.no_side_effects"
-                  }
-                },
-                {
-                  "id": "inputs",
-                  "rule_id": "vibeflow.input_writes",
-                  "original_rule_id": "vibeflow.input_writes",
-                  "params": {
-                    "mutating_methods": [
-                      "append",
-                      "clear",
-                      "extend",
-                      "insert",
-                      "pop",
-                      "popitem",
-                      "remove",
-                      "setdefault",
-                      "sort",
-                      "update"
-                    ]
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "mutating_methods": "default:vibeflow.input_writes"
-                  }
-                },
-                {
-                  "id": "interface",
-                  "rule_id": "vibeflow.node_interface",
-                  "original_rule_id": "vibeflow.node_interface",
-                  "params": {
-                    "allowed_methods": []
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "allowed_methods": "default:vibeflow.node_interface"
-                  }
-                },
-                {
-                  "id": "maintainability",
-                  "rule_id": "vibeflow.maintainability",
-                  "original_rule_id": "vibeflow.maintainability",
-                  "params": {
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "policy": "default:vibeflow.maintainability"
-                  }
-                }
-              ],
-              "relations": []
-            }
-          ],
-          "run": [
-            {
-              "ruleset_id": "vibeflow.python_io",
-              "entrypoint": "run",
-              "graph_scope": "current_graph",
-              "order": [
-                "architecture",
-                "async",
-                "effects",
-                "inputs",
-                "interface",
-                "maintainability"
-              ],
-              "calls": [
-                {
-                  "id": "architecture",
-                  "rule_id": "vibeflow.node_architecture",
-                  "original_rule_id": "vibeflow.node_architecture",
-                  "params": {},
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {}
-                },
-                {
-                  "id": "async",
-                  "rule_id": "vibeflow.async_lifecycle",
-                  "original_rule_id": "vibeflow.async_lifecycle",
-                  "params": {},
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {}
-                },
-                {
-                  "id": "effects",
-                  "rule_id": "vibeflow.no_side_effects",
-                  "original_rule_id": "vibeflow.no_side_effects",
-                  "params": {
-                    "effect_scope": "python_io",
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "effect_scope": "call:effects",
-                    "policy": "default:vibeflow.no_side_effects"
-                  }
-                },
-                {
-                  "id": "inputs",
-                  "rule_id": "vibeflow.input_writes",
-                  "original_rule_id": "vibeflow.input_writes",
-                  "params": {
-                    "mutating_methods": [
-                      "append",
-                      "clear",
-                      "extend",
-                      "insert",
-                      "pop",
-                      "popitem",
-                      "remove",
-                      "setdefault",
-                      "sort",
-                      "update"
-                    ]
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "mutating_methods": "default:vibeflow.input_writes"
-                  }
-                },
-                {
-                  "id": "interface",
-                  "rule_id": "vibeflow.node_interface",
-                  "original_rule_id": "vibeflow.node_interface",
-                  "params": {
-                    "allowed_methods": []
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "allowed_methods": "default:vibeflow.node_interface"
-                  }
-                },
-                {
-                  "id": "maintainability",
-                  "rule_id": "vibeflow.maintainability",
-                  "original_rule_id": "vibeflow.maintainability",
-                  "params": {
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "policy": "default:vibeflow.maintainability"
-                  }
-                }
-              ],
-              "relations": []
-            }
-          ]
+          "import": [],
+          "static": [],
+          "run": []
         },
         "effective_presentation": {
           "values": {
-            "fill": "#ECECFF",
-            "stroke": "#9370DB",
-            "text": "#333333",
-            "shape": "rect"
+            "fill": "#fef3c7",
+            "stroke": "#b7791f",
+            "text": "#713f12",
+            "shape": "notch-rect"
           },
           "sources": {
-            "fill": "native",
-            "stroke": "native",
-            "text": "native",
-            "shape": "native"
+            "fill": "workflow 操作 · call",
+            "stroke": "workflow 操作 · call",
+            "text": "workflow 操作 · call",
+            "shape": "workflow 操作 · call"
           },
           "modifiers": {
             "planned": false
@@ -5134,50 +5275,86 @@
         },
         "sources": [
           {
-            "id": "file:7008e28b7a1edb05",
-            "path": "nodes/stream/runner.py",
+            "id": "file:8e3f4c268d99cc78",
+            "path": "nodes/stream/coordination.py",
             "role": "entry",
-            "symbol": "AutoSession",
-            "language": "python",
-            "load_state": "loaded"
-          },
-          {
-            "id": "file:07e54d27bd42e6d6",
-            "path": "nodes/stream/jobs.py",
-            "role": "support",
-            "symbol": "",
+            "symbol": "CallConnect",
             "language": "python",
             "load_state": "loaded"
           }
         ]
       },
-      "node:usb.collect_job": {
+      "node:usb.call_disconnect": {
         "kind": "node",
         "node_type": "vibeflow.node",
-        "id": "usb.collect_job",
-        "display_name": "查看后台任务",
-        "description": "查看之前启动的连接或断开任务是否还在进行，以及它最终是成功还是失败。",
-        "version": "0.2.0",
-        "flow_kind": "process",
+        "id": "usb.call_disconnect",
+        "display_name": "发起断开",
+        "description": "需要断开时，通过协调服务在后台启动断开工作流，并记下它的实例编号。",
+        "version": "0.1.0",
+        "flow_kind": "workflow-io",
         "tags": [],
         "external": false,
         "contract": {
-          "requires": [],
-          "provides": [
+          "requires": [
             {
-              "key": "job",
-              "type": "usb.job",
-              "display_name": "Background job"
+              "type": "usb.action",
+              "cardinality": "exactly_one",
+              "display_name": "决定"
+            },
+            {
+              "type": "usb.state",
+              "cardinality": "exactly_one",
+              "display_name": "运行状态"
             }
           ],
-          "input_semantics": {},
-          "output_semantics": {
-            "job": [
-              "Action, running flag, exit code and log tail."
+          "provides": [
+            {
+              "key": "start_disconnect",
+              "type": "usb.session_start_disconnect",
+              "display_name": "断开启动"
+            }
+          ],
+          "input_semantics": {
+            "usb.action": [
+              "本轮决定"
+            ],
+            "usb.state": [
+              "是否已有实例在跑"
             ]
           },
-          "params_schema": {},
-          "params_defaults": {},
+          "output_semantics": {
+            "start_disconnect": [
+              "是否启动以及实例编号"
+            ]
+          },
+          "params_schema": {
+            "workflow": {
+              "type": "object"
+            },
+            "launch": {
+              "type": "object"
+            }
+          },
+          "params_defaults": {
+            "workflow": {
+              "path": "configs/disconnect.jsonc",
+              "root": "usb-tablet-display"
+            },
+            "launch": {
+              "command": [
+                "python3",
+                "run.py",
+                "coordination",
+                "run-python",
+                "--workspace",
+                "vibeflow_config.jsonc",
+                "--config",
+                "usb_tablet_display/configs/disconnect.jsonc"
+              ],
+              "cwd": "..",
+              "kind": "process"
+            }
+          },
           "examples": []
         },
         "implementations": [
@@ -5188,17 +5365,20 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/stream/jobs.py",
-              "export": "CollectJob"
+              "ref": "nodes/stream/coordination.py",
+              "export": "CallDisconnect"
             },
-            "completion": "immediate"
+            "completion": "suspend"
           }
         ],
         "base_libs": [],
-        "workflow_operations": [],
-        "rulesets": [
-          "vibeflow.python_io"
+        "workflow_operations": [
+          {
+            "operation": "call",
+            "wait": false
+          }
         ],
+        "rulesets": [],
         "presentation": {},
         "metadata": {},
         "plugin_id": "",
@@ -5215,296 +5395,30 @@
             "root_id": "usb-tablet-display",
             "path": "."
           },
-          "path": "nodes/stream/jobs.py",
-          "line": 60,
-          "symbol": "CollectJob"
+          "path": "nodes/stream/coordination.py",
+          "line": 52,
+          "symbol": "CallDisconnect"
         },
         "status": "implemented",
         "markers": [],
         "diagnostics": [],
         "effective_rules": {
-          "import": [
-            {
-              "ruleset_id": "vibeflow.python_io",
-              "entrypoint": "import",
-              "graph_scope": "current_graph",
-              "order": [
-                "imports"
-              ],
-              "calls": [
-                {
-                  "id": "imports",
-                  "rule_id": "vibeflow.import_side_effects",
-                  "original_rule_id": "vibeflow.import_side_effects",
-                  "params": {
-                    "effect_scope": "python_io",
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "effect_scope": "call:imports",
-                    "policy": "default:vibeflow.import_side_effects"
-                  }
-                }
-              ],
-              "relations": []
-            }
-          ],
-          "static": [
-            {
-              "ruleset_id": "vibeflow.python_io",
-              "entrypoint": "static",
-              "graph_scope": "current_graph",
-              "order": [
-                "architecture",
-                "async",
-                "effects",
-                "inputs",
-                "interface",
-                "maintainability"
-              ],
-              "calls": [
-                {
-                  "id": "architecture",
-                  "rule_id": "vibeflow.node_architecture",
-                  "original_rule_id": "vibeflow.node_architecture",
-                  "params": {},
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {}
-                },
-                {
-                  "id": "async",
-                  "rule_id": "vibeflow.async_lifecycle",
-                  "original_rule_id": "vibeflow.async_lifecycle",
-                  "params": {},
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {}
-                },
-                {
-                  "id": "effects",
-                  "rule_id": "vibeflow.no_side_effects",
-                  "original_rule_id": "vibeflow.no_side_effects",
-                  "params": {
-                    "effect_scope": "python_io",
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "effect_scope": "call:effects",
-                    "policy": "default:vibeflow.no_side_effects"
-                  }
-                },
-                {
-                  "id": "inputs",
-                  "rule_id": "vibeflow.input_writes",
-                  "original_rule_id": "vibeflow.input_writes",
-                  "params": {
-                    "mutating_methods": [
-                      "append",
-                      "clear",
-                      "extend",
-                      "insert",
-                      "pop",
-                      "popitem",
-                      "remove",
-                      "setdefault",
-                      "sort",
-                      "update"
-                    ]
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "mutating_methods": "default:vibeflow.input_writes"
-                  }
-                },
-                {
-                  "id": "interface",
-                  "rule_id": "vibeflow.node_interface",
-                  "original_rule_id": "vibeflow.node_interface",
-                  "params": {
-                    "allowed_methods": []
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "allowed_methods": "default:vibeflow.node_interface"
-                  }
-                },
-                {
-                  "id": "maintainability",
-                  "rule_id": "vibeflow.maintainability",
-                  "original_rule_id": "vibeflow.maintainability",
-                  "params": {
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "policy": "default:vibeflow.maintainability"
-                  }
-                }
-              ],
-              "relations": []
-            }
-          ],
-          "run": [
-            {
-              "ruleset_id": "vibeflow.python_io",
-              "entrypoint": "run",
-              "graph_scope": "current_graph",
-              "order": [
-                "architecture",
-                "async",
-                "effects",
-                "inputs",
-                "interface",
-                "maintainability"
-              ],
-              "calls": [
-                {
-                  "id": "architecture",
-                  "rule_id": "vibeflow.node_architecture",
-                  "original_rule_id": "vibeflow.node_architecture",
-                  "params": {},
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {}
-                },
-                {
-                  "id": "async",
-                  "rule_id": "vibeflow.async_lifecycle",
-                  "original_rule_id": "vibeflow.async_lifecycle",
-                  "params": {},
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {}
-                },
-                {
-                  "id": "effects",
-                  "rule_id": "vibeflow.no_side_effects",
-                  "original_rule_id": "vibeflow.no_side_effects",
-                  "params": {
-                    "effect_scope": "python_io",
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "effect_scope": "call:effects",
-                    "policy": "default:vibeflow.no_side_effects"
-                  }
-                },
-                {
-                  "id": "inputs",
-                  "rule_id": "vibeflow.input_writes",
-                  "original_rule_id": "vibeflow.input_writes",
-                  "params": {
-                    "mutating_methods": [
-                      "append",
-                      "clear",
-                      "extend",
-                      "insert",
-                      "pop",
-                      "popitem",
-                      "remove",
-                      "setdefault",
-                      "sort",
-                      "update"
-                    ]
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "mutating_methods": "default:vibeflow.input_writes"
-                  }
-                },
-                {
-                  "id": "interface",
-                  "rule_id": "vibeflow.node_interface",
-                  "original_rule_id": "vibeflow.node_interface",
-                  "params": {
-                    "allowed_methods": []
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "allowed_methods": "default:vibeflow.node_interface"
-                  }
-                },
-                {
-                  "id": "maintainability",
-                  "rule_id": "vibeflow.maintainability",
-                  "original_rule_id": "vibeflow.maintainability",
-                  "params": {
-                    "policy": {}
-                  },
-                  "dependencies": [],
-                  "inputs": {},
-                  "origins": [
-                    "vibeflow.python_io"
-                  ],
-                  "parameter_sources": {
-                    "policy": "default:vibeflow.maintainability"
-                  }
-                }
-              ],
-              "relations": []
-            }
-          ]
+          "import": [],
+          "static": [],
+          "run": []
         },
         "effective_presentation": {
           "values": {
-            "fill": "#ECECFF",
-            "stroke": "#9370DB",
-            "text": "#333333",
-            "shape": "rect"
+            "fill": "#fef3c7",
+            "stroke": "#b7791f",
+            "text": "#713f12",
+            "shape": "notch-rect"
           },
           "sources": {
-            "fill": "native",
-            "stroke": "native",
-            "text": "native",
-            "shape": "native"
+            "fill": "workflow 操作 · call",
+            "stroke": "workflow 操作 · call",
+            "text": "workflow 操作 · call",
+            "shape": "workflow 操作 · call"
           },
           "modifiers": {
             "planned": false
@@ -5512,10 +5426,10 @@
         },
         "sources": [
           {
-            "id": "file:07e54d27bd42e6d6",
-            "path": "nodes/stream/jobs.py",
+            "id": "file:8e3f4c268d99cc78",
+            "path": "nodes/stream/coordination.py",
             "role": "entry",
-            "symbol": "CollectJob",
+            "symbol": "CallDisconnect",
             "language": "python",
             "load_state": "loaded"
           }
@@ -5564,9 +5478,9 @@
               "display_name": "Pending request"
             },
             {
-              "type": "usb.job",
+              "type": "usb.session_result",
               "cardinality": "exactly_one",
-              "display_name": "Background job"
+              "display_name": "Session result"
             }
           ],
           "provides": [
@@ -5595,8 +5509,8 @@
             "usb.request": [
               "Action requested from the command line interface."
             ],
-            "usb.job": [
-              "Whether a background session job is still running."
+            "usb.session_result": [
+              "Whether a background session is still running."
             ]
           },
           "output_semantics": {
@@ -5644,7 +5558,7 @@
             "path": "."
           },
           "path": "nodes/stream/dispatch.py",
-          "line": 46,
+          "line": 11,
           "symbol": "DecideAction"
         },
         "status": "implemented",
@@ -7083,6 +6997,132 @@
           }
         ]
       },
+      "node:usb.poll_session": {
+        "kind": "node",
+        "node_type": "vibeflow.node",
+        "id": "usb.poll_session",
+        "display_name": "查看会话结果",
+        "description": "如果有一个连接或断开正在后台进行，就查看它是否已经结束以及结果如何。",
+        "version": "0.1.0",
+        "flow_kind": "workflow-io",
+        "tags": [],
+        "external": false,
+        "contract": {
+          "requires": [
+            {
+              "type": "usb.state",
+              "cardinality": "exactly_one",
+              "display_name": "运行状态"
+            }
+          ],
+          "provides": [
+            {
+              "key": "session_result",
+              "type": "usb.session_result",
+              "display_name": "会话结果"
+            }
+          ],
+          "input_semantics": {
+            "usb.state": [
+              "当前保存的实例编号与动作"
+            ]
+          },
+          "output_semantics": {
+            "session_result": [
+              "是否仍在进行，以及结束时的结果"
+            ]
+          },
+          "params_schema": {
+            "wait_timeout": {
+              "type": "integer"
+            },
+            "max_wait_errors": {
+              "type": "integer"
+            }
+          },
+          "params_defaults": {
+            "wait_timeout": 1,
+            "max_wait_errors": 240
+          },
+          "examples": []
+        },
+        "implementations": [
+          {
+            "language": "python",
+            "targets": [
+              "python"
+            ],
+            "source": {
+              "kind": "file",
+              "ref": "nodes/stream/coordination.py",
+              "export": "PollSession"
+            },
+            "completion": "suspend"
+          }
+        ],
+        "base_libs": [],
+        "workflow_operations": [
+          {
+            "operation": "wait"
+          }
+        ],
+        "rulesets": [],
+        "presentation": {},
+        "metadata": {},
+        "plugin_id": "",
+        "owner": {
+          "kind": "root",
+          "id": "usb-tablet-display",
+          "root_id": "usb-tablet-display",
+          "path": "."
+        },
+        "origin": {
+          "owner": {
+            "kind": "root",
+            "id": "usb-tablet-display",
+            "root_id": "usb-tablet-display",
+            "path": "."
+          },
+          "path": "nodes/stream/coordination.py",
+          "line": 78,
+          "symbol": "PollSession"
+        },
+        "status": "implemented",
+        "markers": [],
+        "diagnostics": [],
+        "effective_rules": {
+          "import": [],
+          "static": [],
+          "run": []
+        },
+        "effective_presentation": {
+          "values": {
+            "fill": "#e2e8f0",
+            "stroke": "#475569",
+            "text": "#1e293b",
+            "shape": "notch-rect"
+          },
+          "sources": {
+            "fill": "workflow 操作 · wait",
+            "stroke": "workflow 操作 · wait",
+            "text": "workflow 操作 · wait",
+            "shape": "workflow 操作 · wait"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "sources": [
+          {
+            "id": "file:8e3f4c268d99cc78",
+            "path": "nodes/stream/coordination.py",
+            "role": "entry",
+            "symbol": "PollSession",
+            "language": "python",
+            "load_state": "loaded"
+          }
+        ]
+      },
       "node:usb.probe_device": {
         "kind": "node",
         "node_type": "vibeflow.node",
@@ -7894,7 +7934,7 @@
             ],
             "source": {
               "kind": "file",
-              "ref": "nodes/stream/dispatch.py",
+              "ref": "nodes/stream/session_status.py",
               "export": "SessionStatus"
             },
             "completion": "immediate",
@@ -7927,8 +7967,8 @@
             "root_id": "usb-tablet-display",
             "path": "."
           },
-          "path": "nodes/stream/dispatch.py",
-          "line": 17,
+          "path": "nodes/stream/session_status.py",
+          "line": 12,
           "symbol": "SessionStatus"
         },
         "status": "implemented",
@@ -8224,8 +8264,8 @@
         },
         "sources": [
           {
-            "id": "file:423432595d552a27",
-            "path": "nodes/stream/dispatch.py",
+            "id": "file:84e75b69759e1066",
+            "path": "nodes/stream/session_status.py",
             "role": "entry",
             "symbol": "SessionStatus",
             "language": "python",
@@ -9010,14 +9050,24 @@
               "display_name": "ADB transport state"
             },
             {
-              "type": "usb.action_result",
+              "type": "usb.action",
               "cardinality": "exactly_one",
-              "display_name": "Action result"
+              "display_name": "Session action"
             },
             {
-              "type": "usb.job",
+              "type": "usb.session_start_connect",
               "cardinality": "exactly_one",
-              "display_name": "Background job"
+              "display_name": "Connect start"
+            },
+            {
+              "type": "usb.session_start_disconnect",
+              "cardinality": "exactly_one",
+              "display_name": "Disconnect start"
+            },
+            {
+              "type": "usb.session_result",
+              "cardinality": "exactly_one",
+              "display_name": "Session result"
             },
             {
               "type": "usb.internet_state",
@@ -9045,11 +9095,17 @@
             "usb.adb_state": [
               "ADB transport state from this iteration."
             ],
-            "usb.action_result": [
-              "Session action taken during this iteration."
+            "usb.action": [
+              "Decision for this iteration."
             ],
-            "usb.job": [
-              "Background job state and exit code."
+            "usb.session_start_connect": [
+              "Whether a connect instance was started."
+            ],
+            "usb.session_start_disconnect": [
+              "Whether a disconnect instance was started."
+            ],
+            "usb.session_result": [
+              "Result of the background session, if any."
             ],
             "usb.internet_state": [
               "Internet supervision result for this tick."
@@ -9438,34 +9494,27 @@
         ],
         "load_state": "loaded"
       },
-      "file:7008e28b7a1edb05": {
-        "id": "file:7008e28b7a1edb05",
-        "path": "nodes/stream/runner.py",
+      "file:8e3f4c268d99cc78": {
+        "id": "file:8e3f4c268d99cc78",
+        "path": "nodes/stream/coordination.py",
         "owners": [
           {
             "kind": "node",
-            "id": "usb.auto_session",
+            "id": "usb.call_connect",
             "role": "entry",
-            "symbol": "AutoSession"
-          }
-        ],
-        "load_state": "loaded"
-      },
-      "file:07e54d27bd42e6d6": {
-        "id": "file:07e54d27bd42e6d6",
-        "path": "nodes/stream/jobs.py",
-        "owners": [
-          {
-            "kind": "node",
-            "id": "usb.auto_session",
-            "role": "support",
-            "symbol": ""
+            "symbol": "CallConnect"
           },
           {
             "kind": "node",
-            "id": "usb.collect_job",
+            "id": "usb.call_disconnect",
             "role": "entry",
-            "symbol": "CollectJob"
+            "symbol": "CallDisconnect"
+          },
+          {
+            "kind": "node",
+            "id": "usb.poll_session",
+            "role": "entry",
+            "symbol": "PollSession"
           }
         ],
         "load_state": "loaded"
@@ -9479,12 +9528,6 @@
             "id": "usb.decide_action",
             "role": "entry",
             "symbol": "DecideAction"
-          },
-          {
-            "kind": "node",
-            "id": "usb.session_status",
-            "role": "entry",
-            "symbol": "SessionStatus"
           }
         ],
         "load_state": "loaded"
@@ -9560,6 +9603,19 @@
         ],
         "load_state": "loaded"
       },
+      "file:84e75b69759e1066": {
+        "id": "file:84e75b69759e1066",
+        "path": "nodes/stream/session_status.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.session_status",
+            "role": "entry",
+            "symbol": "SessionStatus"
+          }
+        ],
+        "load_state": "loaded"
+      },
       "file:4fd3ae8cf3ab83de": {
         "id": "file:4fd3ae8cf3ab83de",
         "path": "nodes/stream/session.py",
@@ -9625,18 +9681,13 @@
         "relation": "entry"
       },
       {
-        "from": "node:usb.auto_session",
-        "to": "file:7008e28b7a1edb05",
+        "from": "node:usb.call_connect",
+        "to": "file:8e3f4c268d99cc78",
         "relation": "entry"
       },
       {
-        "from": "node:usb.auto_session",
-        "to": "file:07e54d27bd42e6d6",
-        "relation": "support"
-      },
-      {
-        "from": "node:usb.collect_job",
-        "to": "file:07e54d27bd42e6d6",
+        "from": "node:usb.call_disconnect",
+        "to": "file:8e3f4c268d99cc78",
         "relation": "entry"
       },
       {
@@ -9660,6 +9711,11 @@
         "relation": "entry"
       },
       {
+        "from": "node:usb.poll_session",
+        "to": "file:8e3f4c268d99cc78",
+        "relation": "entry"
+      },
+      {
         "from": "node:usb.probe_device",
         "to": "file:451c0454028d0a3c",
         "relation": "entry"
@@ -9671,7 +9727,7 @@
       },
       {
         "from": "node:usb.session_status",
-        "to": "file:423432595d552a27",
+        "to": "file:84e75b69759e1066",
         "relation": "entry"
       },
       {
@@ -9695,19 +9751,11 @@
         "relation": "entry"
       },
       {
-        "from": "file:423432595d552a27",
+        "from": "file:84e75b69759e1066",
         "to": "file:4fd3ae8cf3ab83de",
         "relation": "import",
         "specifier": "usb_tablet_display.nodes.stream",
-        "line": 8,
-        "type_only": false
-      },
-      {
-        "from": "file:7008e28b7a1edb05",
-        "to": "file:07e54d27bd42e6d6",
-        "relation": "import",
-        "specifier": "usb_tablet_display.nodes.stream",
-        "line": 11,
+        "line": 6,
         "type_only": false
       }
     ]
@@ -9722,9 +9770,23 @@
     {
       "call_path": [
         "loop",
+        "connect"
+      ],
+      "effect_scope": "unconstrained"
+    },
+    {
+      "call_path": [
+        "loop",
         "decide"
       ],
       "effect_scope": "none"
+    },
+    {
+      "call_path": [
+        "loop",
+        "disconnect"
+      ],
+      "effect_scope": "unconstrained"
     },
     {
       "call_path": [
@@ -9775,9 +9837,9 @@
     {
       "call_path": [
         "loop",
-        "job"
+        "poll"
       ],
-      "effect_scope": "python_io"
+      "effect_scope": "unconstrained"
     },
     {
       "call_path": [
@@ -9815,13 +9877,6 @@
       "call_path": [
         "loop",
         "request"
-      ],
-      "effect_scope": "python_io"
-    },
-    {
-      "call_path": [
-        "loop",
-        "runner"
       ],
       "effect_scope": "python_io"
     },
@@ -9939,6 +9994,40 @@
     {
       "kind": "node",
       "owner": "nodeset:usb.daemon_tick",
+      "type_key": "usb.session_status",
+      "call_path": [
+        "loop",
+        "sstatus"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.session_status",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "nodeset:usb.daemon_tick",
+      "type_key": "usb.poll_session",
+      "call_path": [
+        "loop",
+        "poll"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [],
+        "source": "static",
+        "origin": "vibeflow.node",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "nodeset:usb.daemon_tick",
       "type_key": "usb.internet_tick",
       "call_path": [
         "loop",
@@ -9951,24 +10040,6 @@
         ],
         "source": "static",
         "origin": "usb.internet_tick",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.daemon_tick",
-      "type_key": "usb.collect_job",
-      "call_path": [
-        "loop",
-        "job"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.python_io"
-        ],
-        "source": "static",
-        "origin": "usb.collect_job",
         "replaced": []
       }
     },
@@ -9993,24 +10064,6 @@
     {
       "kind": "node",
       "owner": "nodeset:usb.daemon_tick",
-      "type_key": "usb.session_status",
-      "call_path": [
-        "loop",
-        "sstatus"
-      ],
-      "declaration_only": false,
-      "selection": {
-        "references": [
-          "vibeflow.python_io"
-        ],
-        "source": "static",
-        "origin": "usb.session_status",
-        "replaced": []
-      }
-    },
-    {
-      "kind": "node",
-      "owner": "nodeset:usb.daemon_tick",
       "type_key": "usb.decide_action",
       "call_path": [
         "loop",
@@ -10029,18 +10082,32 @@
     {
       "kind": "node",
       "owner": "nodeset:usb.daemon_tick",
-      "type_key": "usb.auto_session",
+      "type_key": "usb.call_connect",
       "call_path": [
         "loop",
-        "runner"
+        "connect"
       ],
       "declaration_only": false,
       "selection": {
-        "references": [
-          "vibeflow.python_io"
-        ],
+        "references": [],
         "source": "static",
-        "origin": "usb.auto_session",
+        "origin": "vibeflow.node",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "nodeset:usb.daemon_tick",
+      "type_key": "usb.call_disconnect",
+      "call_path": [
+        "loop",
+        "disconnect"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [],
+        "source": "static",
+        "origin": "vibeflow.node",
         "replaced": []
       }
     },

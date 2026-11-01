@@ -4543,12 +4543,12 @@
       },
       {
         "kind": "node",
-        "id": "usb.auto_session",
+        "id": "usb.call_connect",
         "reason": "declaration"
       },
       {
         "kind": "node",
-        "id": "usb.collect_job",
+        "id": "usb.call_disconnect",
         "reason": "declaration"
       },
       {
@@ -4589,6 +4589,11 @@
       {
         "kind": "node",
         "id": "usb.moonlight_connect",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.poll_session",
         "reason": "declaration"
       },
       {

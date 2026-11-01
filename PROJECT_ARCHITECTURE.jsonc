@@ -167,7 +167,32 @@
           "default_entry": "",
           "architecture": "usb_tablet_display/docs/daemon-architecture.jsonc",
           "architecture_exists": true,
-          "relations": []
+          "relations": [
+            {
+              "call_path": [
+                "loop",
+                "connect"
+              ],
+              "operation": "call",
+              "workflow": {
+                "root": "usb-tablet-display",
+                "path": "configs/connect.jsonc"
+              },
+              "expected": false
+            },
+            {
+              "call_path": [
+                "loop",
+                "disconnect"
+              ],
+              "operation": "call",
+              "workflow": {
+                "root": "usb-tablet-display",
+                "path": "configs/disconnect.jsonc"
+              },
+              "expected": false
+            }
+          ]
         },
         {
           "root_id": "usb-tablet-display",
@@ -810,18 +835,17 @@
     },
     {
       "kind": "node",
-      "id": "usb.auto_session",
+      "id": "usb.call_connect",
       "owner": {
         "kind": "root",
         "id": "usb-tablet-display",
         "root_id": "usb-tablet-display",
         "path": "usb_tablet_display"
       },
-      "path": "usb_tablet_display/nodes/stream/runner.py",
-      "relative_path": "nodes/stream/runner.py",
+      "path": "usb_tablet_display/nodes/stream/coordination.py",
+      "relative_path": "nodes/stream/coordination.py",
       "implementation_paths": [
-        "usb_tablet_display/nodes/stream/runner.py",
-        "usb_tablet_display/nodes/stream/jobs.py"
+        "usb_tablet_display/nodes/stream/coordination.py"
       ],
       "used_by_roots": [
         "usb-tablet-display"
@@ -839,17 +863,17 @@
     },
     {
       "kind": "node",
-      "id": "usb.collect_job",
+      "id": "usb.call_disconnect",
       "owner": {
         "kind": "root",
         "id": "usb-tablet-display",
         "root_id": "usb-tablet-display",
         "path": "usb_tablet_display"
       },
-      "path": "usb_tablet_display/nodes/stream/jobs.py",
-      "relative_path": "nodes/stream/jobs.py",
+      "path": "usb_tablet_display/nodes/stream/coordination.py",
+      "relative_path": "nodes/stream/coordination.py",
       "implementation_paths": [
-        "usb_tablet_display/nodes/stream/jobs.py"
+        "usb_tablet_display/nodes/stream/coordination.py"
       ],
       "used_by_roots": [
         "usb-tablet-display"
@@ -981,6 +1005,34 @@
     },
     {
       "kind": "node",
+      "id": "usb.poll_session",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/coordination.py",
+      "relative_path": "nodes/stream/coordination.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/coordination.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/daemon.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
       "id": "usb.portal_pin",
       "owner": {
         "kind": "root",
@@ -1089,10 +1141,10 @@
         "root_id": "usb-tablet-display",
         "path": "usb_tablet_display"
       },
-      "path": "usb_tablet_display/nodes/stream/dispatch.py",
-      "relative_path": "nodes/stream/dispatch.py",
+      "path": "usb_tablet_display/nodes/stream/session_status.py",
+      "relative_path": "nodes/stream/session_status.py",
       "implementation_paths": [
-        "usb_tablet_display/nodes/stream/dispatch.py",
+        "usb_tablet_display/nodes/stream/session_status.py",
         "usb_tablet_display/nodes/stream/session.py"
       ],
       "used_by_roots": [

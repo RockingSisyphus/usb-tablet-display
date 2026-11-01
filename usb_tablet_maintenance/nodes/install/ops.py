@@ -11,6 +11,7 @@ ROOT_PATH = "/home/rockingsisyphus/projects/体验优化小项目/平板usb副�
 STATE_PATH = "/tmp/usb-tablet-display"
 NEW_UNIT = "usb-tablet-daemon.service"
 NEW_INTERNET_UNIT = "usb-tablet-internet.service"
+NEW_COORDINATOR_UNIT = "usb-tablet-coordinator.service"
 EXTENSION = "android-tablet-auto-keep-display@rockingsisyphus.local"
 
 
@@ -25,7 +26,7 @@ def run(argv, timeout=20):
 
 def user_files(home: Path):
     units = home / ".config/systemd/user"
-    return [units / NEW_UNIT, units / NEW_INTERNET_UNIT,
+    return [units / NEW_UNIT, units / NEW_INTERNET_UNIT, units / NEW_COORDINATOR_UNIT,
             home / ".local/bin/usb-tablet",
             home / ".config/usb-tablet-display/tablet.toml",
             home / ".config/sunshine/sunshine.conf"]
@@ -44,7 +45,7 @@ def backup(home: Path, runner=run):
             shutil.copy2(source, target)
     (base / "files.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     services = []
-    for unit in (NEW_UNIT, NEW_INTERNET_UNIT):
+    for unit in (NEW_UNIT, NEW_INTERNET_UNIT, NEW_COORDINATOR_UNIT):
         enabled = runner(["systemctl", "--user", "is-enabled", unit])
         active = runner(["systemctl", "--user", "is-active", unit])
         services.append({"unit": unit, "enabled": enabled["out"], "active": active["out"]})
@@ -54,7 +55,7 @@ def backup(home: Path, runner=run):
 
 def quiesce(home: Path, runner=run):
     steps = []
-    for unit in (NEW_UNIT, NEW_INTERNET_UNIT):
+    for unit in (NEW_UNIT, NEW_INTERNET_UNIT, NEW_COORDINATOR_UNIT):
         steps.append(runner(["systemctl", "--user", "stop", unit]))
     return {"action": "quiesce", "steps": len(steps),
             "active": runner(["systemctl", "--user", "is-active", NEW_UNIT])["out"]}
@@ -63,7 +64,7 @@ def quiesce(home: Path, runner=run):
 def install(home: Path, runner=run):
     units = home / ".config/systemd/user"
     units.mkdir(parents=True, exist_ok=True)
-    for name in (NEW_UNIT, NEW_INTERNET_UNIT):
+    for name in (NEW_UNIT, NEW_INTERNET_UNIT, NEW_COORDINATOR_UNIT):
         source = Path(ROOT_PATH) / "services" / name
         text = source.read_text(encoding="utf-8").replace("@ROOT@", ROOT_PATH)
         (units / name).write_text(text, encoding="utf-8")

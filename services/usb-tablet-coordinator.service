@@ -1,0 +1,15 @@
+[Unit]
+Description=USB tablet workflow coordinator (VibeFlow)
+PartOf=graphical-session.target
+Before=usb-tablet-daemon.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/rockingsisyphus/projects/体验优化小项目/平板usb副屏
+ExecStart=/usr/bin/python3 run.py coordination serve --workspace vibeflow_config.jsonc --port 8765
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+
+[Install]
+WantedBy=graphical-session.target

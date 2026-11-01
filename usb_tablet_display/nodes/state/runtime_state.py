@@ -31,8 +31,10 @@ def _write_json(path: Path, value) -> None:
             {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
             {"type": "usb.device", "cardinality": "exactly_one", "display_name": "USB device"},
             {"type": "usb.adb_state", "cardinality": "exactly_one", "display_name": "ADB transport state"},
-            {"type": "usb.action_result", "cardinality": "exactly_one", "display_name": "Action result"},
-            {"type": "usb.job", "cardinality": "exactly_one", "display_name": "Background job"},
+            {"type": "usb.action", "cardinality": "exactly_one", "display_name": "Session action"},
+            {"type": "usb.session_start_connect", "cardinality": "exactly_one", "display_name": "Connect start"},
+            {"type": "usb.session_start_disconnect", "cardinality": "exactly_one", "display_name": "Disconnect start"},
+            {"type": "usb.session_result", "cardinality": "exactly_one", "display_name": "Session result"},
             {"type": "usb.internet_state", "cardinality": "exactly_one", "display_name": "Internet state"},
         ],
         "provides": [{"key": "stop", "type": "usb.shutdown", "display_name": "Stop flag"}],
@@ -53,8 +55,10 @@ def _write_json(path: Path, value) -> None:
             "usb.settings": ["Configuration for the current run."],
             "usb.device": ["USB presence and RNDIS interface from this iteration."],
             "usb.adb_state": ["ADB transport state from this iteration."],
-            "usb.action_result": ["Session action taken during this iteration."],
-            "usb.job": ["Background job state and exit code."],
+            "usb.action": ["Decision for this iteration."],
+            "usb.session_start_connect": ["Whether a connect instance was started."],
+            "usb.session_start_disconnect": ["Whether a disconnect instance was started."],
+            "usb.session_result": ["Result of the background session, if any."],
             "usb.internet_state": ["Internet supervision result for this tick."],
         },
         "output_semantics": {"stop": ["True when the daemon should leave its loop."]},
@@ -66,8 +70,10 @@ class TickMerge:
         device = inputs["usb.device"]["value"]
         adb = inputs["usb.adb_state"]["value"]
         settings = inputs["usb.settings"]["value"]
-        action_result = inputs["usb.action_result"]["value"]
-        job = inputs["usb.job"]["value"]
+        action = inputs["usb.action"]["value"]
+        started = inputs["usb.session_start_connect"]["value"]
+        started_disconnect = inputs["usb.session_start_disconnect"]["value"]
+        session = inputs["usb.session_result"]["value"]
         internet = inputs["usb.internet_state"]["value"]
         time.sleep(max(int(params["tick_ms"]), 1) / 1000.0)
         state.update({
@@ -79,23 +85,28 @@ class TickMerge:
             "adb": adb.get("state", "unavailable"),
             "adb_detail": adb.get("detail", ""),
         })
-        state["job_running"] = bool(job.get("running"))
+        if started.get("instance"):
+            state["session_instance"] = started["instance"]
+            state["session_action"] = started.get("action", "connect")
+        if started_disconnect.get("instance"):
+            state["session_instance"] = started_disconnect["instance"]
+            state["session_action"] = started_disconnect.get("action", "disconnect")
         if internet.get("status"):
             state["internet"] = internet["status"]
         if internet.get("checked"):
             state["internet_at"] = float(internet.get("at") or time.time())
-        if job.get("action") not in (None, "none") and job.get("code") is not None:
-            state["last_action"] = job["action"]
-            state["last_action_code"] = job["code"]
+        if action.get("auto_enabled") is not None:
+            state["auto_enabled"] = bool(action["auto_enabled"])
+        if session.get("wait_errors") is not None:
+            state["session_wait_errors"] = int(session["wait_errors"])
+        if session.get("running") is False and session.get("code") is not None:
+            state["last_action"] = session.get("action") or "none"
+            state["last_action_code"] = session["code"]
             state["last_action_at"] = time.time()
-            state["last_action_detail"] = str(job.get("detail") or "")[-200:]
-        if action_result.get("auto_enabled") is not None:
-            state["auto_enabled"] = bool(action_result["auto_enabled"])
-        if action_result.get("action") not in (None, "none"):
-            state["last_action"] = action_result.get("action")
-            state["last_action_code"] = action_result.get("code")
-            state["last_action_at"] = time.time()
-            state["last_action_detail"] = action_result.get("detail", "")[-200:]
+            state["last_action_detail"] = str(session.get("detail") or "")[-200:]
+            state.pop("session_instance", None)
+            state.pop("session_action", None)
+            state.pop("session_wait_errors", None)
         _write_json(Path(params["state_path"]), state)
         limit = int(params["max_ticks"] or 0)
         stop = Path(params["shutdown_path"]).exists() or (limit > 0 and state["ticks"] >= limit)
