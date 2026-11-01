@@ -33,6 +33,7 @@ def _write_json(path: Path, value) -> None:
             {"type": "usb.adb_state", "cardinality": "exactly_one", "display_name": "ADB transport state"},
             {"type": "usb.action_result", "cardinality": "exactly_one", "display_name": "Action result"},
             {"type": "usb.job", "cardinality": "exactly_one", "display_name": "Background job"},
+            {"type": "usb.internet_state", "cardinality": "exactly_one", "display_name": "Internet state"},
         ],
         "provides": [{"key": "stop", "type": "usb.shutdown", "display_name": "Stop flag"}],
         "params_schema": {
@@ -54,6 +55,7 @@ def _write_json(path: Path, value) -> None:
             "usb.adb_state": ["ADB transport state from this iteration."],
             "usb.action_result": ["Session action taken during this iteration."],
             "usb.job": ["Background job state and exit code."],
+            "usb.internet_state": ["Internet supervision result for this tick."],
         },
         "output_semantics": {"stop": ["True when the daemon should leave its loop."]},
     },
@@ -66,6 +68,7 @@ class TickMerge:
         settings = inputs["usb.settings"]["value"]
         action_result = inputs["usb.action_result"]["value"]
         job = inputs["usb.job"]["value"]
+        internet = inputs["usb.internet_state"]["value"]
         time.sleep(max(int(params["tick_ms"]), 1) / 1000.0)
         state.update({
             "ticks": int(state.get("ticks") or 0) + 1,
@@ -77,6 +80,10 @@ class TickMerge:
             "adb_detail": adb.get("detail", ""),
         })
         state["job_running"] = bool(job.get("running"))
+        if internet.get("status"):
+            state["internet"] = internet["status"]
+        if internet.get("checked"):
+            state["internet_at"] = float(internet.get("at") or time.time())
         if job.get("action") not in (None, "none") and job.get("code") is not None:
             state["last_action"] = job["action"]
             state["last_action_code"] = job["code"]

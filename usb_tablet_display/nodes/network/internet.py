@@ -90,3 +90,56 @@ class InternetSync:
         return {"internet_state": {"vpn": "present" if present else "missing",
                                    "tablet_ok": tablet_ok, "host_ok": host_ok,
                                    "status": status}}
+
+
+@node(
+    id="usb.internet_tick", node_type="vibeflow.node",
+    display_name="Internet tick",
+    description="Runs the internet supervision at most once per interval and reports the last known state.",
+    version="0.1.0", flow_kind="process",
+    rulesets=["vibeflow.python_io"],
+    contract={
+        "requires": [
+            {"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"},
+            {"type": "usb.state", "cardinality": "exactly_one", "display_name": "Runtime state"},
+        ],
+        "provides": [{"key": "internet_state", "type": "usb.internet_state", "display_name": "Internet state"}],
+        "params_schema": {"interval_s": {"type": "integer"}, "timeout_ms": {"type": "integer"}},
+        "params_defaults": {"interval_s": 60, "timeout_ms": 30000},
+        "input_semantics": {
+            "usb.settings": ["VPN unit, ADB serial and probe URLs."],
+            "usb.state": ["State carrying the last internet check timestamp."],
+        },
+        "output_semantics": {"internet_state": ["Internet status, whether it was checked and when."]},
+    },
+)
+class InternetTick:
+    def run_pure(self, inputs, params):
+        import time
+        settings = inputs["usb.settings"]["value"]
+        state = inputs["usb.state"]["value"]
+        now = time.time()
+        last = float(state.get("internet_at") or 0)
+        interval = max(int(params["interval_s"]), 5)
+        if now - last < interval:
+            return {"internet_state": {"status": state.get("internet", "unknown"),
+                                       "checked": False, "at": last}}
+        present = _vpn_present(settings)
+        if not present:
+            _run(["systemctl", "--user", "reset-failed", settings["vpn_unit"]], 10)
+            _run(["systemctl", "--user", "restart", settings["vpn_unit"]], 15)
+            deadline = time.monotonic() + max(int(params["timeout_ms"]), 1000) / 1000.0
+            while time.monotonic() < deadline and not present:
+                time.sleep(1)
+                present = _vpn_present(settings)
+        tablet_ok = _tablet_internet(settings) if present else False
+        host_ok = _host_internet(settings)
+        if tablet_ok:
+            status = "ok"
+        elif not present:
+            status = "disconnected"
+        else:
+            status = "unavailable"
+        return {"internet_state": {"status": status, "checked": True, "at": now,
+                                   "vpn": "present" if present else "missing",
+                                   "tablet_ok": tablet_ok, "host_ok": host_ok}}

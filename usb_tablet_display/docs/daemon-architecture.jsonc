@@ -325,11 +325,11 @@
         "execution_lock": null,
         "contains_global_state": false,
         "summary": {
-          "nodes": 10,
+          "nodes": 11,
           "nodeset_types": 3,
-          "explicit_edges": 19,
+          "explicit_edges": 21,
           "data_edges": 7,
-          "reported_edges": 18,
+          "reported_edges": 20,
           "contains_global_state": false
         },
         "entry_nodes": [
@@ -340,16 +340,16 @@
         ],
         "god_nodes": [
           {
+            "node": "io",
+            "degree": 7
+          },
+          {
             "node": "decide",
             "degree": 6
           },
           {
-            "node": "io",
-            "degree": 6
-          },
-          {
             "node": "tick",
-            "degree": 5
+            "degree": 6
           }
         ],
         "nodes": [
@@ -567,6 +567,91 @@
               "target": "usb.device_probe",
               "target_status": "implemented"
             },
+            "config": {
+              "call": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "node_configs": {
+                "values": {},
+                "source": {
+                  "root_id": "usb-tablet-display",
+                  "path": "nodeset_types/daemon_tick.jsonc"
+                }
+              },
+              "allow_config_override": false
+            }
+          },
+          {
+            "id": "inet",
+            "definition_id": "usb.internet_tick",
+            "source": {
+              "root_id": "usb-tablet-display",
+              "path": "nodeset_types/daemon_tick.jsonc"
+            },
+            "role": {
+              "display_name": "Internet tick",
+              "description": "Supervises the tablet internet at most once per interval.",
+              "description_source": "call"
+            },
+            "flow_kind": "process",
+            "rulesets": [
+              "vibeflow.python_io"
+            ],
+            "selected_rulesets": [
+              "vibeflow.python_io"
+            ],
+            "tags": [],
+            "metadata": {},
+            "presentation": {
+              "values": {
+                "fill": "#ECECFF",
+                "stroke": "#9370DB",
+                "text": "#333333",
+                "shape": "rect"
+              },
+              "sources": {
+                "fill": "native",
+                "stroke": "native",
+                "text": "native",
+                "shape": "native"
+              },
+              "modifiers": {
+                "planned": false
+              }
+            },
+            "effect_scope": "python_io",
+            "execution_lock": null,
+            "effective_execution_lock": null,
+            "contains_global_state": false,
+            "status": "implemented",
+            "planned_behavior": null,
+            "requires": [
+              {
+                "type": "usb.settings",
+                "cardinality": "exactly_one",
+                "display_name": "Tablet settings"
+              },
+              {
+                "type": "usb.state",
+                "cardinality": "exactly_one",
+                "display_name": "Runtime state"
+              }
+            ],
+            "provides": [
+              {
+                "key": "internet_state",
+                "type": "usb.internet_state",
+                "display_name": "Internet state"
+              }
+            ],
+            "contract_source": "node_definition",
+            "join_policy": "safe_any",
+            "loop": null,
+            "invokes": null,
             "config": {
               "call": {
                 "values": {},
@@ -1087,6 +1172,11 @@
                 "type": "usb.job",
                 "cardinality": "exactly_one",
                 "display_name": "Background job"
+              },
+              {
+                "type": "usb.internet_state",
+                "cardinality": "exactly_one",
+                "display_name": "Internet state"
               }
             ],
             "provides": [
@@ -1220,6 +1310,66 @@
               "transfer"
             ],
             "transfers": []
+          },
+          {
+            "from": "io",
+            "to": "inet",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "settings",
+                  "type": "usb.settings",
+                  "display_name": "Tablet settings"
+                },
+                "requirement": {
+                  "type": "usb.settings",
+                  "cardinality": "exactly_one",
+                  "display_name": "Tablet settings"
+                }
+              },
+              {
+                "provider": {
+                  "key": "loaded_state",
+                  "type": "usb.state",
+                  "display_name": "Runtime state"
+                },
+                "requirement": {
+                  "type": "usb.state",
+                  "cardinality": "exactly_one",
+                  "display_name": "Runtime state"
+                }
+              }
+            ]
+          },
+          {
+            "from": "inet",
+            "to": "tick",
+            "when": "",
+            "roles": [
+              "mainline",
+              "schedule",
+              "transfer"
+            ],
+            "transfers": [
+              {
+                "provider": {
+                  "key": "internet_state",
+                  "type": "usb.internet_state",
+                  "display_name": "Internet state"
+                },
+                "requirement": {
+                  "type": "usb.internet_state",
+                  "cardinality": "exactly_one",
+                  "display_name": "Internet state"
+                }
+              }
+            ]
           },
           {
             "from": "job",
@@ -2879,6 +3029,103 @@
         "schema": {}
       }
     },
+    "usb.internet_tick": {
+      "id": "usb.internet_tick",
+      "node_type": "vibeflow.node",
+      "source": {
+        "module": "nodes.network.internet",
+        "class": "InternetTick",
+        "root_id": "usb-tablet-display",
+        "path": "nodes/network/internet.py",
+        "line": 116
+      },
+      "declaration": {
+        "root_id": "usb-tablet-display",
+        "path": "nodes/network/internet.py"
+      },
+      "info": {
+        "display_name": "Internet tick",
+        "description": "Runs the internet supervision at most once per interval and reports the last known state.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "author": null,
+        "tags": [],
+        "external": false,
+        "effect_scope": "python_io"
+      },
+      "contract": {
+        "requires": [
+          {
+            "type": "usb.settings",
+            "cardinality": "exactly_one",
+            "display_name": "Tablet settings"
+          },
+          {
+            "type": "usb.state",
+            "cardinality": "exactly_one",
+            "display_name": "Runtime state"
+          }
+        ],
+        "provides": [
+          {
+            "key": "internet_state",
+            "type": "usb.internet_state",
+            "display_name": "Internet state"
+          }
+        ],
+        "input_semantics": {
+          "usb.settings": [
+            "VPN unit, ADB serial and probe URLs."
+          ],
+          "usb.state": [
+            "State carrying the last internet check timestamp."
+          ]
+        },
+        "output_semantics": {
+          "internet_state": [
+            "Internet status, whether it was checked and when."
+          ]
+        }
+      },
+      "rulesets": [
+        "vibeflow.python_io"
+      ],
+      "declared_presentation": {},
+      "declared_rulesets": [
+        "vibeflow.python_io"
+      ],
+      "presentation": {
+        "values": {
+          "fill": "#ECECFF",
+          "stroke": "#9370DB",
+          "text": "#333333",
+          "shape": "rect"
+        },
+        "sources": {
+          "fill": "native",
+          "stroke": "native",
+          "text": "native",
+          "shape": "native"
+        },
+        "modifiers": {
+          "planned": false
+        }
+      },
+      "config": {
+        "defaults": {
+          "interval_s": 60,
+          "timeout_ms": 30000
+        },
+        "schema": {
+          "interval_s": {
+            "type": "integer"
+          },
+          "timeout_ms": {
+            "type": "integer"
+          }
+        }
+      }
+    },
     "usb.load_settings": {
       "id": "usb.load_settings",
       "node_type": "vibeflow.node",
@@ -3337,7 +3584,7 @@
         "class": "TickMerge",
         "root_id": "usb-tablet-display",
         "path": "nodes/state/runtime_state.py",
-        "line": 61
+        "line": 63
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -3384,6 +3631,11 @@
             "type": "usb.job",
             "cardinality": "exactly_one",
             "display_name": "Background job"
+          },
+          {
+            "type": "usb.internet_state",
+            "cardinality": "exactly_one",
+            "display_name": "Internet state"
           }
         ],
         "provides": [
@@ -3402,6 +3654,9 @@
           ],
           "usb.device": [
             "USB presence and RNDIS interface from this iteration."
+          ],
+          "usb.internet_state": [
+            "Internet supervision result for this tick."
           ],
           "usb.job": [
             "Background job state and exit code."
@@ -3689,6 +3944,11 @@
       {
         "kind": "node",
         "id": "usb.internet_sync",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.internet_tick",
         "reason": "declaration"
       },
       {
@@ -6084,6 +6344,404 @@
           }
         ]
       },
+      "node:usb.internet_tick": {
+        "kind": "node",
+        "node_type": "vibeflow.node",
+        "id": "usb.internet_tick",
+        "display_name": "Internet tick",
+        "description": "Runs the internet supervision at most once per interval and reports the last known state.",
+        "version": "0.1.0",
+        "flow_kind": "process",
+        "tags": [],
+        "external": false,
+        "contract": {
+          "requires": [
+            {
+              "type": "usb.settings",
+              "cardinality": "exactly_one",
+              "display_name": "Tablet settings"
+            },
+            {
+              "type": "usb.state",
+              "cardinality": "exactly_one",
+              "display_name": "Runtime state"
+            }
+          ],
+          "provides": [
+            {
+              "key": "internet_state",
+              "type": "usb.internet_state",
+              "display_name": "Internet state"
+            }
+          ],
+          "input_semantics": {
+            "usb.settings": [
+              "VPN unit, ADB serial and probe URLs."
+            ],
+            "usb.state": [
+              "State carrying the last internet check timestamp."
+            ]
+          },
+          "output_semantics": {
+            "internet_state": [
+              "Internet status, whether it was checked and when."
+            ]
+          },
+          "params_schema": {
+            "interval_s": {
+              "type": "integer"
+            },
+            "timeout_ms": {
+              "type": "integer"
+            }
+          },
+          "params_defaults": {
+            "interval_s": 60,
+            "timeout_ms": 30000
+          },
+          "examples": []
+        },
+        "implementations": [
+          {
+            "language": "python",
+            "targets": [
+              "python"
+            ],
+            "source": {
+              "kind": "file",
+              "ref": "nodes/network/internet.py",
+              "export": "InternetTick"
+            },
+            "completion": "immediate"
+          }
+        ],
+        "base_libs": [],
+        "workflow_operations": [],
+        "rulesets": [
+          "vibeflow.python_io"
+        ],
+        "presentation": {},
+        "metadata": {},
+        "plugin_id": "",
+        "owner": {
+          "kind": "root",
+          "id": "usb-tablet-display",
+          "root_id": "usb-tablet-display",
+          "path": "."
+        },
+        "origin": {
+          "owner": {
+            "kind": "root",
+            "id": "usb-tablet-display",
+            "root_id": "usb-tablet-display",
+            "path": "."
+          },
+          "path": "nodes/network/internet.py",
+          "line": 95,
+          "symbol": "InternetTick"
+        },
+        "status": "implemented",
+        "markers": [],
+        "diagnostics": [],
+        "effective_rules": {
+          "import": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "import",
+              "graph_scope": "current_graph",
+              "order": [
+                "imports"
+              ],
+              "calls": [
+                {
+                  "id": "imports",
+                  "rule_id": "vibeflow.import_side_effects",
+                  "original_rule_id": "vibeflow.import_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:imports",
+                    "policy": "default:vibeflow.import_side_effects"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "static": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "static",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ],
+          "run": [
+            {
+              "ruleset_id": "vibeflow.python_io",
+              "entrypoint": "run",
+              "graph_scope": "current_graph",
+              "order": [
+                "architecture",
+                "async",
+                "effects",
+                "inputs",
+                "interface",
+                "maintainability"
+              ],
+              "calls": [
+                {
+                  "id": "architecture",
+                  "rule_id": "vibeflow.node_architecture",
+                  "original_rule_id": "vibeflow.node_architecture",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "async",
+                  "rule_id": "vibeflow.async_lifecycle",
+                  "original_rule_id": "vibeflow.async_lifecycle",
+                  "params": {},
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {}
+                },
+                {
+                  "id": "effects",
+                  "rule_id": "vibeflow.no_side_effects",
+                  "original_rule_id": "vibeflow.no_side_effects",
+                  "params": {
+                    "effect_scope": "python_io",
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "effect_scope": "call:effects",
+                    "policy": "default:vibeflow.no_side_effects"
+                  }
+                },
+                {
+                  "id": "inputs",
+                  "rule_id": "vibeflow.input_writes",
+                  "original_rule_id": "vibeflow.input_writes",
+                  "params": {
+                    "mutating_methods": [
+                      "append",
+                      "clear",
+                      "extend",
+                      "insert",
+                      "pop",
+                      "popitem",
+                      "remove",
+                      "setdefault",
+                      "sort",
+                      "update"
+                    ]
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "mutating_methods": "default:vibeflow.input_writes"
+                  }
+                },
+                {
+                  "id": "interface",
+                  "rule_id": "vibeflow.node_interface",
+                  "original_rule_id": "vibeflow.node_interface",
+                  "params": {
+                    "allowed_methods": []
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "allowed_methods": "default:vibeflow.node_interface"
+                  }
+                },
+                {
+                  "id": "maintainability",
+                  "rule_id": "vibeflow.maintainability",
+                  "original_rule_id": "vibeflow.maintainability",
+                  "params": {
+                    "policy": {}
+                  },
+                  "dependencies": [],
+                  "inputs": {},
+                  "origins": [
+                    "vibeflow.python_io"
+                  ],
+                  "parameter_sources": {
+                    "policy": "default:vibeflow.maintainability"
+                  }
+                }
+              ],
+              "relations": []
+            }
+          ]
+        },
+        "effective_presentation": {
+          "values": {
+            "fill": "#ECECFF",
+            "stroke": "#9370DB",
+            "text": "#333333",
+            "shape": "rect"
+          },
+          "sources": {
+            "fill": "native",
+            "stroke": "native",
+            "text": "native",
+            "shape": "native"
+          },
+          "modifiers": {
+            "planned": false
+          }
+        },
+        "sources": [
+          {
+            "id": "file:d0b9fa0c462ea1b3",
+            "path": "nodes/network/internet.py",
+            "role": "entry",
+            "symbol": "InternetTick",
+            "language": "python",
+            "load_state": "loaded"
+          }
+        ]
+      },
       "node:usb.load_settings": {
         "kind": "node",
         "node_type": "vibeflow.node",
@@ -8395,6 +9053,11 @@
               "type": "usb.job",
               "cardinality": "exactly_one",
               "display_name": "Background job"
+            },
+            {
+              "type": "usb.internet_state",
+              "cardinality": "exactly_one",
+              "display_name": "Internet state"
             }
           ],
           "provides": [
@@ -8422,6 +9085,9 @@
             ],
             "usb.job": [
               "Background job state and exit code."
+            ],
+            "usb.internet_state": [
+              "Internet supervision result for this tick."
             ]
           },
           "output_semantics": {
@@ -8877,6 +9543,19 @@
         ],
         "load_state": "loaded"
       },
+      "file:d0b9fa0c462ea1b3": {
+        "id": "file:d0b9fa0c462ea1b3",
+        "path": "nodes/network/internet.py",
+        "owners": [
+          {
+            "kind": "node",
+            "id": "usb.internet_tick",
+            "role": "entry",
+            "symbol": "InternetTick"
+          }
+        ],
+        "load_state": "loaded"
+      },
       "file:e1a41cc6a9c9287d": {
         "id": "file:e1a41cc6a9c9287d",
         "path": "nodes/state/settings.py",
@@ -9006,6 +9685,11 @@
         "relation": "entry"
       },
       {
+        "from": "node:usb.internet_tick",
+        "to": "file:d0b9fa0c462ea1b3",
+        "relation": "entry"
+      },
+      {
         "from": "node:usb.load_settings",
         "to": "file:e1a41cc6a9c9287d",
         "relation": "entry"
@@ -9083,6 +9767,13 @@
         "end"
       ],
       "effect_scope": "none"
+    },
+    {
+      "call_path": [
+        "loop",
+        "inet"
+      ],
+      "effect_scope": "python_io"
     },
     {
       "call_path": [
@@ -9277,6 +9968,24 @@
         ],
         "source": "static",
         "origin": "usb.start",
+        "replaced": []
+      }
+    },
+    {
+      "kind": "node",
+      "owner": "nodeset:usb.daemon_tick",
+      "type_key": "usb.internet_tick",
+      "call_path": [
+        "loop",
+        "inet"
+      ],
+      "declaration_only": false,
+      "selection": {
+        "references": [
+          "vibeflow.python_io"
+        ],
+        "source": "static",
+        "origin": "usb.internet_tick",
         "replaced": []
       }
     },
