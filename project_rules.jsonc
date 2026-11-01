@@ -23,6 +23,10 @@
           "purpose": "Offline verification scripts"
         },
         {
+          "path": "vendor",
+          "purpose": "Vendored third-party runtime payloads"
+        },
+        {
           "path": "gnome-shell-ext",
           "purpose": "GNOME Shell extension source installed with the stack"
         },

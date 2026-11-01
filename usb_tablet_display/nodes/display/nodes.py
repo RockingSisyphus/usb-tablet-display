@@ -26,7 +26,7 @@ def _state(connection: Gio.DBusConnection) -> tuple:
 
 
 EXTENSION_UUID = "android-tablet-auto-keep-display@rockingsisyphus.local"
-MARKER_SUFFIX = (".cache", "android-usb-secondary-display", "auto-accept-display-change")
+MARKER_SUFFIX = (".cache", "usb-tablet-display", "auto-accept-display-change")
 
 
 def _marker_path() -> Path:

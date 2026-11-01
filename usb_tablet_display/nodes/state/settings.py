@@ -27,7 +27,7 @@ def _defaults() -> dict:
     "sunshine_adapter": "",
     "vpn_unit": "usb-tablet-internet.service",
     "adb": "/usr/bin/adb",
-    "gnirehtet": "~/.local/share/android-usb-secondary-display/gnirehtet/gnirehtet",
+    "gnirehtet": "/home/rockingsisyphus/projects/体验优化小项目/平板usb副屏/vendor/gnirehtet/gnirehtet",
     "dns": ["223.5.5.5", "1.1.1.1"],
     "probe_urls": ["https://work.weixin.qq.com/", "https://www.baidu.com/"],
     "keep_awake": False,
@@ -35,7 +35,7 @@ def _defaults() -> dict:
 
 
 def _config_path() -> Path:
-    return Path("~/.config/android-usb-secondary-display/tablet.toml").expanduser()
+    return Path("~/.config/usb-tablet-display/tablet.toml").expanduser()
 
 
 @node(

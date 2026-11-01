@@ -9,7 +9,6 @@ from pathlib import Path
 
 ROOT_PATH = "/home/rockingsisyphus/projects/体验优化小项目/平板usb副屏"
 STATE_PATH = "/tmp/usb-tablet-display"
-OLD_UNITS = ("android-tablet-controller.service", "android-tablet-internet.service")
 NEW_UNIT = "usb-tablet-daemon.service"
 NEW_INTERNET_UNIT = "usb-tablet-internet.service"
 EXTENSION = "android-tablet-auto-keep-display@rockingsisyphus.local"
@@ -26,9 +25,9 @@ def run(argv, timeout=20):
 
 def user_files(home: Path):
     units = home / ".config/systemd/user"
-    return [units / NEW_UNIT, units / NEW_INTERNET_UNIT, units / OLD_UNITS[0], units / OLD_UNITS[1],
+    return [units / NEW_UNIT, units / NEW_INTERNET_UNIT,
             home / ".local/bin/usb-tablet",
-            home / ".config/android-usb-secondary-display/tablet.toml",
+            home / ".config/usb-tablet-display/tablet.toml",
             home / ".config/sunshine/sunshine.conf"]
 
 
@@ -45,7 +44,7 @@ def backup(home: Path, runner=run):
             shutil.copy2(source, target)
     (base / "files.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     services = []
-    for unit in (NEW_UNIT, NEW_INTERNET_UNIT, *OLD_UNITS):
+    for unit in (NEW_UNIT, NEW_INTERNET_UNIT):
         enabled = runner(["systemctl", "--user", "is-enabled", unit])
         active = runner(["systemctl", "--user", "is-active", unit])
         services.append({"unit": unit, "enabled": enabled["out"], "active": active["out"]})
@@ -55,10 +54,8 @@ def backup(home: Path, runner=run):
 
 def quiesce(home: Path, runner=run):
     steps = []
-    for unit in (NEW_UNIT, NEW_INTERNET_UNIT, *OLD_UNITS):
+    for unit in (NEW_UNIT, NEW_INTERNET_UNIT):
         steps.append(runner(["systemctl", "--user", "stop", unit]))
-    for unit in OLD_UNITS:
-        steps.append(runner(["systemctl", "--user", "disable", unit]))
     return {"action": "quiesce", "steps": len(steps),
             "active": runner(["systemctl", "--user", "is-active", NEW_UNIT])["out"]}
 
@@ -82,14 +79,12 @@ def install(home: Path, runner=run):
     wrapper = bin_home / "usb-tablet"
     wrapper.write_text(f'#!/bin/sh\nexec python3 "{ROOT_PATH}/cli/main.py" "$@"\n', encoding="utf-8")
     wrapper.chmod(0o755)
-    config = home / ".config/android-usb-secondary-display/tablet.toml"
+    config = home / ".config/usb-tablet-display/tablet.toml"
     if not config.is_file():
         template = Path(ROOT_PATH) / "install" / "tablet.toml.default"
         config.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(template, config)
     runner(["systemctl", "--user", "daemon-reload"])
-    for unit in OLD_UNITS:
-        runner(["systemctl", "--user", "disable", unit])
     enabled = runner(["systemctl", "--user", "enable", "--now", NEW_UNIT])
     return {"action": "install", "unit": str(target), "internet_unit": str(units / NEW_INTERNET_UNIT),
             "extension": str(extension_target), "cli": str(wrapper),

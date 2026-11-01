@@ -10,14 +10,14 @@ from pathlib import Path
 DEFAULTS = {
     "serial": "R52W70H37TW",
     "adb": "/usr/bin/adb",
-    "gnirehtet": "~/.local/share/android-usb-secondary-display/gnirehtet/gnirehtet",
+    "gnirehtet": "/home/rockingsisyphus/projects/体验优化小项目/平板usb副屏/vendor/gnirehtet/gnirehtet",
     "dns": ["223.5.5.5", "1.1.1.1"],
 }
 
 
 def config():
     base = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
-    path = base / "android-usb-secondary-display" / "tablet.toml"
+    path = base / "usb-tablet-display" / "tablet.toml"
     values = tomllib.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
     return {**DEFAULTS, **{k: values[k] for k in DEFAULTS if k in values}}
 

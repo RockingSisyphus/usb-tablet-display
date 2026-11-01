@@ -99,6 +99,13 @@
       ]
     },
     {
+      "path": "vendor",
+      "purpose": "Vendored third-party runtime payloads",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
       "path": "vibeflow-preview",
       "purpose": "Offline workflow viewer assets and history",
       "declared": true,

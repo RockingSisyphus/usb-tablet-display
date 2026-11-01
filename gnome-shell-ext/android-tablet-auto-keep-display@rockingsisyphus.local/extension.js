@@ -10,7 +10,7 @@ function markerPath() {
     return GLib.build_filenamev([
         GLib.get_home_dir(),
         '.cache',
-        'android-usb-secondary-display',
+        'usb-tablet-display',
         'auto-accept-display-change',
     ]);
 }

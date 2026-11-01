@@ -8,3 +8,5 @@ host_name = "rockingsisyphus-pc"
 app_name = "Desktop"
 dns = ["223.5.5.5", "1.1.1.1"]
 keep_awake = false
+app_id = "881448767"
+shared_ui_snapshot = ""

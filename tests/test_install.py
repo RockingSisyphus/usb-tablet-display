@@ -25,8 +25,8 @@ def home(tmp_path):
     home = tmp_path / "home"
     (home / ".config/systemd/user").mkdir(parents=True)
     (home / ".config/systemd/user/usb-tablet-daemon.service").write_text("OLD UNIT\n")
-    (home / ".config/android-usb-secondary-display").mkdir(parents=True)
-    (home / ".config/android-usb-secondary-display/tablet.toml").write_text('serial = "X"\n')
+    (home / ".config/usb-tablet-display").mkdir(parents=True)
+    (home / ".config/usb-tablet-display/tablet.toml").write_text('serial = "X"\n')
     return home
 
 
@@ -47,7 +47,7 @@ def test_install_writes_unit_cli_and_template(home):
     assert result["enabled"] is True
     wrapper = home / ".local/bin/usb-tablet"
     assert wrapper.is_file() and wrapper.stat().st_mode & stat.S_IXUSR
-    assert (home / ".config/android-usb-secondary-display/tablet.toml").read_text().strip().startswith("serial")
+    assert (home / ".config/usb-tablet-display/tablet.toml").read_text().strip().startswith("serial")
 
 
 def test_verify_reports_all_checks(home):
