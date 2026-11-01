@@ -50,6 +50,17 @@ def test_install_writes_unit_cli_and_template(home):
     assert (home / ".config/usb-tablet-display/tablet.toml").read_text().strip().startswith("serial")
 
 
+def test_autofill_uses_single_adb_device_and_hostname(home, monkeypatch):
+    calls = []
+    monkeypatch.setattr(ops, "_action_output", lambda argv, timeout=10: (
+        "List of devices attached\nSER123\tdevice\n" if "devices" in argv else ""))
+    result = ops.autofill_config(home)
+    text = (home / ".config/usb-tablet-display/tablet.toml").read_text()
+    assert 'serial = "SER123"' in text
+    assert "host_name" in text
+    assert result["filled"] is True
+
+
 def test_verify_reports_all_checks(home):
     ops.install(home, runner=fake_runner())
     result = ops.verify(home, runner=fake_runner())

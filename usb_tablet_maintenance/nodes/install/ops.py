@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import socket
 import shutil
 import subprocess
 import sys
@@ -89,9 +90,10 @@ def install(home: Path, runner=run):
         template = Path(ROOT_PATH) / "install" / "tablet.toml.default"
         config.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(template, config)
+    autofill = autofill_config(home)
     runner(["systemctl", "--user", "daemon-reload"])
     enabled = runner(["systemctl", "--user", "enable", "--now", NEW_UNIT])
-    return {"action": "install", "unit": str(target), "internet_unit": str(units / NEW_INTERNET_UNIT),
+    return {"action": "install", "autofill": autofill, "unit": str(target), "internet_unit": str(units / NEW_INTERNET_UNIT),
             "extension": str(extension_target), "cli": str(wrapper),
             "enabled": enabled["code"] == 0, "detail": enabled["err"] or enabled["out"]}
 
@@ -144,6 +146,39 @@ def _tablet_serial(home: Path):
         if line.strip().startswith("serial"):
             return line.split("=", 1)[1].strip().strip('"')
     return ""
+
+
+def _adb_serials():
+    lines = _action_output(["adb", "devices"]).splitlines()[1:]
+    return [line.split("\t")[0].strip() for line in lines if line.endswith("device")]
+
+
+def _set_toml_value(text, key, value):
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if line.strip().startswith(key + " ") or line.strip().startswith(key + "="):
+            lines[index] = f'{key} = "{value}"'
+            return "\n".join(lines) + "\n"
+    return "\n".join(lines) + f'\n{key} = "{value}"\n'
+
+
+def autofill_config(home: Path):
+    config = home / ".config/usb-tablet-display/tablet.toml"
+    if not config.is_file():
+        return {"filled": False, "reason": "配置不存在"}
+    text = config.read_text(encoding="utf-8")
+    filled = []
+    serials = _adb_serials()
+    if len(serials) == 1:
+        text = _set_toml_value(text, "serial", serials[0])
+        filled.append(f"serial={serials[0]}")
+    host = socket.gethostname().split(".")[0]
+    if host:
+        text = _set_toml_value(text, "host_name", host)
+        filled.append(f"host_name={host}")
+    config.write_text(text, encoding="utf-8")
+    return {"filled": True, "fields": filled,
+            "reason": "" if len(serials) == 1 else "未检测到唯一的平板，保持原有序列号"}
 
 
 def _device_apps():
