@@ -13,8 +13,36 @@
       "root_ids": []
     },
     {
+      "path": ".pytest_cache",
+      "purpose": "Pytest cache directory",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
+      "path": "bin",
+      "purpose": "Launch wrappers",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
+      "path": "cli",
+      "purpose": "Command line entry point",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
       "path": "docs",
       "purpose": "Documentation",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
+      "path": "install",
+      "purpose": "Install templates copied into the user configuration",
       "declared": true,
       "role": "directory",
       "root_ids": []
@@ -29,6 +57,27 @@
     {
       "path": "runs",
       "purpose": "Execution outputs",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
+      "path": "services",
+      "purpose": "Systemd unit definitions",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
+      "path": "tests",
+      "purpose": "Tests",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
+      "path": "tools",
+      "purpose": "Offline verification scripts",
       "declared": true,
       "role": "directory",
       "root_ids": []
@@ -140,6 +189,38 @@
         },
         {
           "root_id": "usb-tablet-display",
+          "path": "configs/install.jsonc",
+          "id": "usb-tablet-display:configs/install.jsonc",
+          "name": "install",
+          "target": "python",
+          "filename": "install.jsonc",
+          "description": "",
+          "project_path": "usb_tablet_display/configs/install.jsonc",
+          "exists": true,
+          "entries": {},
+          "default_entry": "",
+          "architecture": "usb_tablet_display/docs/install-architecture.jsonc",
+          "architecture_exists": true,
+          "relations": []
+        },
+        {
+          "root_id": "usb-tablet-display",
+          "path": "configs/internet.jsonc",
+          "id": "usb-tablet-display:configs/internet.jsonc",
+          "name": "internet",
+          "target": "python",
+          "filename": "internet.jsonc",
+          "description": "",
+          "project_path": "usb_tablet_display/configs/internet.jsonc",
+          "exists": true,
+          "entries": {},
+          "default_entry": "",
+          "architecture": "usb_tablet_display/docs/internet-architecture.jsonc",
+          "architecture_exists": true,
+          "relations": []
+        },
+        {
+          "root_id": "usb-tablet-display",
           "path": "configs/status.jsonc",
           "id": "usb-tablet-display:configs/status.jsonc",
           "name": "status",
@@ -193,7 +274,44 @@
           "relation": "declaration"
         },
         {
+          "path": "usb_tablet_display/configs/internet.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        },
+        {
           "path": "usb_tablet_display/configs/status.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.auto_session",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/runner.py",
+      "relative_path": "nodes/stream/runner.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/runner.py",
+        "usb_tablet_display/nodes/stream/jobs.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/daemon.jsonc",
           "root": "usb-tablet-display",
           "statuses": [
             "implemented"
@@ -222,6 +340,62 @@
       "used_by_workflows": [
         {
           "path": "usb_tablet_display/configs/status.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.collect_job",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/jobs.py",
+      "relative_path": "nodes/stream/jobs.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/jobs.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/daemon.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.decide_action",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/dispatch.py",
+      "relative_path": "nodes/stream/dispatch.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/dispatch.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/daemon.jsonc",
           "root": "usb-tablet-display",
           "statuses": [
             "implemented"
@@ -387,7 +561,108 @@
           "relation": "declaration"
         },
         {
+          "path": "usb_tablet_display/configs/install.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        },
+        {
+          "path": "usb_tablet_display/configs/internet.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        },
+        {
           "path": "usb_tablet_display/configs/status.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.install_run",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/install/nodes.py",
+      "relative_path": "nodes/install/nodes.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/install/nodes.py",
+        "usb_tablet_display/nodes/install/ops.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/install.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.internet_sync",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/network/internet.py",
+      "relative_path": "nodes/network/internet.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/network/internet.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/internet.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.internet_tick",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/network/internet.py",
+      "relative_path": "nodes/network/internet.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/network/internet.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/daemon.jsonc",
           "root": "usb-tablet-display",
           "statuses": [
             "implemented"
@@ -455,7 +730,73 @@
           "relation": "declaration"
         },
         {
+          "path": "usb_tablet_display/configs/internet.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        },
+        {
           "path": "usb_tablet_display/configs/status.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.moonlight_connect",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/moonlight.py",
+      "relative_path": "nodes/stream/moonlight.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/moonlight.py",
+        "usb_tablet_display/nodes/stream/moonlight_ui.py",
+        "usb_tablet_display/nodes/stream/session.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/connect.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.portal_pin",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/portal.py",
+      "relative_path": "nodes/stream/portal.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/portal.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/connect.jsonc",
           "root": "usb-tablet-display",
           "statuses": [
             "implemented"
@@ -492,6 +833,14 @@
         },
         {
           "path": "usb_tablet_display/configs/daemon.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        },
+        {
+          "path": "usb_tablet_display/configs/internet.jsonc",
           "root": "usb-tablet-display",
           "statuses": [
             "implemented"
@@ -567,6 +916,14 @@
           "relation": "declaration"
         },
         {
+          "path": "usb_tablet_display/configs/internet.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        },
+        {
           "path": "usb_tablet_display/configs/status.jsonc",
           "root": "usb-tablet-display",
           "statuses": [
@@ -606,6 +963,34 @@
     },
     {
       "kind": "node",
+      "id": "usb.require_stream",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/moonlight.py",
+      "relative_path": "nodes/stream/moonlight.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/moonlight.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/connect.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
       "id": "usb.run_command",
       "owner": {
         "kind": "root",
@@ -620,6 +1005,35 @@
       ],
       "used_by_roots": [],
       "used_by_workflows": []
+    },
+    {
+      "kind": "node",
+      "id": "usb.session_status",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/dispatch.py",
+      "relative_path": "nodes/stream/dispatch.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/dispatch.py",
+        "usb_tablet_display/nodes/stream/session.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/daemon.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
     },
     {
       "kind": "node",
@@ -708,6 +1122,22 @@
           "relation": "declaration"
         },
         {
+          "path": "usb_tablet_display/configs/install.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        },
+        {
+          "path": "usb_tablet_display/configs/internet.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        },
+        {
           "path": "usb_tablet_display/configs/status.jsonc",
           "root": "usb-tablet-display",
           "statuses": [
@@ -729,7 +1159,8 @@
       "path": "usb_tablet_display/nodes/stream/sunshine.py",
       "relative_path": "nodes/stream/sunshine.py",
       "implementation_paths": [
-        "usb_tablet_display/nodes/stream/sunshine.py"
+        "usb_tablet_display/nodes/stream/sunshine.py",
+        "usb_tablet_display/nodes/stream/session.py"
       ],
       "used_by_roots": [
         "usb-tablet-display"
@@ -758,6 +1189,35 @@
       "relative_path": "nodes/stream/sunshine.py",
       "implementation_paths": [
         "usb_tablet_display/nodes/stream/sunshine.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/connect.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.sunshine_ready",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/sunshine.py",
+      "relative_path": "nodes/stream/sunshine.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/sunshine.py",
+        "usb_tablet_display/nodes/stream/session.py"
       ],
       "used_by_roots": [
         "usb-tablet-display"
@@ -831,6 +1291,34 @@
     },
     {
       "kind": "node",
+      "id": "usb.take_request",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/requests.py",
+      "relative_path": "nodes/stream/requests.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/requests.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/daemon.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
       "id": "usb.teardown_summary",
       "owner": {
         "kind": "root",
@@ -877,6 +1365,35 @@
       "used_by_workflows": [
         {
           "path": "usb_tablet_display/configs/daemon.jsonc",
+          "root": "usb-tablet-display",
+          "statuses": [
+            "implemented"
+          ],
+          "relation": "declaration"
+        }
+      ]
+    },
+    {
+      "kind": "node",
+      "id": "usb.wait_usb_address",
+      "owner": {
+        "kind": "root",
+        "id": "usb-tablet-display",
+        "root_id": "usb-tablet-display",
+        "path": "usb_tablet_display"
+      },
+      "path": "usb_tablet_display/nodes/stream/address.py",
+      "relative_path": "nodes/stream/address.py",
+      "implementation_paths": [
+        "usb_tablet_display/nodes/stream/address.py",
+        "usb_tablet_display/nodes/stream/session.py"
+      ],
+      "used_by_roots": [
+        "usb-tablet-display"
+      ],
+      "used_by_workflows": [
+        {
+          "path": "usb_tablet_display/configs/connect.jsonc",
           "root": "usb-tablet-display",
           "statuses": [
             "implemented"

@@ -19,6 +19,10 @@
           "purpose": "Systemd unit definitions"
         },
         {
+          "path": "tools",
+          "purpose": "Offline verification scripts"
+        },
+        {
           "path": "install",
           "purpose": "Install templates copied into the user configuration"
         },
