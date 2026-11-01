@@ -1629,7 +1629,7 @@
         "class": "SunshineStop",
         "root_id": "usb-tablet-display",
         "path": "nodes/stream/sunshine.py",
-        "line": 44
+        "line": 221
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -1714,7 +1714,7 @@
         "class": "TeardownSummary",
         "root_id": "usb-tablet-display",
         "path": "nodes/session/gates.py",
-        "line": 98
+        "line": 102
       },
       "declaration": {
         "root_id": "usb-tablet-display",
@@ -1870,6 +1870,16 @@
       {
         "kind": "node",
         "id": "usb.start",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.stream_verify",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.sunshine_configure",
         "reason": "declaration"
       },
       {
@@ -4620,7 +4630,7 @@
             "path": "."
           },
           "path": "nodes/stream/sunshine.py",
-          "line": 29,
+          "line": 206,
           "symbol": "SunshineStop"
         },
         "status": "implemented",
@@ -5008,7 +5018,7 @@
             "path": "."
           },
           "path": "nodes/session/gates.py",
-          "line": 77,
+          "line": 81,
           "symbol": "TeardownSummary"
         },
         "status": "implemented",

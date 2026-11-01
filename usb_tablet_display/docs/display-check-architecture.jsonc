@@ -1229,6 +1229,16 @@
       },
       {
         "kind": "node",
+        "id": "usb.stream_verify",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.sunshine_configure",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.sunshine_start",
         "reason": "declaration"
       },

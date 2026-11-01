@@ -48,6 +48,7 @@ class RequireReady:
             {"type": "usb.readiness", "cardinality": "exactly_one", "display_name": "Session readiness"},
             {"type": "usb.display_result", "cardinality": "exactly_one", "display_name": "Display result"},
             {"type": "usb.display_check", "cardinality": "exactly_one", "display_name": "Display check"},
+            {"type": "usb.stream_check", "cardinality": "exactly_one", "display_name": "Stream check"},
         ],
         "provides": [{"key": "session_result", "type": "usb.session_result", "display_name": "Session result"}],
         "params_schema": {},
@@ -56,6 +57,7 @@ class RequireReady:
             "usb.readiness": ["Device and ADB readiness."],
             "usb.display_result": ["Applied layout result."],
             "usb.display_check": ["Post-apply layout comparison."],
+            "usb.stream_check": ["Sunshine and Moonlight stream state."],
         },
         "output_semantics": {"session_result": ["Connect session outcome."]},
     },
@@ -65,12 +67,14 @@ class SessionSummary:
         readiness = inputs["usb.readiness"]["value"]
         result = inputs["usb.display_result"]["value"]
         check = inputs["usb.display_check"]["value"]
+        stream = inputs["usb.stream_check"]["value"]
         return {"session_result": {
             "session": "connect",
             "serial": readiness.get("serial"),
             "interface": readiness.get("interface"),
             "changed": bool(result.get("changed")),
             "verified": bool(check.get("matches")),
+            "stream_connected": bool(stream.get("connected")),
         }}
 
 
