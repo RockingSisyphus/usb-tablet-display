@@ -1,0 +1,6 @@
+{
+  "uuid": "android-tablet-auto-keep-display@rockingsisyphus.local",
+  "name": "Android Tablet Auto Keep Display",
+  "description": "Automatically accepts GNOME's display-change confirmation only for the Android tablet secondary display automation.",
+  "shell-version": ["50"]
+}

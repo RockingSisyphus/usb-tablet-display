@@ -11,6 +11,8 @@ ROOT_PATH = "/home/rockingsisyphus/projects/体验优化小项目/平板usb副�
 STATE_PATH = "/tmp/usb-tablet-display"
 OLD_UNITS = ("android-tablet-controller.service", "android-tablet-internet.service")
 NEW_UNIT = "usb-tablet-daemon.service"
+NEW_INTERNET_UNIT = "usb-tablet-internet.service"
+EXTENSION = "android-tablet-auto-keep-display@rockingsisyphus.local"
 
 
 def run(argv, timeout=20):
@@ -24,7 +26,7 @@ def run(argv, timeout=20):
 
 def user_files(home: Path):
     units = home / ".config/systemd/user"
-    return [units / NEW_UNIT, units / OLD_UNITS[0], units / OLD_UNITS[1],
+    return [units / NEW_UNIT, units / NEW_INTERNET_UNIT, units / OLD_UNITS[0], units / OLD_UNITS[1],
             home / ".local/bin/usb-tablet",
             home / ".config/android-usb-secondary-display/tablet.toml",
             home / ".config/sunshine/sunshine.conf"]
@@ -43,7 +45,7 @@ def backup(home: Path, runner=run):
             shutil.copy2(source, target)
     (base / "files.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     services = []
-    for unit in (NEW_UNIT, *OLD_UNITS):
+    for unit in (NEW_UNIT, NEW_INTERNET_UNIT, *OLD_UNITS):
         enabled = runner(["systemctl", "--user", "is-enabled", unit])
         active = runner(["systemctl", "--user", "is-active", unit])
         services.append({"unit": unit, "enabled": enabled["out"], "active": active["out"]})
@@ -53,7 +55,7 @@ def backup(home: Path, runner=run):
 
 def quiesce(home: Path, runner=run):
     steps = []
-    for unit in (NEW_UNIT, *OLD_UNITS):
+    for unit in (NEW_UNIT, NEW_INTERNET_UNIT, *OLD_UNITS):
         steps.append(runner(["systemctl", "--user", "stop", unit]))
     for unit in OLD_UNITS:
         steps.append(runner(["systemctl", "--user", "disable", unit]))
@@ -64,10 +66,17 @@ def quiesce(home: Path, runner=run):
 def install(home: Path, runner=run):
     units = home / ".config/systemd/user"
     units.mkdir(parents=True, exist_ok=True)
-    source = Path(ROOT_PATH) / "services" / NEW_UNIT
-    text = source.read_text(encoding="utf-8").replace("@ROOT@", ROOT_PATH)
+    for name in (NEW_UNIT, NEW_INTERNET_UNIT):
+        source = Path(ROOT_PATH) / "services" / name
+        text = source.read_text(encoding="utf-8").replace("@ROOT@", ROOT_PATH)
+        (units / name).write_text(text, encoding="utf-8")
     target = units / NEW_UNIT
-    target.write_text(text, encoding="utf-8")
+    extension_source = Path(ROOT_PATH) / "gnome-shell-ext" / EXTENSION
+    extension_target = home / ".local/share/gnome-shell/extensions" / EXTENSION
+    if extension_source.is_dir():
+        extension_target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(extension_source, extension_target, dirs_exist_ok=True)
+        runner(["gnome-extensions", "enable", EXTENSION])
     bin_home = home / ".local/bin"
     bin_home.mkdir(parents=True, exist_ok=True)
     wrapper = bin_home / "usb-tablet"
@@ -82,7 +91,8 @@ def install(home: Path, runner=run):
     for unit in OLD_UNITS:
         runner(["systemctl", "--user", "disable", unit])
     enabled = runner(["systemctl", "--user", "enable", "--now", NEW_UNIT])
-    return {"action": "install", "unit": str(target), "cli": str(wrapper),
+    return {"action": "install", "unit": str(target), "internet_unit": str(units / NEW_INTERNET_UNIT),
+            "extension": str(extension_target), "cli": str(wrapper),
             "enabled": enabled["code"] == 0, "detail": enabled["err"] or enabled["out"]}
 
 

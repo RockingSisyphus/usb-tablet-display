@@ -41,6 +41,13 @@
       "root_ids": []
     },
     {
+      "path": "gnome-shell-ext",
+      "purpose": "GNOME Shell extension source installed with the stack",
+      "declared": true,
+      "role": "directory",
+      "root_ids": []
+    },
+    {
       "path": "install",
       "purpose": "Install templates copied into the user configuration",
       "declared": true,

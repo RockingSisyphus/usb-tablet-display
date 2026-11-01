@@ -25,7 +25,7 @@ def _defaults() -> dict:
     "sunshine_unit": "app-dev.lizardbyte.app.Sunshine.service",
     "sunshine_encoder": "nvenc",
     "sunshine_adapter": "",
-    "vpn_unit": "android-tablet-internet.service",
+    "vpn_unit": "usb-tablet-internet.service",
     "adb": "/usr/bin/adb",
     "gnirehtet": "~/.local/share/android-usb-secondary-display/gnirehtet/gnirehtet",
     "dns": ["223.5.5.5", "1.1.1.1"],

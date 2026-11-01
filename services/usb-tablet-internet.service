@@ -1,0 +1,14 @@
+[Unit]
+Description=USB tablet reverse tethering (VibeFlow)
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/rockingsisyphus/projects/体验优化小项目/平板usb副屏
+ExecStart=/usr/bin/python3 cli/vpn.py
+ExecStop=/usr/bin/python3 cli/vpn.py stop
+TimeoutStopSec=6
+KillSignal=SIGINT
+Restart=on-failure
+RestartSec=5
+RestartPreventExitStatus=78
