@@ -1,0 +1,17 @@
+{
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Start display check", "description": "Starts the read-only display layout check."},
+      {"id": "io", "definition_id": "usb.state_io", "display_name": "Load state and settings", "description": "Loads tablet settings."},
+      {"id": "check", "definition_id": "usb.display_matches", "display_name": "Match display layout", "description": "Compares the current Mutter layout with the enable target."},
+      {"id": "end", "definition_id": "usb.end", "display_name": "End display check", "description": "Ends the read-only display layout check."}
+    ],
+    "edges": [["start", "io"], ["io", "check"], ["check", "end"]],
+    "outputs": [
+      {"type": "usb.display_check", "cardinality": "exactly_one", "display_name": "Display match result"}
+    ]
+  },
+  "nodeset_imports": [{"path": "../nodeset_types/state_io.jsonc"}],
+  "plugins": []
+}

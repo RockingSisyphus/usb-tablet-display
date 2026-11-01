@@ -1,0 +1,19 @@
+{
+  "type_key": "usb.display_control",
+  "display_name": "Display control",
+  "description": "Matches, applies and verifies the GNOME monitor layout for the tablet target.",
+  "requires": [{"type": "usb.settings", "cardinality": "exactly_one", "display_name": "Tablet settings"}],
+  "provides": [{"key": "display_result", "type": "usb.display_result", "display_name": "Display result"}],
+  "pipeline": {
+    "inputs": [{"key": "settings", "type": "usb.settings", "display_name": "Tablet settings", "required": true}],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Begin display control", "description": "Begins display layout control."},
+      {"id": "apply", "definition_id": "usb.display_apply", "display_name": "Apply display layout", "description": "Applies the layout when the current state differs and verifies the result."},
+      {"id": "end", "definition_id": "usb.end", "display_name": "Finish display control", "description": "Finishes display layout control."}
+    ],
+    "edges": [["start", "apply"], ["apply", "end"]],
+    "outputs": [
+      {"type": "usb.display_result", "cardinality": "exactly_one", "display_name": "Display result"}
+    ]
+  }
+}

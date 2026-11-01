@@ -5,6 +5,10 @@
       {
         "workflow": "configs/daemon.jsonc",
         "document": "docs/daemon-architecture.jsonc"
+      },
+      {
+        "workflow": "configs/display-check.jsonc",
+        "document": "docs/display-check-architecture.jsonc"
       }
     ]
   }

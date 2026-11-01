@@ -2431,6 +2431,16 @@
       },
       {
         "kind": "node",
+        "id": "usb.display_apply",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
+        "id": "usb.display_matches",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.end",
         "reason": "declaration"
       },
