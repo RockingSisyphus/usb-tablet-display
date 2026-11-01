@@ -3943,6 +3943,11 @@
       },
       {
         "kind": "node",
+        "id": "usb.install_run",
+        "reason": "declaration"
+      },
+      {
+        "kind": "node",
         "id": "usb.internet_sync",
         "reason": "declaration"
       },

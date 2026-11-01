@@ -19,6 +19,10 @@
           "purpose": "Systemd unit definitions"
         },
         {
+          "path": "install",
+          "purpose": "Install templates copied into the user configuration"
+        },
+        {
           "path": ".pytest_cache",
           "purpose": "Pytest cache directory"
         },

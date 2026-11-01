@@ -1,0 +1,15 @@
+{
+  "pipeline": {
+    "inputs": [],
+    "nodes": [
+      {"id": "start", "definition_id": "usb.start", "display_name": "Start install", "description": "Starts the install action."},
+      {"id": "run", "definition_id": "usb.install_run", "display_name": "Run install action", "description": "Runs the requested backup, quiesce, install, restore or verify action."},
+      {"id": "end", "definition_id": "usb.end", "display_name": "End install", "description": "Ends the install action."}
+    ],
+    "edges": [["start", "run"], ["run", "end"]],
+    "outputs": [
+      {"type": "usb.install_result", "cardinality": "exactly_one", "display_name": "Install result"}
+    ]
+  },
+  "plugins": []
+}

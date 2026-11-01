@@ -8,7 +8,8 @@
       {"workflow": "configs/connect.jsonc", "document": "docs/connect-architecture.jsonc"},
       {"workflow": "configs/disconnect.jsonc", "document": "docs/disconnect-architecture.jsonc"},
       {"workflow": "configs/guard-check.jsonc", "document": "docs/guard-check-architecture.jsonc"},
-      {"workflow": "configs/internet.jsonc", "document": "docs/internet-architecture.jsonc"}
+      {"workflow": "configs/internet.jsonc", "document": "docs/internet-architecture.jsonc"},
+      {"workflow": "configs/install.jsonc", "document": "docs/install-architecture.jsonc"}
     ]
   }
 }

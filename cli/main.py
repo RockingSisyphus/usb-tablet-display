@@ -51,8 +51,9 @@ def main():
     parser = argparse.ArgumentParser(description="USB 平板副屏")
     parser.add_argument("action", nargs="?", default="status",
                         choices=("status", "enable", "disable", "reconnect", "set-auto",
-                                 "auto", "logs", "gui"))
-    parser.add_argument("value", nargs="?", choices=("on", "off"))
+                                 "auto", "logs", "gui", "install"))
+    parser.add_argument("value", nargs="?", choices=("on", "off", "backup", "quiesce",
+                                                    "install", "restore", "verify"))
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     if args.action == "status":
@@ -65,6 +66,23 @@ def main():
             parser.error("set-auto requires on or off")
         print("请求已提交；使用 status 查看结果。")
         return _request("set-auto", args.value == "on")
+    if args.action == "install":
+        action = args.value or "verify"
+        payload = {"action": action}
+        if action == "restore":
+            payload["backup_dir"] = os.environ.get("USB_TABLET_BACKUP", "")
+        STATE_ROOT.mkdir(parents=True, exist_ok=True)
+        (STATE_ROOT / "install-request.json").write_text(json.dumps(payload), encoding="utf-8")
+        done = subprocess.run([sys.executable, "run.py", "run", "--config",
+                               "usb_tablet_display/configs/install.jsonc", "--input",
+                               "usb_tablet_display/probes/daemon.json"],
+                              cwd=ROOT, capture_output=True, text=True, timeout=600)
+        result_path = STATE_ROOT / "install-result.json"
+        if result_path.is_file():
+            print(result_path.read_text(encoding="utf-8"))
+            return 0
+        print(done.stderr[-600:] or "install workflow failed")
+        return 1
     if args.action == "logs":
         return subprocess.call(["journalctl", "--user", "-u", UNIT, "-n", "150", "--no-pager"])
     if args.action == "gui":
