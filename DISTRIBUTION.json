@@ -19,9 +19,14 @@
   },
   "roots": [
     {
-      "id": "usb-tablet-display",
-      "path": "usb_tablet_display",
+      "id": "python-project",
+      "path": "python_project",
       "project_target": "python"
+    },
+    {
+      "id": "javascript-project",
+      "path": "javascript_project",
+      "project_target": "javascript"
     }
   ],
   "schema": "vibeflow.distribution.v2",
