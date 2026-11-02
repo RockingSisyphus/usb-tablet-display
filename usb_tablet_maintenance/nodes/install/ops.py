@@ -289,6 +289,11 @@ def ensure_virtual_display(connector="DP-1", runner=run):
         return {"ready": True, "changed": False, "reboot_required": False}
     steps = []
     source = Path(ROOT_PATH) / "install" / "edid" / "virtual-display.bin"
+    if not source.is_file():
+        source = Path("/tmp/usb-tablet-edid.bin")
+        subprocess.run(["python3", str(Path(ROOT_PATH) / "tools" / "make_edid.py"),
+                        "--name", connector, "--output", str(source)],
+                       capture_output=True, text=True, timeout=30)
     target = Path(EDID_TARGET)
     need_copy = not target.is_file() or target.stat().st_size != source.stat().st_size
     if need_copy:

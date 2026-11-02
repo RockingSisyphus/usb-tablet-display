@@ -85,6 +85,13 @@ tests/                       行为级测试
    `drm.edid_firmware=DP-1:edid/virtual-display.bin video=DP-1:e`
 5. 执行 `sudo update-grub`
 
+需要自定义分辨率或厂商信息时，可以重新生成 EDID（默认 2560x1600@60）：
+
+```bash
+python3 tools/make_edid.py --width 2560 --height 1600 --refresh 60 \
+    --name VIRTUAL-DP --vendor BOE --product 0x1234 --serial 0x12345678
+```
+
 **需要 sudo 权限，且重启后才生效。** 自检（`usb-tablet install verify`）会报告
 `virtual_display` 与 `sunshine_portal_token` 两项，缺失时给出明确提示。
 
