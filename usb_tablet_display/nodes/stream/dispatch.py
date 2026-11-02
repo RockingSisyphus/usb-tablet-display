@@ -50,6 +50,7 @@ class DecideAction:
         session = _value(inputs, "usb.session_result")
         auto = bool(state.get("auto_enabled", True))
         usable = bool(device.get("present")) and adb.get("state") == "device"
+        streak = 0 if usable else int(state.get("unusable_streak") or 0) + 1
         if session.get("running"):
             return {"action": {"action": "none", "auto_enabled": auto,
                                "reason": "session job running"}}
@@ -57,26 +58,30 @@ class DecideAction:
         if action == "set-auto":
             enabled = bool(request.get("value"))
             return {"action": {"action": "policy", "auto_enabled": enabled,
-                               "reason": "automatic session " + ("enabled" if enabled else "disabled")}}
+                               "reason": "automatic session " + ("enabled" if enabled else "disabled"), "unusable_streak": streak}}
         if action == "disable":
             return {"action": {"action": "disconnect", "auto_enabled": False,
-                               "reason": "requested disable"}}
+                               "reason": "requested disable", "unusable_streak": streak}}
         if action == "enable":
             if usable:
                 return {"action": {"action": "connect", "auto_enabled": True,
-                                   "reason": "requested enable"}}
+                                   "reason": "requested enable", "unusable_streak": streak}}
             return {"action": {"action": "none", "auto_enabled": True,
-                               "reason": "requested enable but tablet unavailable"}}
+                               "reason": "requested enable but tablet unavailable", "unusable_streak": streak}}
         if action == "reconnect" and current.get("connected"):
             return {"action": {"action": "disconnect", "auto_enabled": True,
-                               "reason": "requested reconnect"}}
+                               "reason": "requested reconnect", "unusable_streak": streak}}
         if usable and auto and not current.get("connected"):
-            return {"action": {"action": "connect", "auto_enabled": auto,
+            return {"action": {"action": "connect", "auto_enabled": auto, "unusable_streak": streak,
                                "reason": "tablet present and stream idle"}}
         if not usable and str(state.get("last_action") or "") == "connect":
-            return {"action": {"action": "disconnect", "auto_enabled": auto,
+            if streak < 3:
+                return {"action": {"action": "none", "auto_enabled": auto, "unusable_streak": streak,
+                                   "reason": f"waiting for tablet (unavailable for {streak} ticks)"}}
+            return {"action": {"action": "disconnect", "auto_enabled": auto, "unusable_streak": streak,
                                "reason": "tablet removed or adb unavailable"}}
         if current.get("connected") and not auto:
-            return {"action": {"action": "disconnect", "auto_enabled": False,
+            return {"action": {"action": "disconnect", "auto_enabled": False, "unusable_streak": streak,
                                "reason": "automatic session disabled"}}
-        return {"action": {"action": "none", "auto_enabled": auto, "reason": "no change"}}
+        return {"action": {"action": "none", "auto_enabled": auto, "unusable_streak": streak,
+                           "reason": "no change"}}

@@ -15,8 +15,10 @@ import asyncio
 
 
 def inputs(*, settings, device=True, adb="device", connected=False, auto=True,
-           last_action=None, request=("none", None), job_running=False):
+           last_action=None, request=("none", None), job_running=False, streak=0):
     state = {"last_action": last_action} if last_action else {}
+    if streak:
+        state["unusable_streak"] = streak
     if not auto:
         state["auto_enabled"] = False
     return {
@@ -33,9 +35,10 @@ def inputs(*, settings, device=True, adb="device", connected=False, auto=True,
 DECISION_CASES = [
     ("idle tablet connects", dict(connected=False), "connect", True),
     ("healthy session stays", dict(connected=True), "none", True),
-    ("removed tablet tears down", dict(device=False, last_action="connect"), "disconnect", True),
+    ("removed tablet tears down", dict(device=False, last_action="connect", streak=2), "disconnect", True),
+    ("brief unavailability waits", dict(device=False, last_action="connect", streak=0), "none", True),
     ("removed tablet without session", dict(device=False, last_action="disconnect"), "none", True),
-    ("unauthorized adb tears down", dict(adb="unauthorized", last_action="connect"), "disconnect", True),
+    ("unauthorized adb tears down", dict(adb="unauthorized", last_action="connect", streak=2), "disconnect", True),
     ("auto off tears down", dict(connected=True, auto=False), "disconnect", False),
     ("disable request", dict(request=("disable", None)), "disconnect", False),
     ("enable request", dict(request=("enable", None)), "connect", True),
@@ -54,8 +57,9 @@ def test_decide_action(label, overrides, expected, expected_auto, settings):
 def test_set_auto_request_updates_policy(settings):
     decision = DecideAction().run_pure(
         inputs(settings=settings, request=("set-auto", False)), {})["action"]
-    assert decision == {"action": "policy", "auto_enabled": False,
-                        "reason": "automatic session disabled"}
+    assert decision["action"] == "policy"
+    assert decision["auto_enabled"] is False
+    assert decision["reason"] == "automatic session disabled"
 
 
 def test_take_request_claims_oldest_and_leaves_queue_empty(tmp_path):

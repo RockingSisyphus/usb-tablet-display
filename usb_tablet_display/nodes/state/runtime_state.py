@@ -95,6 +95,9 @@ class TickMerge:
             state["internet"] = internet["status"]
         if internet.get("checked"):
             state["internet_at"] = float(internet.get("at") or time.time())
+        state["unusable_streak"] = int(action.get("unusable_streak") or 0)
+        state["last_decision"] = str(action.get("reason") or "")[:200]
+        state["last_decision_at"] = time.time()
         if action.get("auto_enabled") is not None:
             state["auto_enabled"] = bool(action["auto_enabled"])
         if session.get("wait_errors") is not None:
